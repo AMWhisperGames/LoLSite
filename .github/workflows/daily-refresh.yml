@@ -71,6 +71,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -f *.html *.css *.js _site/
+          if [ -f riot.txt ]; then cp -f riot.txt _site/; fi
           touch _site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
