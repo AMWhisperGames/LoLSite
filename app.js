@@ -129,7 +129,6 @@ const els = {
   wCounterVal: document.getElementById("w-counter-val"),
   wPairingVal: document.getElementById("w-pairing-val"),
   wUniqueVal: document.getElementById("w-unique-val"),
-  draftWindows: document.getElementById("draft-windows"),
 };
 
 let patch = "";
@@ -150,9 +149,7 @@ let roleRates = {};
 let winrates = { lanes: {} };
 let oePop = {};
 let teamIndex = {};
-let teamIndexAll = {};
 let teamNames = [];
-let teamNamesAll = [];
 
 let state = emptyState();
 let chartOpen = false;
@@ -233,75 +230,20 @@ function emptyRoleBag() {
   return { players: {}, champs: {}, champWins: {}, n: 0 };
 }
 
-function addDays(iso, days) {
-  const date = new Date(iso + "T00:00:00");
-  date.setDate(date.getDate() + days);
-  return date.toISOString().slice(0, 10);
-}
-
-function proGameBundle() {
-  return window.RIFT_PRO_GAMES || { games: [], to: "" };
-}
-
-function teamStatsCutoff() {
-  if (!window.RIFT_WINDOW || !RIFT_WINDOW.isRecent()) return "";
-  return RIFT_WINDOW.cutoff(proGameBundle().to, addDays);
-}
-
-function gamesForTeamStats() {
-  const games = proGameBundle().games || [];
-  const cutoff = teamStatsCutoff();
-  if (!cutoff) return games;
-  const out = [];
-  for (let i = 0; i < games.length; i += 1) {
-    const game = games[i];
-    if (game.d && game.d >= cutoff) out.push(game);
-  }
-  return out;
-}
-
-function listAllTeams() {
-  const games = proGameBundle().games || [];
-  const seen = {};
-  for (let i = 0; i < games.length; i += 1) {
-    if (games[i].bt) seen[games[i].bt] = true;
-    if (games[i].rt) seen[games[i].rt] = true;
-  }
-  return Object.keys(seen).sort(function (a, b) {
-    return a.localeCompare(b);
-  });
-}
-
-function makeTeamRecord(name) {
-  return {
-    name: name,
-    n: 0,
-    league: "",
-    roles: {
-      top: emptyRoleBag(),
-      jng: emptyRoleBag(),
-      mid: emptyRoleBag(),
-      adc: emptyRoleBag(),
-      sup: emptyRoleBag(),
-    },
-    starters: {},
-  };
-}
-
-function accumulateTeamIndex(index, games, useAgeWeight) {
-  const newestMs = games.length && games[0].d ? Date.parse(games[0].d) : 0;
-  for (let g = 0; g < games.length; g += 1) {
+function buildTeamIndex() {
+  teamIndex = {};
+  const games = (window.RIFT_PRO_GAMES && window.RIFT_PRO_GAMES.games) || [];
+  const total = games.length;
+  const newestMs = total && games[0].d ? Date.parse(games[0].d) : 0;
+  for (let g = 0; g < total; g += 1) {
     const game = games[g];
-    let weight = 1;
-    if (useAgeWeight) {
-      const gameMs = game.d ? Date.parse(game.d) : 0;
-      const ageDays = newestMs && gameMs ? Math.max(0, (newestMs - gameMs) / 86400000) : Infinity;
-      weight =
-        ageDays <= TEAM_RECENT_DAYS
-          ? TEAM_RECENT_WEIGHT -
-            (TEAM_RECENT_WEIGHT - 1) * (ageDays / TEAM_RECENT_DAYS)
-          : TEAM_OLD_WEIGHT;
-    }
+    const gameMs = game.d ? Date.parse(game.d) : 0;
+    const ageDays = newestMs && gameMs ? Math.max(0, (newestMs - gameMs) / 86400000) : Infinity;
+    const weight =
+      ageDays <= TEAM_RECENT_DAYS
+        ? TEAM_RECENT_WEIGHT -
+          (TEAM_RECENT_WEIGHT - 1) * (ageDays / TEAM_RECENT_DAYS)
+        : TEAM_OLD_WEIGHT;
     const sides = [
       { name: game.bt, champs: game.b, players: game.bp, win: game.w === 1 },
       { name: game.rt, champs: game.r, players: game.rp, win: game.w === 0 },
@@ -309,7 +251,21 @@ function accumulateTeamIndex(index, games, useAgeWeight) {
     for (let s = 0; s < sides.length; s += 1) {
       const side = sides[s];
       if (!side.name) continue;
-      const rec = index[side.name] || (index[side.name] = makeTeamRecord(side.name));
+      const rec =
+        teamIndex[side.name] ||
+        (teamIndex[side.name] = {
+          name: side.name,
+          n: 0,
+          league: "",
+          roles: {
+            top: emptyRoleBag(),
+            jng: emptyRoleBag(),
+            mid: emptyRoleBag(),
+            adc: emptyRoleBag(),
+            sup: emptyRoleBag(),
+          },
+          starters: {},
+        });
       rec.n += weight;
       if (game.l) rec.league = game.l;
       for (let i = 0; i < 5; i += 1) {
@@ -326,51 +282,25 @@ function accumulateTeamIndex(index, games, useAgeWeight) {
       }
     }
   }
-  return index;
-}
-
-function finalizeTeamStarters(index) {
-  const names = Object.keys(index);
-  for (let i = 0; i < names.length; i += 1) {
-    const rec = index[names[i]];
+  teamNames = Object.keys(teamIndex).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  for (let i = 0; i < teamNames.length; i += 1) {
+    const rec = teamIndex[teamNames[i]];
     for (let r = 0; r < ROLE_KEYS.length; r += 1) {
       rec.starters[ROLE_KEYS[r]] = topWeighted(rec.roles[ROLE_KEYS[r]].players);
     }
   }
 }
 
-function buildTeamIndex() {
-  const allGames = proGameBundle().games || [];
-  teamIndexAll = accumulateTeamIndex({}, allGames, true);
-  finalizeTeamStarters(teamIndexAll);
-  teamNamesAll = listAllTeams();
-  teamNames = teamNamesAll;
-
-  teamIndex = accumulateTeamIndex({}, gamesForTeamStats(), false);
-  finalizeTeamStarters(teamIndex);
-}
-
-function orgRecord(name) {
-  if (!name) return null;
-  if (teamIndex[name]) return teamIndex[name];
-  if (teamIndexAll[name]) return teamIndexAll[name];
-  return null;
-}
-
 function orgOf(side) {
   const name = state[side] && state[side].org;
-  if (name && orgRecord(name)) return orgRecord(name);
+  if (name && teamIndex[name]) return teamIndex[name];
   if (chartOpen && chartStage === "play" && side !== chartYou) {
     const practiceName = state[chartYou] && state[chartYou].org;
-    if (practiceName && orgRecord(practiceName)) return orgRecord(practiceName);
+    if (practiceName && teamIndex[practiceName]) return teamIndex[practiceName];
   }
   return null;
-}
-
-function orgForRoster(side) {
-  const name = state[side] && state[side].org;
-  if (!name) return null;
-  return teamIndexAll[name] || teamIndex[name] || null;
 }
 
 function findTeam(raw) {
@@ -378,8 +308,8 @@ function findTeam(raw) {
   if (!q || isGenericName(q)) return "";
   let prefix = "";
   let prefixN = 0;
-  for (let i = 0; i < teamNamesAll.length; i += 1) {
-    const name = teamNamesAll[i];
+  for (let i = 0; i < teamNames.length; i += 1) {
+    const name = teamNames[i];
     const low = name.toLowerCase();
     if (low === q) return name;
     if (low.indexOf(q) === 0) {
@@ -392,29 +322,23 @@ function findTeam(raw) {
 
 function searchTeams(raw, limit) {
   const q = String(raw || "").trim().toLowerCase();
-  const cap = limit || 20;
   const out = [];
   if (!q || isGenericName(q)) {
-    for (let i = 0; i < teamNamesAll.length && out.length < cap; i += 1) out.push(teamNamesAll[i]);
+    for (let i = 0; i < teamNames.length && out.length < (limit || 12); i += 1) out.push(teamNames[i]);
     return out;
   }
-  const prefix = [];
-  const contains = [];
-  for (let i = 0; i < teamNamesAll.length; i += 1) {
-    const name = teamNamesAll[i];
-    const low = name.toLowerCase();
-    if (low.indexOf(q) === 0) prefix.push(name);
-    else if (low.indexOf(q) !== -1) contains.push(name);
+  for (let i = 0; i < teamNames.length; i += 1) {
+    if (teamNames[i].toLowerCase().indexOf(q) === -1) continue;
+    out.push(teamNames[i]);
+    if (out.length >= (limit || 12)) break;
   }
-  for (let i = 0; i < prefix.length && out.length < cap; i += 1) out.push(prefix[i]);
-  for (let i = 0; i < contains.length && out.length < cap; i += 1) out.push(contains[i]);
   return out;
 }
 
 function setSideOrg(side, orgName) {
   const team = state[side];
   if (!team) return;
-  if (!orgName || !teamIndexAll[orgName]) {
+  if (!orgName || !teamIndex[orgName]) {
     team.org = "";
     team.name = genericName(side);
     return;
@@ -2496,7 +2420,7 @@ function renderRoster(side) {
   const el = side === "blue" ? els.blueRoster : els.redRoster;
   const input = side === "blue" ? els.blueName : els.redName;
   if (!el) return;
-  const org = orgForRoster(side);
+  const org = orgOf(side);
   if (input) input.classList.toggle("is-org", !!org);
   if (!org) {
     el.hidden = true;
@@ -2738,19 +2662,10 @@ function bindWeights() {
   });
 }
 
-function bindDraftWindow() {
-  if (!window.RIFT_WINDOW || !els.draftWindows) return;
-  RIFT_WINDOW.mount(els.draftWindows, function () {
-    buildTeamIndex();
-    render();
-  });
-}
-
 function bind() {
   bindWeights();
   bindTeamCombo("blue");
   bindTeamCombo("red");
-  bindDraftWindow();
   els.search.addEventListener("input", function () {
     search = els.search.value;
     renderGrid();
@@ -2891,9 +2806,6 @@ function boot() {
     winrates = window.RIFT_WINRATES || { lanes: {} };
     if (!winrates.lanes) winrates.lanes = {};
     rebuildChampGames();
-    if (window.RIFT_WINDOW) {
-      RIFT_WINDOW.init(new URLSearchParams(location.search).get("window"));
-    }
     buildTeamIndex();
     if (els.bootStatus) els.bootStatus.textContent = "Loading match data…";
     loadOracles()
