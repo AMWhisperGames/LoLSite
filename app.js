@@ -36,6 +36,10 @@ const RESPONSE_ROLE_BASE = 4;
 const OE_EARLY_PHASE_PICKS = 6;
 const OE_EARLY_PICK_SCALE = 5;
 const OE_EARLY_PICK_PRIOR = 12;
+// Blind/openers: heavily favor champs taken in first 3 team picks in OE.
+const OE_BLIND_EARLY_SCALE = 7;
+const OE_BLIND_EARLY_FLOOR = 0.35;
+const OE_BLIND_EARLY_POP_BLEND = 0.72;
 const TEAM_RECENT_DAYS = 60;
 const TEAM_RECENT_WEIGHT = 1.5;
 const TEAM_OLD_WEIGHT = 0.15;
@@ -577,6 +581,24 @@ function blindThreatWeight(them, role) {
   return weight;
 }
 
+function blindEarlyInfo(id, role) {
+  const order = oePickOrder(id, role);
+  if (!order || !order.picks) {
+    return { early: 0, earlyRate: 0, earlyPicks: 0, picks: 0 };
+  }
+  const confidence = order.picks / (order.picks + OE_EARLY_PICK_PRIOR);
+  const earlyRate = order.early / order.picks;
+  // Reward regular early-priority openers; mild WR still handled by mix.wr.
+  const early =
+    OE_BLIND_EARLY_SCALE * confidence * Math.max(0, earlyRate - OE_BLIND_EARLY_FLOOR);
+  return {
+    early: early,
+    earlyRate: earlyRate,
+    earlyPicks: order.early,
+    picks: order.picks,
+  };
+}
+
 function blindPick(id, power, scoreWeights) {
   if (!power) return null;
   const mix = scoreWeights || weights;
@@ -584,8 +606,18 @@ function blindPick(id, power, scoreWeights) {
   const picks = oePicks(id, role);
   const roleGames = oeRoleGames(role);
   const popInfo = oePop[role] || { prior: 20 };
-  const popularity = POPULARITY_SCALE * (picks / (picks + popInfo.prior));
+  const earlyInfo = blindEarlyInfo(id, role);
+  const totalPop = POPULARITY_SCALE * (picks / (picks + popInfo.prior));
+  const earlyPop =
+    POPULARITY_SCALE *
+    (earlyInfo.earlyPicks / (earlyInfo.earlyPicks + popInfo.prior));
+  // Blind popularity leans on early OE picks, not raw presence.
+  const popularity =
+    (1 - OE_BLIND_EARLY_POP_BLEND) * totalPop +
+    OE_BLIND_EARLY_POP_BLEND * earlyPop;
   const flex = blindSafety(id, role);
+  // Bot chart already applies early via botEarlyPickScore in the first phase.
+  const early = mix === BOT_WEIGHTS ? 0 : earlyInfo.early;
   return {
     popularity: popularity,
     safety: flex.safety,
@@ -593,10 +625,14 @@ function blindPick(id, power, scoreWeights) {
     sharpShare: flex.sharpShare,
     picks: picks,
     pickRate: roleGames ? picks / roleGames : 0,
+    early: early,
+    earlyRate: earlyInfo.earlyRate,
+    earlyPicks: earlyInfo.earlyPicks,
     score:
       mix.wr * power.power +
       mix.pop * popularity +
-      mix.safety * flex.safety,
+      mix.safety * flex.safety +
+      early,
   };
 }
 
@@ -1257,18 +1293,27 @@ function scoreTooltip(champ, score) {
     const opening = Number(score.blind.picks || 0).toLocaleString(undefined, {
       maximumFractionDigits: 1,
     });
+    const earlyPicks = Number(score.blind.earlyPicks || 0).toLocaleString(undefined, {
+      maximumFractionDigits: 1,
+    });
     lines.push(
       "popular  " +
         formatDelta(weights.pop * score.blind.popularity) +
         "  (" +
+        earlyPicks +
+        " early / " +
         opening +
-        " opening " +
+        " " +
         roleLabel(score.power && score.power.role) +
         ", " +
         formatShare(score.blind.pickRate) +
         " of recent pro · ×" +
         weights.pop.toFixed(2) +
-        ")  ·  safety  " +
+        ")  ·  early  " +
+        formatDelta(score.blind.early || 0) +
+        "  (" +
+        formatShare(score.blind.earlyRate || 0) +
+        " pre-2nd ban)  ·  safety  " +
         formatDelta(weights.safety * score.blind.safety) +
         "  (" +
         formatShare(score.blind.sharpShare) +
