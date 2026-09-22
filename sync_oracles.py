@@ -56,6 +56,7 @@ POS = {
 
 MAJOR_LEAGUES = ("LPL", "LCK", "LEC", "LCS")
 EARLY_PICK_SLOTS = 3
+PICK_SLOT_KEYS = ("s0", "s1", "s2", "s3", "s4")
 
 ROOT = Path(__file__).resolve().parent
 DOWNLOADS = Path.home() / "Downloads"
@@ -479,8 +480,11 @@ def convert(csv_path: Path, champions_js: Path, recent_days: int = 60) -> dict:
         lambda: defaultdict(lambda: {"picks": 0, "wins": 0})
     )
     pick_order: dict[str, dict[str, dict[str, int]]] = defaultdict(
-        lambda: defaultdict(lambda: {"picks": 0, "early": 0})
+        lambda: defaultdict(
+            lambda: {"picks": 0, "early": 0, "s0": 0, "s1": 0, "s2": 0, "s3": 0, "s4": 0}
+        )
     )
+    pairings: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     pairs = 0
     for rows in by_game.values():
         keyed: dict[tuple[str, str], tuple[str, int]] = {}
@@ -490,6 +494,16 @@ def convert(csv_path: Path, champions_js: Path, recent_days: int = 60) -> dict:
             bucket["picks"] += 1
             bucket["wins"] += row["win"]
             keyed[(row["side"], row["pos"])] = (row["id"], row["win"])
+        for side in ("Blue", "Red"):
+            lineup = []
+            for pos in ("top", "jng", "mid", "adc", "sup"):
+                row = keyed.get((side, pos))
+                if row:
+                    lineup.append(row[0])
+            for i in range(len(lineup)):
+                for j in range(i + 1, len(lineup)):
+                    pairings[lineup[i]][lineup[j]] += 1
+                    pairings[lineup[j]][lineup[i]] += 1
         for pos in ("top", "jng", "mid", "adc", "sup"):
             blue = keyed.get(("Blue", pos))
             red = keyed.get(("Red", pos))
@@ -519,6 +533,7 @@ def convert(csv_path: Path, champions_js: Path, recent_days: int = 60) -> dict:
                 order["picks"] += 1
                 if slot < EARLY_PICK_SLOTS:
                     order["early"] += 1
+                order[PICK_SLOT_KEYS[slot]] += 1
 
     compact: dict[str, dict[str, dict[str, float | int]]] = {}
     for us, vs in matchups.items():
@@ -574,6 +589,11 @@ def convert(csv_path: Path, champions_js: Path, recent_days: int = 60) -> dict:
         pos: sum(counts.get(pos, 0) for counts in recent_picks.values())
         for pos in ("top", "jng", "mid", "adc", "sup")
     }
+    compact_pairings: dict[str, dict[str, int]] = {}
+    for us, vs in pairings.items():
+        row = {them: games for them, games in vs.items() if games >= 3}
+        if row:
+            compact_pairings[us] = row
 
     return {
         "source": "Oracle's Elixir",
@@ -591,6 +611,7 @@ def convert(csv_path: Path, champions_js: Path, recent_days: int = 60) -> dict:
             champ_id: {role: dict(order) for role, order in roles.items()}
             for champ_id, roles in pick_order.items()
         },
+        "pairings": compact_pairings,
         "recent": {
             "days": recent_days,
             "from": cutoff,

@@ -40,6 +40,10 @@ const OE_EARLY_PICK_PRIOR = 12;
 const OE_BLIND_EARLY_SCALE = 7;
 const OE_BLIND_EARLY_FLOOR = 0.35;
 const OE_BLIND_EARLY_POP_BLEND = 0.72;
+const OE_SLOT_MATCH_SCALE = 3.8;
+const OE_SLOT_KEYS = ["s0", "s1", "s2", "s3", "s4"];
+const PAIR_POP_SCALE = 1.25;
+const OE_PAIR_POP_PRIOR = 12;
 const TEAM_RECENT_DAYS = 60;
 const TEAM_RECENT_WEIGHT = 1.5;
 const TEAM_OLD_WEIGHT = 0.15;
@@ -581,21 +585,55 @@ function blindThreatWeight(them, role) {
   return weight;
 }
 
+function currentTeamPickSlot() {
+  if (chartOpen && chartStage === "play") {
+    const step = CHART_STEPS[chartCurrentStep()];
+    if (step && step.kind === "pick") return step.index;
+    return -1;
+  }
+  const picks = state[recSide] && state[recSide].picks;
+  if (!picks) return -1;
+  for (let i = 0; i < picks.length; i += 1) {
+    if (!picks[i]) return i;
+  }
+  return -1;
+}
+
 function blindEarlyInfo(id, role) {
   const order = oePickOrder(id, role);
   if (!order || !order.picks) {
-    return { early: 0, earlyRate: 0, earlyPicks: 0, picks: 0 };
+    return {
+      early: 0,
+      earlyRate: 0,
+      earlyPicks: 0,
+      picks: 0,
+      slot: -1,
+      slotRate: 0,
+      slotBonus: 0,
+    };
   }
   const confidence = order.picks / (order.picks + OE_EARLY_PICK_PRIOR);
   const earlyRate = order.early / order.picks;
   // Reward regular early-priority openers; mild WR still handled by mix.wr.
   const early =
     OE_BLIND_EARLY_SCALE * confidence * Math.max(0, earlyRate - OE_BLIND_EARLY_FLOOR);
+  const slot = currentTeamPickSlot();
+  let slotRate = 0;
+  let slotBonus = 0;
+  if (slot >= 0 && slot < OE_SLOT_KEYS.length) {
+    const slotPicks = order[OE_SLOT_KEYS[slot]] || 0;
+    slotRate = slotPicks / order.picks;
+    // Extra lift when this champ is often taken in the same team pick slot.
+    slotBonus = OE_SLOT_MATCH_SCALE * confidence * slotRate;
+  }
   return {
     early: early,
     earlyRate: earlyRate,
     earlyPicks: order.early,
     picks: order.picks,
+    slot: slot,
+    slotRate: slotRate,
+    slotBonus: slotBonus,
   };
 }
 
@@ -618,6 +656,7 @@ function blindPick(id, power, scoreWeights) {
   const flex = blindSafety(id, role);
   // Bot chart already applies early via botEarlyPickScore in the first phase.
   const early = mix === BOT_WEIGHTS ? 0 : earlyInfo.early;
+  const slotBonus = earlyInfo.slotBonus;
   return {
     popularity: popularity,
     safety: flex.safety,
@@ -628,11 +667,15 @@ function blindPick(id, power, scoreWeights) {
     early: early,
     earlyRate: earlyInfo.earlyRate,
     earlyPicks: earlyInfo.earlyPicks,
+    slot: earlyInfo.slot,
+    slotRate: earlyInfo.slotRate,
+    slotBonus: slotBonus,
     score:
       mix.wr * power.power +
       mix.pop * popularity +
       mix.safety * flex.safety +
-      early,
+      early +
+      slotBonus,
   };
 }
 
@@ -862,6 +905,12 @@ function synergyEntry(us, them) {
   if (synergies[us] && synergies[us][them]) return synergies[us][them];
   if (synergies[them] && synergies[them][us]) return synergies[them][us];
   return null;
+}
+
+function proPairGames(us, them) {
+  const row = oracles.pairings && oracles.pairings[us];
+  if (!row) return 0;
+  return row[them] || 0;
 }
 
 function teamPickRows(side) {
@@ -1116,13 +1165,21 @@ function scoreChampion(id, enemies, allies, scoreWeights) {
     if (!entry || typeof entry.delta !== "number") continue;
     const games = entry.games || 0;
     const conf = games / (games + PAIR_PRIOR_GAMES);
+    const proGames = proPairGames(id, allies[i]);
+    // Slight boost for commonly drafted pro pairings (e.g. Lucian + Milio).
+    const pop =
+      proGames > 0
+        ? PAIR_POP_SCALE * (proGames / (proGames + OE_PAIR_POP_PRIOR))
+        : 0;
     pairs.push({
       id: allies[i],
       delta: entry.delta,
       games: games,
+      proGames: proGames,
       role: entry.role || "",
       conf: conf,
-      weighted: entry.delta * conf,
+      pop: pop,
+      weighted: entry.delta * conf + pop,
     });
   }
   let counter = 0;
@@ -1313,7 +1370,16 @@ function scoreTooltip(champ, score) {
         formatDelta(score.blind.early || 0) +
         "  (" +
         formatShare(score.blind.earlyRate || 0) +
-        " pre-2nd ban)  ·  safety  " +
+        " pre-2nd ban" +
+        (score.blind.slot >= 0
+          ? ", pick " +
+            (score.blind.slot + 1) +
+            " match " +
+            formatShare(score.blind.slotRate || 0) +
+            " → " +
+            formatDelta(score.blind.slotBonus || 0)
+          : "") +
+        ")  ·  safety  " +
         formatDelta(weights.safety * score.blind.safety) +
         "  (" +
         formatShare(score.blind.sharpShare) +
@@ -1393,7 +1459,14 @@ function scoreTooltip(champ, score) {
           formatDelta(pair.delta) +
           " Δ2, " +
           (pair.games || 0).toLocaleString() +
-          " games)"
+          " solo games" +
+          (pair.proGames
+            ? ", " +
+              pair.proGames.toLocaleString() +
+              " pro games, commonality " +
+              formatDelta(pair.pop)
+            : "") +
+          ")"
       );
     }
   }
