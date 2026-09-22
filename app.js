@@ -46,7 +46,7 @@ const TEAM_COMFORT_SCALE = 0.55;
 const TEAM_RARE_RATE = 0.04;
 const TEAM_RARE_PENALTY = 3.5;
 const ELO_SCALE = 400;
-const ELO_MULT = 10;
+const ELO_MULT = 4;
 
 const els = {
   boot: document.getElementById("boot"),
@@ -554,6 +554,29 @@ function rebuildOePop() {
   }
 }
 
+// Roles that can realistically answer an opener in that seat.
+const BLIND_THREAT_ROLES = {
+  top: ["top", "jng"],
+  jng: ["jng", "top", "mid"],
+  mid: ["mid", "jng"],
+  adc: ["adc", "mid", "sup"],
+  sup: ["sup", "adc"],
+};
+
+function blindThreatWeight(them, role) {
+  const roleKey = String(role || "").toLowerCase();
+  const flex = BLIND_THREAT_ROLES[roleKey] || ROLE_KEYS;
+  let weight = 0;
+  for (let i = 0; i < flex.length; i += 1) {
+    const r = flex[i];
+    const n = oePicks(them, r);
+    if (!n) continue;
+    // Same-seat answers count fully; flex seats (e.g. jng into top) count partially.
+    weight += n * (r === roleKey ? 1 : 0.55);
+  }
+  return weight;
+}
+
 function blindPick(id, power, scoreWeights) {
   if (!power) return null;
   const mix = scoreWeights || weights;
@@ -578,20 +601,19 @@ function blindPick(id, power, scoreWeights) {
 }
 
 function blindSafety(id, role) {
-  const vs = counters[id];
-  if (!vs) return { mean: 0, sharpShare: 0, safety: 0 };
-  const oppIds = Object.keys(vs);
+  if (!counters[id]) return { mean: 0, sharpShare: 0, safety: 0 };
+  const taken = takenIds();
   let deltaSum = 0;
   let weightSum = 0;
   let sharpWeight = 0;
-  for (let i = 0; i < oppIds.length; i += 1) {
-    const them = oppIds[i];
-    if (them === id) continue;
-    const threat = winrateEntry(them, role);
-    if (!threat || (threat.lane_pct || 0) < 8) continue;
+  for (let i = 0; i < champions.length; i += 1) {
+    const them = champions[i].id;
+    if (!them || them === id || taken.has(them)) continue;
     const delta = matchupDelta(id, them);
     if (delta == null) continue;
-    const weight = threat.games || 0;
+    // Remaining selectable pool only; impact scaled by OE pick frequency in
+    // roles that can actually answer this opener.
+    const weight = blindThreatWeight(them, role);
     if (weight <= 0) continue;
     deltaSum += delta * weight;
     weightSum += weight;
@@ -934,6 +956,7 @@ function draftExpect() {
       draft: rec.draft,
       team: rec.team,
       comfort: rec.comfort,
+      side: rec.side,
       counter: rec.counter,
       pairing: rec.pairing,
       hasDraft: hasDraft,
@@ -1008,6 +1031,9 @@ function renderExpect() {
   }
   if (rec.comfort) {
     bits.push("comfort <span class=\"" + toneClass(rec.comfort) + "\">" + formatDelta(rec.comfort) + "</span>");
+  }
+  if (rec.side) {
+    bits.push("side <span class=\"" + toneClass(rec.side) + "\">" + formatDelta(rec.side) + "</span>");
   }
   els.expectSub.innerHTML = bits.join(" · ");
   if (els.expectMeter) {
@@ -1248,8 +1274,8 @@ function scoreTooltip(champ, score) {
         formatShare(score.blind.sharpShare) +
         " hard counters · ×" +
         weights.safety.toFixed(2) +
-        ")"
-    );
+        ", vs remaining pool · OE-weighted)"
+      );
   }
   if (score.parts && score.parts.length) {
     lines.push(
