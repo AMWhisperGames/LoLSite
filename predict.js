@@ -1,9 +1,14 @@
 (function (root) {
+  // Locked via ratings/tune_predict.py (60d primary, 30d + Brier tie-break).
+  // Draft weight is 0: both LoLalytics and leave-one-out OE hurt once team+comfort are tuned.
   const ELO_SCALE = 400;
-  const ELO_MULT = 10;
+  const ELO_MULT = 0;
+  const SYN_MULT = 0;
   const PAIR_PRIOR = 400;
-  const TEAM_SCORE_ELO = 25;
-  const CHAMP_SCORE_ELO = 3;
+  const OE_PAIR_PRIOR = 40;
+  const TEAM_SCORE_ELO = 18;
+  const CHAMP_SCORE_ELO = 9;
+  const BLUE_SIDE_ELO = 10;
   const CHAMP_SCORE_CLAMP = 15;
   const CHAMP_RESIDUAL_CLAMP = 5;
   const CHAMP_MIN_GAMES = 6;
@@ -11,6 +16,10 @@
 
   function matchups() {
     return (root.RIFT_COUNTERS && root.RIFT_COUNTERS.matchups) || {};
+  }
+
+  function oeMatchups() {
+    return (root.RIFT_ORACLES && root.RIFT_ORACLES.matchups) || {};
   }
 
   function synergies() {
@@ -56,17 +65,30 @@
     return 1 / (1 + Math.pow(10, -diff / ELO_SCALE));
   }
 
-  function matchupRec(us, them) {
-    const map = matchups();
+  function lookupMatchup(map, us, them) {
     const direct = map[us] && map[us][them];
     if (direct && typeof direct.delta === "number") {
-      return { delta: direct.delta, games: direct.games || 0 };
+      return { delta: direct.delta, games: direct.games || 0, source: "direct" };
     }
     const inverse = map[them] && map[them][us];
     if (inverse && typeof inverse.delta === "number") {
-      return { delta: -inverse.delta, games: inverse.games || 0 };
+      return { delta: -inverse.delta, games: inverse.games || 0, source: "inverse" };
     }
     return null;
+  }
+
+  // Solo-queue counters — used by draft recommendation scoring.
+  function matchupRec(us, them) {
+    return lookupMatchup(matchups(), us, them);
+  }
+
+  // Pro matchups prefer Oracle's Elixir, fall back to LoLalytics.
+  function proMatchupRec(us, them) {
+    const oe = lookupMatchup(oeMatchups(), us, them);
+    if (oe && oe.games >= 3) return { delta: oe.delta, games: oe.games, prior: OE_PAIR_PRIOR, source: "oe" };
+    const solo = lookupMatchup(matchups(), us, them);
+    if (!solo) return null;
+    return { delta: solo.delta, games: solo.games, prior: PAIR_PRIOR, source: "solo" };
   }
 
   function synergyRec(us, them) {
@@ -103,7 +125,7 @@
     return { elo: den ? eloNum / den : 0, delta: den ? deltaNum / den : 0 };
   }
 
-  function counterOf(usRows, themRows) {
+  function counterOf(usRows, themRows, preferPro) {
     let eloNum = 0;
     let deltaNum = 0;
     let den = 0;
@@ -111,10 +133,11 @@
       for (let j = 0; j < themRows.length; j += 1) {
         const us = usRows[i];
         const them = themRows[j];
-        const rec = matchupRec(us.id, them.id);
+        const rec = preferPro ? proMatchupRec(us.id, them.id) : matchupRec(us.id, them.id);
         if (!rec) continue;
-        const conf = rec.games / (rec.games + PAIR_PRIOR);
-        const weight = laneWeight(us.role, them.role) * Math.max(conf, 0.15);
+        const prior = rec.prior != null ? rec.prior : PAIR_PRIOR;
+        const conf = rec.games / (rec.games + prior);
+        const weight = laneWeight(us.role, them.role) * Math.max(conf, preferPro ? 0.05 : 0.15);
         eloNum += eloFromDelta(rec.delta) * weight;
         deltaNum += rec.delta * weight;
         den += weight;
@@ -124,10 +147,10 @@
   }
 
   function lineupExpect(blue, red) {
-    const counter = counterOf(blue || [], red || []);
+    const counter = counterOf(blue || [], red || [], true);
     const pairBlue = pairingOf(blue || []);
     const pairRed = pairingOf(red || []);
-    const elo = (counter.elo + pairBlue.elo - pairRed.elo) * ELO_MULT;
+    const elo = counter.elo * ELO_MULT + (pairBlue.elo - pairRed.elo) * SYN_MULT;
     return {
       elo: elo,
       counter: counter.delta,
@@ -517,7 +540,7 @@
     const teamElo =
       blueScore != null && redScore != null ? (blueScore - redScore) * TEAM_SCORE_ELO : 0;
     const comfortElo = champLineupElo(blue, red);
-    const elo = (draft.elo || 0) + teamElo + comfortElo;
+    const elo = (draft.elo || 0) + teamElo + comfortElo + BLUE_SIDE_ELO;
     const p = expectedFromElo(elo);
     return {
       blue: p * 100,
@@ -526,6 +549,7 @@
       draft: draft.elo,
       team: teamElo,
       comfort: comfortElo,
+      side: BLUE_SIDE_ELO,
       counter: draft.counter,
       pairing: draft.pairing,
       blueScore: blueScore,
