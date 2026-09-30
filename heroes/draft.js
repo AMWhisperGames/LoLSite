@@ -21,6 +21,7 @@
   const REPEAT_STEP = 80;
   const DUO_SYNERGY = 0.5;
   const SYLVANAS_MAIEV = 160;
+  const DEATHWING_UTHER = 400;
   const LINKED = { Cho: "Gall", Gall: "Cho" };
   const DEFAULT_STATS = {
     waveclear: 0.001,
@@ -148,6 +149,16 @@
     if (hero === "Sylvanas" && enemy === "Maiev") score += SYLVANAS_MAIEV;
     if (hero === "Maiev" && enemy === "Sylvanas") score -= SYLVANAS_MAIEV;
     return score;
+  }
+
+  function pairingEdge(hero, ally) {
+    const row = lookup(data.pairings, hero, ally);
+    if (!row) return null;
+    let score = shrink(row.score, row.games);
+    if ((hero === "Deathwing" && ally === "Uther") || (hero === "Uther" && ally === "Deathwing")) {
+      score -= DEATHWING_UTHER;
+    }
+    return { score: score, games: row.games || 0 };
   }
 
   function pickCount() {
@@ -388,10 +399,10 @@
       counterGames += Math.min(row.games || 0, back ? back.games || 0 : 0);
     });
     allies.forEach(function (ally) {
-      const row = lookup(data.pairings, name, ally);
-      if (!row) return;
-      pairing += shrink(row.score, row.games);
-      pairingGames += row.games || 0;
+      const edge = pairingEdge(name, ally);
+      if (!edge) return;
+      pairing += edge.score;
+      pairingGames += edge.games;
     });
     const hasContext = enemies.length || allies.length;
     const factor = mapFactor(name);

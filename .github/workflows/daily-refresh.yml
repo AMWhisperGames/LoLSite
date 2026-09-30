@@ -71,6 +71,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -f *.html *.css *.js _site/
+          if [ -d heroes ]; then cp -a heroes _site/heroes; fi
           if [ -f riot.txt ]; then cp -f riot.txt _site/; fi
           touch _site/.nojekyll
 
