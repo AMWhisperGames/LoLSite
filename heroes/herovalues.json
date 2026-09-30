@@ -1,0 +1,912 @@
+[
+  {
+    "Hero Name": "Abathur",
+    "Wave Clear": 2,
+    "Engage": 0,
+    "Peel": 2,
+    "TeamSustain": 5,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Alarak",
+    "Wave Clear": 2,
+    "Engage": 5,
+    "Peel": 5,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Alexstrasza",
+    "Wave Clear": 4,
+    "Engage": 1,
+    "Peel": 2,
+    "TeamSustain": 7,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Ana",
+    "Wave Clear": 2,
+    "Engage": 2,
+    "Peel": 4,
+    "TeamSustain": 7,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Anduin",
+    "Wave Clear": 3,
+    "Engage": 5.5,
+    "Peel": 5.5,
+    "TeamSustain": 8,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Anub'arak",
+    "Wave Clear": 5,
+    "Engage": 9,
+    "Peel": 7,
+    "TeamSustain": 0,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Artanis",
+    "Wave Clear": 5,
+    "Engage": 6,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 6,
+    "Jungler": 1,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Arthas",
+    "Wave Clear": 4,
+    "Engage": 4,
+    "Peel": 6,
+    "TeamSustain": 0,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Auriel",
+    "Wave Clear": 6,
+    "Engage": 3,
+    "Peel": 6,
+    "TeamSustain": 8,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Azmodan",
+    "Wave Clear": 6,
+    "Engage": 0,
+    "Peel": 1,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Blaze",
+    "Wave Clear": 8,
+    "Engage": 7,
+    "Peel": 6,
+    "TeamSustain": 3,
+    "SelfSustain": 7,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Brightwing",
+    "Wave Clear": 6,
+    "Engage": 4,
+    "Peel": 7,
+    "TeamSustain": 8,
+    "SelfSustain": 9,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Cassia",
+    "Wave Clear": 6,
+    "Engage": 4,
+    "Peel": 4,
+    "TeamSustain": 3,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Chen",
+    "Wave Clear": 6,
+    "Engage": 5,
+    "Peel": 4,
+    "TeamSustain": 2,
+    "SelfSustain": 6,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Cho",
+    "Wave Clear": 4,
+    "Engage": 4,
+    "Peel": 6,
+    "TeamSustain": 0,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Chromie",
+    "Wave Clear": 5,
+    "Engage": 4,
+    "Peel": 4,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "D.Va",
+    "Wave Clear": 6,
+    "Engage": 2,
+    "Peel": 7,
+    "TeamSustain": 4,
+    "SelfSustain": 5,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Deathwing",
+    "Wave Clear": 5,
+    "Engage": 3,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Deckard",
+    "Wave Clear": 3,
+    "Engage": 4,
+    "Peel": 7,
+    "TeamSustain": 8,
+    "SelfSustain": 6,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Dehaka",
+    "Wave Clear": 7,
+    "Engage": 6,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 8,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Diablo",
+    "Wave Clear": 5,
+    "Engage": 8,
+    "Peel": 5,
+    "TeamSustain": 0,
+    "SelfSustain": 9,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "E.T.C.",
+    "Wave Clear": 4,
+    "Engage": 7,
+    "Peel": 8,
+    "TeamSustain": 2,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Falstad",
+    "Wave Clear": 6.5,
+    "Engage": 3,
+    "Peel": 5.75,
+    "TeamSustain": 0,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Fenix",
+    "Wave Clear": 6.5,
+    "Engage": 1,
+    "Peel": 1,
+    "TeamSustain": 0,
+    "SelfSustain": 7,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Gall",
+    "Wave Clear": 5,
+    "Engage": 0,
+    "Peel": 1,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Garrosh",
+    "Wave Clear": 4,
+    "Engage": 3,
+    "Peel": 7,
+    "TeamSustain": 2,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Gazlowe",
+    "Wave Clear": 3,
+    "Engage": 0,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Genji",
+    "Wave Clear": 4,
+    "Engage": 5,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Greymane",
+    "Wave Clear": 6,
+    "Engage": 2,
+    "Peel": 1,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Gul'dan",
+    "Wave Clear": 10,
+    "Engage": 3,
+    "Peel": 4,
+    "TeamSustain": 0,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Hanzo",
+    "Wave Clear": 6,
+    "Engage": 4,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Hogger",
+    "Wave Clear": 8,
+    "Engage": 4,
+    "Peel": 8,
+    "TeamSustain": 3,
+    "SelfSustain": 7,
+    "Jungler": 1,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Illidan",
+    "Wave Clear": 4,
+    "Engage": 4,
+    "Peel": 1,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Imperius",
+    "Wave Clear": 4,
+    "Engage": 6,
+    "Peel": 1,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Jaina",
+    "Wave Clear": 5,
+    "Engage": 2,
+    "Peel": 4,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Johanna",
+    "Wave Clear": 4,
+    "Engage": 4,
+    "Peel": 6,
+    "TeamSustain": 3,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Junkrat",
+    "Wave Clear": 9,
+    "Engage": 2,
+    "Peel": 5,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Kael'thas",
+    "Wave Clear": 5,
+    "Engage": 7,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 6,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Kel'Thuzad",
+    "Wave Clear": 3,
+    "Engage": 0,
+    "Peel": 3,
+    "TeamSustain": 6,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Kerrigan",
+    "Wave Clear": 1,
+    "Engage": 2,
+    "Peel": 0,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Kharazim",
+    "Wave Clear": 6,
+    "Engage": 2,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Leoric",
+    "Wave Clear": 8,
+    "Engage": 4,
+    "Peel": 7,
+    "TeamSustain": 4,
+    "SelfSustain": 6,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Li Li",
+    "Wave Clear": 3,
+    "Engage": 3,
+    "Peel": 5,
+    "TeamSustain": 7,
+    "SelfSustain": 6,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Li-Ming",
+    "Wave Clear": 6,
+    "Engage": 1,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 1.5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Lt. Morales",
+    "Wave Clear": 2,
+    "Engage": 1,
+    "Peel": 3,
+    "TeamSustain": 7,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "L?cio",
+    "Wave Clear": 2,
+    "Engage": 3,
+    "Peel": 8,
+    "TeamSustain": 8.5,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Lunara",
+    "Wave Clear": 6,
+    "Engage": 2,
+    "Peel": 5,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Maiev",
+    "Wave Clear": 6,
+    "Engage": 7,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "MalGanis",
+    "Wave Clear": 3,
+    "Engage": 3,
+    "Peel": 4,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Malfurion",
+    "Wave Clear": 2,
+    "Engage": 2,
+    "Peel": 5,
+    "TeamSustain": 7,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Malthael",
+    "Wave Clear": 7,
+    "Engage": 2,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 6,
+    "Jungler": 1,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Medivh",
+    "Wave Clear": 3,
+    "Engage": 7,
+    "Peel": 9,
+    "TeamSustain": 4,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Mei",
+    "Wave Clear": 4,
+    "Engage": 4,
+    "Peel": 6,
+    "TeamSustain": 2,
+    "SelfSustain": 7,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Mephisto",
+    "Wave Clear": 4,
+    "Engage": 3,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Muradin",
+    "Wave Clear": 2,
+    "Engage": 6,
+    "Peel": 4,
+    "TeamSustain": 1,
+    "SelfSustain": 6,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Murky",
+    "Wave Clear": 6,
+    "Engage": 4,
+    "Peel": 6,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Nazeebo",
+    "Wave Clear": 6,
+    "Engage": 2.5,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 4.5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Nova",
+    "Wave Clear": 2,
+    "Engage": 4,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Orphea",
+    "Wave Clear": 7,
+    "Engage": 2,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Probius",
+    "Wave Clear": 2,
+    "Engage": 0,
+    "Peel": 0,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Qhira",
+    "Wave Clear": 4,
+    "Engage": 6,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Ragnaros",
+    "Wave Clear": 5,
+    "Engage": 3,
+    "Peel": 4,
+    "TeamSustain": 0,
+    "SelfSustain": 3,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Raynor",
+    "Wave Clear": 5,
+    "Engage": 2,
+    "Peel": 7,
+    "TeamSustain": 0,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Rehgar",
+    "Wave Clear": 4,
+    "Engage": 1,
+    "Peel": 2,
+    "TeamSustain": 6,
+    "SelfSustain": 2,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Rexxar",
+    "Wave Clear": 5.75,
+    "Engage": 6,
+    "Peel": 6,
+    "TeamSustain": 0,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Samuro",
+    "Wave Clear": 5,
+    "Engage": 3,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Sgt. Hammer",
+    "Wave Clear": 2,
+    "Engage": 0,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Sonya",
+    "Wave Clear": 5,
+    "Engage": 7,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 1,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Stitches",
+    "Wave Clear": 4,
+    "Engage": 6,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Stukov",
+    "Wave Clear": 3,
+    "Engage": 4,
+    "Peel": 4,
+    "TeamSustain": 6.75,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Sylvanas",
+    "Wave Clear": 7,
+    "Engage": 4,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Tassadar",
+    "Wave Clear": 7,
+    "Engage": 2,
+    "Peel": 5,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "The Butcher",
+    "Wave Clear": 5,
+    "Engage": 7.75,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "The Lost Vikings",
+    "Wave Clear": 6.5,
+    "Engage": 0,
+    "Peel": 0,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 1,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Thrall",
+    "Wave Clear": 4,
+    "Engage": 6,
+    "Peel": 5,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Tracer",
+    "Wave Clear": 3,
+    "Engage": 2,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Tychus",
+    "Wave Clear": 7,
+    "Engage": 2,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Tyrael",
+    "Wave Clear": 4,
+    "Engage": 3,
+    "Peel": 4,
+    "TeamSustain": 3,
+    "SelfSustain": 8,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Tyrande",
+    "Wave Clear": 2,
+    "Engage": 3,
+    "Peel": 2,
+    "TeamSustain": 5.75,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Uther",
+    "Wave Clear": 2,
+    "Engage": 5,
+    "Peel": 6,
+    "TeamSustain": 7,
+    "SelfSustain": 4.5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Valeera",
+    "Wave Clear": 4,
+    "Engage": 7,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Valla",
+    "Wave Clear": 6,
+    "Engage": 3,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Varian",
+    "Wave Clear": 4,
+    "Engage": 7,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 1,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Whitemane",
+    "Wave Clear": 2,
+    "Engage": 2,
+    "Peel": 3,
+    "TeamSustain": 7,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Xul",
+    "Wave Clear": 9,
+    "Engage": 4,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 5,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Yrel",
+    "Wave Clear": 7,
+    "Engage": 3,
+    "Peel": 8,
+    "TeamSustain": 3,
+    "SelfSustain": 7,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Zagara",
+    "Wave Clear": 6,
+    "Engage": 2,
+    "Peel": 3,
+    "TeamSustain": 0,
+    "SelfSustain": 0,
+    "Jungler": 0,
+    "Anchor": 1
+  },
+  {
+    "Hero Name": "Zarya",
+    "Wave Clear": 4,
+    "Engage": 3,
+    "Peel": 6,
+    "TeamSustain": 4,
+    "SelfSustain": 2,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Zeratul",
+    "Wave Clear": 6,
+    "Engage": 4,
+    "Peel": 5,
+    "TeamSustain": 0,
+    "SelfSustain": 3,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "Zul'jin",
+    "Wave Clear": 4,
+    "Engage": 1,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 4,
+    "Jungler": 0,
+    "Anchor": 0
+  },
+  {
+    "Hero Name": "DEFAULT",
+    "Wave Clear": 0.001,
+    "Engage": 0.001,
+    "Peel": 0.001,
+    "TeamSustain": 0.001,
+    "SelfSustain": 0.001,
+    "Jungler": 0,
+    "Anchor": 0
+  }
+]

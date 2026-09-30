@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whisper Draft — Heroes of the Storm</title>
+    <meta
+      name="description"
+      content="Heroes of the Storm draft board. Storm League, Platinum and above, patches 2.55 and 2.57."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css?v=55" />
+    <link rel="stylesheet" href="heroes.css?v=9" />
+  </head>
+  <body>
+    <div id="splash" class="splash" aria-hidden="true"></div>
+    <div class="vignette"></div>
+
+    <div id="app" class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">W</span>
+          <div>
+            <strong>Whisper Draft</strong>
+            <nav class="site-nav">
+              <a href="../index.html">League</a>
+              <a href="./" aria-current="page">Heroes</a>
+            </nav>
+          </div>
+        </div>
+
+        <div class="phase-wrap">
+          <p id="phase-kicker" class="phase-kicker">Storm League · Platinum+ · 2.55 + 2.57</p>
+          <h2 id="phase-title" class="phase-title">Drop a hero on any slot</h2>
+        </div>
+
+        <div class="top-actions">
+          <button id="practice-btn" type="button" class="chart-toggle" aria-pressed="false">Practice</button>
+          <div id="practice-side" class="chips practice-side" hidden>
+            <button type="button" id="play-blue">Blue</button>
+            <button type="button" id="play-red">Red</button>
+          </div>
+          <span id="win-readout" class="game-label">Add picks on both sides for a win estimate</span>
+        </div>
+      </header>
+
+      <main class="board" id="draft-board">
+        <section class="team team-blue" aria-label="Blue side">
+          <header class="team-head">
+            <input id="blue-name" class="team-name" value="Blue Side" maxlength="40" aria-label="Blue team" />
+            <span>Blue</span>
+          </header>
+          <div class="comfort-drop" id="blue-comfort" tabindex="0" aria-label="Blue comfort CSV">
+            <strong>Comfort</strong>
+            <span class="comfort-status">Drop a CSV to override roles</span>
+            <button type="button" class="comfort-clear" hidden>Clear</button>
+            <input class="comfort-file" type="file" accept=".csv,text/csv" aria-label="Blue comfort file" />
+          </div>
+          <div id="blue-bans" class="bans"></div>
+          <div id="blue-picks" class="picks"></div>
+        </section>
+
+        <section class="pool" aria-label="Hero pool">
+          <div class="pool-tools">
+            <input id="search" type="search" placeholder="Search heroes" autocomplete="off" spellcheck="false" />
+            <div id="tag-filters" class="chips" role="tablist" aria-label="Hero roles"></div>
+          </div>
+          <div id="recs" class="recs" hidden>
+            <div class="recs-head">
+              <span id="recs-label">Suggested picks</span>
+              <div class="recs-sides">
+                <button type="button" id="recs-single" class="active">Single</button>
+                <button type="button" id="recs-duo">Duo</button>
+                <button type="button" id="recs-blue">For Blue</button>
+                <button type="button" id="recs-red">For Red</button>
+              </div>
+            </div>
+            <div id="recs-weights" class="recs-weights" title="How strongly each factor moves a suggestion">
+              <label>
+                <span>Pairings <b id="w-pairing-val">2.00</b></span>
+                <input id="w-pairing" type="range" min="0" max="3" step="0.05" value="2" />
+              </label>
+              <label>
+                <span>Counters <b id="w-counter-val">0.50</b></span>
+                <input id="w-counter" type="range" min="0" max="3" step="0.05" value="0.5" />
+              </label>
+              <label>
+                <span>Values <b id="w-values-val">1.80</b></span>
+                <input id="w-values" type="range" min="0" max="3" step="0.05" value="1.8" />
+              </label>
+              <label>
+                <span>Comfort <b id="w-role-val">1.40</b></span>
+                <input id="w-role" type="range" min="0" max="3" step="0.05" value="1.4" aria-label="Comfort, role fit" />
+              </label>
+            </div>
+            <div id="recs-list" class="recs-list"></div>
+          </div>
+          <div class="pool-main">
+            <div id="grid" class="grid"></div>
+          </div>
+          <div class="pool-footer">
+            <div class="pool-actions">
+              <button id="undo-btn" type="button">Undo</button>
+              <button id="reset-btn" type="button">Reset</button>
+              <button id="swap-btn" type="button">Swap sides</button>
+            </div>
+            <label class="map-field">
+              <span>Map</span>
+              <select id="map-select" aria-label="Map">
+                <option value="">Any map</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="team team-red" aria-label="Red side">
+          <header class="team-head">
+            <input id="red-name" class="team-name" value="Red Side" maxlength="40" aria-label="Red team" />
+            <span>Red</span>
+          </header>
+          <div class="comfort-drop" id="red-comfort" tabindex="0" aria-label="Red comfort CSV">
+            <strong>Comfort</strong>
+            <span class="comfort-status">Drop a CSV to override roles</span>
+            <button type="button" class="comfort-clear" hidden>Clear</button>
+            <input class="comfort-file" type="file" accept=".csv,text/csv" aria-label="Red comfort file" />
+          </div>
+          <div id="red-bans" class="bans"></div>
+          <div id="red-picks" class="picks"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="data.js?v=2"></script>
+    <script src="draft.js?v=27"></script>
+  </body>
+</html>

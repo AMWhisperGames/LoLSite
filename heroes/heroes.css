@@ -1,0 +1,224 @@
+.pick.selected,
+.ban.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.champ img,
+.pick-art,
+.ban img,
+.rec-card img {
+  object-position: center center;
+}
+
+.champ.fallback,
+.pick-art.fallback,
+.ban img.fallback {
+  display: grid;
+  place-items: center;
+  background: #141a22;
+  color: #d5dde6;
+  font-weight: 700;
+}
+
+.ban img.fallback {
+  font-size: 14px;
+}
+
+.pick-art.fallback {
+  font-size: 28px;
+}
+
+.win-positive {
+  color: #8fd0a8;
+}
+
+.win-negative {
+  color: #e08b8b;
+}
+
+.pool-footer {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.map-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.map-field span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+#map-select {
+  min-width: 220px;
+  background: var(--slot);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.pool.drop-hover {
+  outline: 1px dashed var(--accent);
+  outline-offset: -6px;
+}
+
+.champ.blind-locked {
+  opacity: 0.4;
+}
+
+.practice-side button.active {
+  color: #101114;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+#practice-btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--gold-bright);
+}
+
+.rec-card.pair {
+  cursor: pointer;
+}
+
+.rec-card img.is-blind {
+  box-shadow: 0 0 0 2px #e2c56a;
+}
+
+#recs-weights {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 14px;
+  padding: 4px 2px 2px;
+}
+
+#recs-weights label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+#recs-weights span {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+#recs-weights b {
+  color: var(--gold-bright);
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+#recs-weights input[type="range"] {
+  width: 100%;
+  height: 4px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.pick.turn,
+.ban.turn,
+.pick.staged,
+.ban.staged {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.pick.staged,
+.ban.staged {
+  opacity: 0.85;
+}
+
+.comfort-drop {
+  margin: 0 12px 8px;
+  min-height: 52px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: copy;
+}
+
+.comfort-drop.is-over,
+.comfort-drop:focus {
+  border-color: var(--accent);
+  outline: none;
+  background: rgba(197, 208, 216, 0.08);
+}
+
+.comfort-drop.has-custom {
+  border-style: solid;
+}
+
+.team-blue .comfort-drop.has-custom {
+  border-color: var(--blue);
+}
+
+.team-red .comfort-drop.has-custom {
+  border-color: var(--red);
+}
+
+.comfort-drop.is-error {
+  border-color: var(--red);
+}
+
+.comfort-drop strong {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.comfort-status {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.comfort-clear {
+  justify-self: start;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+#draft-board .team {
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+}
+
+.comfort-file {
+  display: none;
+}

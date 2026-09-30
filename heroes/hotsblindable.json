@@ -1,0 +1,362 @@
+[
+  {
+    "Hero Name": "Abathur",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Alarak",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Alexstrasza",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Ana",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Anduin",
+    "Blindable": 1
+  },
+  {
+    "Hero Name": "Anub'arak",
+    "Blindable": 0.5
+  },
+  {
+    "Hero Name": "Artanis",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Arthas",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Auriel",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Azmodan",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Blaze",
+    "Blindable": 1
+  },
+  {
+    "Hero Name": "Brightwing",
+    "Blindable": 1
+  },
+  {
+    "Hero Name": "Cassia",
+    "Blindable": 0.25
+  },
+  {
+    "Hero Name": "Chen",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Cho",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Chromie",
+    "Blindable": 0.35
+  },
+  {
+    "Hero Name": "D.Va",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Deathwing",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Deckard",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Dehaka",
+    "Blindable": 1
+  },
+  {
+    "Hero Name": "Diablo",
+    "Blindable": 0.75
+  },
+  {
+    "Hero Name": "E.T.C.",
+    "Blindable": 0.25
+  },
+  {
+    "Hero Name": "Falstad",
+    "Blindable": 0.2
+  },
+  {
+    "Hero Name": "Fenix",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Gall",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Garrosh",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Gazlowe",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Genji",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Greymane",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Guldan",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Hanzo",
+    "Blindable": 0.7
+  },
+  {
+    "Hero Name": "Hogger",
+    "Blindable": 1
+  },
+  {
+    "Hero Name": "Illidan",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Imperius",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Jaina",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Johanna",
+    "Blindable": 0.8
+  },
+  {
+    "Hero Name": "Junkrat",
+    "Blindable": 0.85
+  },
+  {
+    "Hero Name": "Kaelthas",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "KelThuzad",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Kerrigan",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Kharazim",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Leoric",
+    "Blindable": 0.8
+  },
+  {
+    "Hero Name": "Li Li",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Li-Ming",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Lt. Morales",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "L?cio",
+    "Blindable": 0.85
+  },
+  {
+    "Hero Name": "Lunara",
+    "Blindable": 0.2
+  },
+  {
+    "Hero Name": "Maiev",
+    "Blindable": 0.8
+  },
+  {
+    "Hero Name": "MalGanis",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Malfurion",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Malthael",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Medivh",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Mei",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Mephisto",
+    "Blindable": 0.15
+  },
+  {
+    "Hero Name": "Muradin",
+    "Blindable": 0.6
+  },
+  {
+    "Hero Name": "Murky",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Nazeebo",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Nova",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Orphea",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Probius",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Qhira",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Ragnaros",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Raynor",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Rehgar",
+    "Blindable": 0.7
+  },
+  {
+    "Hero Name": "Rexxar",
+    "Blindable": 0.2
+  },
+  {
+    "Hero Name": "Samuro",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Sgt. Hammer",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Sonya",
+    "Blindable": 0.45
+  },
+  {
+    "Hero Name": "Stitches",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Stukov",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Sylvanas",
+    "Blindable": 0.85
+  },
+  {
+    "Hero Name": "Tassadar",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "TheButcher",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "The Lost Vikings",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Thrall",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Tracer",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Tychus",
+    "Blindable": 0.1
+  },
+  {
+    "Hero Name": "Tyrael",
+    "Blindable": 0.75
+  },
+  {
+    "Hero Name": "Tyrande",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Uther",
+    "Blindable": 0.1
+  },
+  {
+    "Hero Name": "Valeera",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Valla",
+    "Blindable": 0.2
+  },
+  {
+    "Hero Name": "Varian",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Whitemane",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Xul",
+    "Blindable": 0.0
+  },
+  {
+    "Hero Name": "Yrel",
+    "Blindable": 0.7
+  },
+  {
+    "Hero Name": "Zagara",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Zarya",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Zeratul",
+    "Blindable": 0
+  },
+  {
+    "Hero Name": "Zuljin",
+    "Blindable": 0
+  }
+]
