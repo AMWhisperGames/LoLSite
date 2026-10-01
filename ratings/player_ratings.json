@@ -979,14 +979,14 @@
           "games": 29,
           "wins": 14,
           "win_rate": 0.4828,
-          "score": 0.121,
+          "score": 0.119,
           "form": 3.468,
           "impact": -0.116,
           "recent_games": 0,
           "last_date": "2026-05-15",
           "region": 0.003,
           "tier": -1.263,
-          "idle": 0.082,
+          "idle": 0.081,
           "form_raw": 0.0634,
           "ctx": -0.2088,
           "qualities": {
@@ -1000,7 +1000,7 @@
             "deaths_pm": -0.315,
             "dpm_vs": -0.388
           },
-          "champ_score": 0.175
+          "champ_score": 0.171
         },
         {
           "name": "sheer",
@@ -1039,7 +1039,7 @@
           "games": 43,
           "wins": 21,
           "win_rate": 0.4884,
-          "score": -0.037,
+          "score": -0.036,
           "form": -2.399,
           "impact": -0.182,
           "recent_games": 0,
@@ -1060,7 +1060,7 @@
             "deaths_pm": 0.063,
             "dpm_vs": -0.076
           },
-          "champ_score": -0.05
+          "champ_score": -0.049
         },
         {
           "name": "ZUIAN",
@@ -1099,7 +1099,7 @@
           "games": 11,
           "wins": 5,
           "win_rate": 0.4545,
-          "score": -0.14,
+          "score": -0.137,
           "form": -8.856,
           "impact": -0.013,
           "recent_games": 0,
@@ -1120,7 +1120,7 @@
             "deaths_pm": 0.908,
             "dpm_vs": -0.728
           },
-          "champ_score": -0.247
+          "champ_score": -0.242
         },
         {
           "name": "Photon",
@@ -1129,14 +1129,14 @@
           "games": 24,
           "wins": 5,
           "win_rate": 0.2083,
-          "score": -0.326,
+          "score": -0.319,
           "form": 3.355,
           "impact": -1.211,
           "recent_games": 0,
           "last_date": "2026-05-17",
           "region": -4.49,
           "tier": 0.0,
-          "idle": 0.086,
+          "idle": 0.084,
           "form_raw": 0.0671,
           "ctx": -0.7238,
           "qualities": {
@@ -1150,7 +1150,7 @@
             "deaths_pm": -0.117,
             "dpm_vs": -0.063
           },
-          "champ_score": -0.146
+          "champ_score": -0.143
         },
         {
           "name": "Hery",
@@ -1159,14 +1159,14 @@
           "games": 34,
           "wins": 12,
           "win_rate": 0.3529,
-          "score": -0.397,
+          "score": -0.388,
           "form": 0.612,
           "impact": -0.784,
           "recent_games": 0,
           "last_date": "2026-05-15",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.082,
+          "idle": 0.081,
           "form_raw": 0.0104,
           "ctx": -0.5886,
           "qualities": {
@@ -1180,7 +1180,7 @@
             "deaths_pm": 0.112,
             "dpm_vs": 0.169
           },
-          "champ_score": -0.447
+          "champ_score": -0.437
         },
         {
           "name": "TheShy",
@@ -1213,6 +1213,36 @@
           "champ_score": -2.122
         },
         {
+          "name": "Empyros",
+          "team": "Fnatic",
+          "league": "LEC",
+          "games": 38,
+          "wins": 15,
+          "win_rate": 0.3947,
+          "score": -0.494,
+          "form": 0.314,
+          "impact": -0.276,
+          "recent_games": 0,
+          "last_date": "2026-05-04",
+          "region": -4.65,
+          "tier": 0.0,
+          "idle": 0.062,
+          "form_raw": 0.0051,
+          "ctx": -0.872,
+          "qualities": {
+            "gd10": -0.603,
+            "gd15": -0.756,
+            "xd15": -0.55,
+            "cd15": -0.699,
+            "dpm": -0.537,
+            "cspm": -0.273,
+            "vspm": 0.471,
+            "deaths_pm": -0.167,
+            "dpm_vs": -0.628
+          },
+          "champ_score": -0.491
+        },
+        {
           "name": "Morgan",
           "team": "Team Liquid",
           "league": "LCS",
@@ -1243,50 +1273,20 @@
           "champ_score": -1.964
         },
         {
-          "name": "Empyros",
-          "team": "Fnatic",
-          "league": "LEC",
-          "games": 38,
-          "wins": 15,
-          "win_rate": 0.3947,
-          "score": -0.506,
-          "form": 0.314,
-          "impact": -0.276,
-          "recent_games": 0,
-          "last_date": "2026-05-04",
-          "region": -4.65,
-          "tier": 0.0,
-          "idle": 0.064,
-          "form_raw": 0.0051,
-          "ctx": -0.872,
-          "qualities": {
-            "gd10": -0.603,
-            "gd15": -0.756,
-            "xd15": -0.55,
-            "cd15": -0.699,
-            "dpm": -0.537,
-            "cspm": -0.273,
-            "vspm": 0.471,
-            "deaths_pm": -0.167,
-            "dpm_vs": -0.628
-          },
-          "champ_score": -0.503
-        },
-        {
           "name": "Wenbo",
           "team": "Bilibili Gaming",
           "league": "LPL",
           "games": 20,
           "wins": 14,
           "win_rate": 0.7,
-          "score": -1.055,
+          "score": -1.031,
           "form": 0.947,
           "impact": -1.365,
           "recent_games": 2,
           "last_date": "2026-08-08",
           "region": 0.003,
           "tier": 0.18,
-          "idle": 0.588,
+          "idle": 0.574,
           "form_raw": 0.0208,
           "ctx": -0.3162,
           "qualities": {
@@ -1300,7 +1300,7 @@
             "deaths_pm": -0.114,
             "dpm_vs": -0.447
           },
-          "champ_score": 0.436
+          "champ_score": 0.426
         },
         {
           "name": "BrokenBlade",
@@ -1369,14 +1369,14 @@
           "games": 31,
           "wins": 9,
           "win_rate": 0.2903,
-          "score": -1.498,
+          "score": -1.464,
           "form": -11.303,
           "impact": -1.648,
           "recent_games": 0,
           "last_date": "2026-05-17",
           "region": -4.49,
           "tier": 0.0,
-          "idle": 0.086,
+          "idle": 0.084,
           "form_raw": -0.2005,
           "ctx": -0.8056,
           "qualities": {
@@ -1390,7 +1390,7 @@
             "deaths_pm": 0.861,
             "dpm_vs": 0.077
           },
-          "champ_score": -1.655
+          "champ_score": -1.617
         },
         {
           "name": "Lot",
@@ -1399,14 +1399,14 @@
           "games": 50,
           "wins": 24,
           "win_rate": 0.48,
-          "score": -1.614,
+          "score": -1.577,
           "form": -6.275,
           "impact": 0.154,
           "recent_games": 0,
           "last_date": "2026-06-01",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.122,
+          "idle": 0.119,
           "form_raw": -0.0929,
           "ctx": -0.8302,
           "qualities": {
@@ -1420,7 +1420,7 @@
             "deaths_pm": 0.237,
             "dpm_vs": -0.515
           },
-          "champ_score": -1.505
+          "champ_score": -1.47
         },
         {
           "name": "Thanatos",
@@ -1489,14 +1489,14 @@
           "games": 77,
           "wins": 31,
           "win_rate": 0.4026,
-          "score": -3.316,
+          "score": -3.24,
           "form": -1.062,
           "impact": -0.094,
           "recent_games": 0,
           "last_date": "2026-08-20",
           "region": 0.087,
           "tier": -3.15,
-          "idle": 0.776,
+          "idle": 0.758,
           "form_raw": -0.0139,
           "ctx": -0.3894,
           "qualities": {
@@ -1510,7 +1510,7 @@
             "deaths_pm": 0.149,
             "dpm_vs": -0.125
           },
-          "champ_score": -2.727
+          "champ_score": -2.665
         },
         {
           "name": "Cube",
@@ -2363,7 +2363,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.202,
+            "score": -0.198,
             "form": 14.093,
             "rank": 12
           },
@@ -2374,7 +2374,7 @@
             "games": 6,
             "wins": 5,
             "win_rate": 0.8333,
-            "score": -0.335,
+            "score": -0.327,
             "form": 11.339,
             "rank": 13
           },
@@ -2396,7 +2396,7 @@
             "games": 6,
             "wins": 3,
             "win_rate": 0.5,
-            "score": -0.417,
+            "score": -0.407,
             "form": 6.176,
             "rank": 15
           },
@@ -2440,7 +2440,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -1.602,
+            "score": -1.565,
             "form": -15.85,
             "rank": 19
           },
@@ -2451,7 +2451,7 @@
             "games": 5,
             "wins": 2,
             "win_rate": 0.4,
-            "score": -1.689,
+            "score": -1.65,
             "form": -6.185,
             "rank": 20
           },
@@ -2572,7 +2572,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -7.317,
+            "score": -7.15,
             "form": -6.218,
             "rank": 31
           },
@@ -2794,7 +2794,7 @@
             "games": 12,
             "wins": 6,
             "win_rate": 0.5,
-            "score": 2.74,
+            "score": 2.677,
             "form": 10.492,
             "rank": 6
           },
@@ -2849,7 +2849,7 @@
             "games": 4,
             "wins": 3,
             "win_rate": 0.75,
-            "score": 0.815,
+            "score": 0.796,
             "form": 5.836,
             "rank": 11
           },
@@ -2882,7 +2882,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -0.041,
+            "score": -0.04,
             "form": -4.453,
             "rank": 14
           },
@@ -2904,7 +2904,7 @@
             "games": 9,
             "wins": 3,
             "win_rate": 0.3333,
-            "score": -0.385,
+            "score": -0.376,
             "form": 2.86,
             "rank": 16
           },
@@ -2915,7 +2915,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.415,
+            "score": -0.406,
             "form": -0.142,
             "rank": 17
           },
@@ -2959,7 +2959,7 @@
             "games": 9,
             "wins": 4,
             "win_rate": 0.4444,
-            "score": -1.35,
+            "score": -1.319,
             "form": -5.959,
             "rank": 21
           },
@@ -3403,7 +3403,7 @@
             "games": 8,
             "wins": 3,
             "win_rate": 0.375,
-            "score": -1.547,
+            "score": -1.512,
             "form": -13.657,
             "rank": 14
           },
@@ -3414,7 +3414,7 @@
             "games": 5,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -1.76,
+            "score": -1.719,
             "form": -28.047,
             "rank": 15
           },
@@ -3425,7 +3425,7 @@
             "games": 9,
             "wins": 5,
             "win_rate": 0.5556,
-            "score": -2.506,
+            "score": -2.449,
             "form": -4.551,
             "rank": 16
           },
@@ -3812,7 +3812,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": 0.211,
+            "score": 0.206,
             "form": 5.733,
             "rank": 15
           },
@@ -3823,7 +3823,7 @@
             "games": 6,
             "wins": 3,
             "win_rate": 0.5,
-            "score": -0.094,
+            "score": -0.092,
             "form": -13.688,
             "rank": 16
           },
@@ -3834,7 +3834,7 @@
             "games": 6,
             "wins": 4,
             "win_rate": 0.6667,
-            "score": -0.212,
+            "score": -0.207,
             "form": 3.154,
             "rank": 17
           },
@@ -3845,7 +3845,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.614,
+            "score": -0.6,
             "form": -4.964,
             "rank": 18
           },
@@ -3856,7 +3856,7 @@
             "games": 3,
             "wins": 3,
             "win_rate": 1.0,
-            "score": -0.89,
+            "score": -0.87,
             "form": -1.289,
             "rank": 19
           },
@@ -3867,7 +3867,7 @@
             "games": 3,
             "wins": 3,
             "win_rate": 1.0,
-            "score": -1.083,
+            "score": -1.058,
             "form": -11.933,
             "rank": 20
           },
@@ -3878,7 +3878,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -1.296,
+            "score": -1.266,
             "form": -1.406,
             "rank": 21
           },
@@ -3933,7 +3933,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -2.798,
+            "score": -2.734,
             "form": -2.704,
             "rank": 26
           },
@@ -4298,7 +4298,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -0.535,
+            "score": -0.523,
             "form": -1.03,
             "rank": 14
           },
@@ -4309,7 +4309,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.691,
+            "score": -0.675,
             "form": -3.769,
             "rank": 15
           },
@@ -4320,7 +4320,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -1.526,
+            "score": -1.491,
             "form": -7.675,
             "rank": 16
           },
@@ -4375,7 +4375,7 @@
             "games": 18,
             "wins": 11,
             "win_rate": 0.6111,
-            "score": -4.09,
+            "score": -3.996,
             "form": -2.465,
             "rank": 21
           },
@@ -5118,7 +5118,7 @@
             "games": 4,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -1.452,
+            "score": -1.419,
             "form": -20.619,
             "rank": 17
           },
@@ -5162,7 +5162,7 @@
             "games": 5,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -6.813,
+            "score": -6.658,
             "form": -12.658,
             "rank": 21
           },
@@ -5362,7 +5362,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -3.333,
+            "score": -3.257,
             "form": -0.647,
             "rank": 7
           },
@@ -5540,7 +5540,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -0.095,
+            "score": -0.093,
             "form": -7.833,
             "rank": 12
           },
@@ -5573,7 +5573,7 @@
             "games": 5,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.555,
+            "score": -0.542,
             "form": 0.644,
             "rank": 15
           },
@@ -5584,7 +5584,7 @@
             "games": 6,
             "wins": 1,
             "win_rate": 0.1667,
-            "score": -0.763,
+            "score": -0.745,
             "form": -3.711,
             "rank": 16
           },
@@ -5617,7 +5617,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -1.797,
+            "score": -1.756,
             "form": -21.306,
             "rank": 19
           },
@@ -5628,7 +5628,7 @@
             "games": 6,
             "wins": 3,
             "win_rate": 0.5,
-            "score": -1.825,
+            "score": -1.783,
             "form": -10.043,
             "rank": 20
           },
@@ -5754,6 +5754,17 @@
             "rank": 31
           },
           {
+            "name": "Rich",
+            "team": "Kiwoom DRX",
+            "league": "LCK",
+            "games": 4,
+            "wins": 0,
+            "win_rate": 0.0,
+            "score": -9.331,
+            "form": -13.321,
+            "rank": 32
+          },
+          {
             "name": "Casting",
             "team": "HANJIN BRION",
             "league": "LCK",
@@ -5762,17 +5773,6 @@
             "win_rate": 0.4286,
             "score": -9.505,
             "form": -4.308,
-            "rank": 32
-          },
-          {
-            "name": "Rich",
-            "team": "Kiwoom DRX",
-            "league": "LCK",
-            "games": 4,
-            "wins": 0,
-            "win_rate": 0.0,
-            "score": -9.549,
-            "form": -13.321,
             "rank": 33
           },
           {
@@ -5850,7 +5850,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.247,
+            "score": -0.242,
             "form": -26.097,
             "rank": 1
           },
@@ -6203,7 +6203,7 @@
             "games": 4,
             "wins": 4,
             "win_rate": 1.0,
-            "score": 2.222,
+            "score": 2.171,
             "form": 7.729,
             "rank": 6
           },
@@ -6236,7 +6236,7 @@
             "games": 4,
             "wins": 3,
             "win_rate": 0.75,
-            "score": 0.684,
+            "score": 0.668,
             "form": 12.136,
             "rank": 9
           },
@@ -6269,7 +6269,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.897,
+            "score": -0.876,
             "form": -7.549,
             "rank": 12
           },
@@ -6291,7 +6291,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -2.988,
+            "score": -2.92,
             "form": -1.108,
             "rank": 14
           },
@@ -6460,7 +6460,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": 0.378,
+            "score": 0.369,
             "form": 7.84,
             "rank": 4
           },
@@ -6471,7 +6471,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": 0.17,
+            "score": 0.166,
             "form": 7.27,
             "rank": 5
           },
@@ -6482,7 +6482,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.439,
+            "score": -0.429,
             "form": 1.72,
             "rank": 6
           },
@@ -6504,7 +6504,7 @@
             "games": 4,
             "wins": 4,
             "win_rate": 1.0,
-            "score": -1.169,
+            "score": -1.142,
             "form": -5.828,
             "rank": 8
           },
@@ -6706,7 +6706,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.072,
+            "score": -0.07,
             "form": 8.833,
             "rank": 2
           },
@@ -6728,7 +6728,7 @@
             "games": 3,
             "wins": 3,
             "win_rate": 1.0,
-            "score": -0.376,
+            "score": -0.367,
             "form": 3.711,
             "rank": 4
           },
@@ -6750,7 +6750,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -1.942,
+            "score": -1.897,
             "form": -11.322,
             "rank": 6
           },
@@ -6851,7 +6851,7 @@
             "games": 5,
             "wins": 2,
             "win_rate": 0.4,
-            "score": 1.616,
+            "score": 1.579,
             "form": -2.206,
             "rank": 2
           },
@@ -6978,7 +6978,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.262,
+            "score": -0.256,
             "form": 4.194,
             "rank": 5
           },
@@ -7206,7 +7206,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -2.271,
+            "score": -2.219,
             "form": -22.171,
             "rank": 3
           },
@@ -7289,7 +7289,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.172,
+            "score": -0.168,
             "form": 0.293,
             "rank": 1
           }
@@ -7646,14 +7646,14 @@
           "games": 39,
           "wins": 27,
           "win_rate": 0.6923,
-          "score": 0.381,
+          "score": 0.373,
           "form": 9.187,
           "impact": 0.659,
           "recent_games": 0,
           "last_date": "2026-05-23",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.099,
+          "idle": 0.097,
           "form_raw": 0.1484,
           "ctx": -0.3571,
           "qualities": {
@@ -7667,7 +7667,7 @@
             "deaths_pm": -0.269,
             "dpm_vs": 0.287
           },
-          "champ_score": 0.459
+          "champ_score": 0.449
         },
         {
           "name": "Heng",
@@ -7706,7 +7706,7 @@
           "games": 43,
           "wins": 21,
           "win_rate": 0.4884,
-          "score": -0.092,
+          "score": -0.09,
           "form": -7.604,
           "impact": -0.182,
           "recent_games": 0,
@@ -7727,7 +7727,7 @@
             "deaths_pm": 0.367,
             "dpm_vs": -0.31
           },
-          "champ_score": -0.07
+          "champ_score": -0.068
         },
         {
           "name": "Velja",
@@ -7736,14 +7736,14 @@
           "games": 11,
           "wins": 5,
           "win_rate": 0.4545,
-          "score": -0.218,
+          "score": -0.213,
           "form": -4.153,
           "impact": -0.013,
           "recent_games": 0,
           "last_date": "2026-03-14",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.02,
+          "idle": 0.019,
           "form_raw": -0.1321,
           "ctx": -0.8558,
           "qualities": {
@@ -7757,7 +7757,7 @@
             "deaths_pm": 0.177,
             "dpm_vs": -0.281
           },
-          "champ_score": -0.285
+          "champ_score": -0.279
         },
         {
           "name": "Kanavi",
@@ -7796,14 +7796,14 @@
           "games": 12,
           "wins": 6,
           "win_rate": 0.5,
-          "score": -0.463,
+          "score": -0.452,
           "form": -1.268,
           "impact": -0.037,
           "recent_games": 0,
           "last_date": "2026-05-15",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.082,
+          "idle": 0.081,
           "form_raw": -0.038,
           "ctx": -0.5248,
           "qualities": {
@@ -7817,7 +7817,7 @@
             "deaths_pm": 0.189,
             "dpm_vs": 0.337
           },
-          "champ_score": -0.523
+          "champ_score": -0.511
         },
         {
           "name": "Sharvel",
@@ -7856,14 +7856,14 @@
           "games": 21,
           "wins": 9,
           "win_rate": 0.4286,
-          "score": -0.674,
+          "score": -0.659,
           "form": -4.245,
           "impact": -0.349,
           "recent_games": 0,
           "last_date": "2026-05-15",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.082,
+          "idle": 0.081,
           "form_raw": -0.091,
           "ctx": -0.5595,
           "qualities": {
@@ -7877,7 +7877,7 @@
             "deaths_pm": 0.303,
             "dpm_vs": -0.19
           },
-          "champ_score": -0.612
+          "champ_score": -0.598
         },
         {
           "name": "Juhan",
@@ -7886,14 +7886,14 @@
           "games": 13,
           "wins": 3,
           "win_rate": 0.2308,
-          "score": -0.811,
+          "score": -0.793,
           "form": -14.616,
           "impact": -0.435,
           "recent_games": 0,
           "last_date": "2026-04-24",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.051,
+          "idle": 0.05,
           "form_raw": -0.416,
           "ctx": -0.5691,
           "qualities": {
@@ -7907,7 +7907,7 @@
             "deaths_pm": 1.088,
             "dpm_vs": -0.646
           },
-          "champ_score": -1.337
+          "champ_score": -1.306
         },
         {
           "name": "Boukada",
@@ -7916,14 +7916,14 @@
           "games": 28,
           "wins": 8,
           "win_rate": 0.2857,
-          "score": -0.969,
+          "score": -0.947,
           "form": -12.393,
           "impact": -0.94,
           "recent_games": 0,
           "last_date": "2026-04-26",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.053,
+          "idle": 0.052,
           "form_raw": -0.2302,
           "ctx": -0.9587,
           "qualities": {
@@ -7937,7 +7937,7 @@
             "deaths_pm": 0.349,
             "dpm_vs": -0.783
           },
-          "champ_score": -0.929
+          "champ_score": -0.908
         },
         {
           "name": "Pyosik",
@@ -7946,14 +7946,14 @@
           "games": 68,
           "wins": 18,
           "win_rate": 0.2647,
-          "score": -2.006,
+          "score": -1.96,
           "form": -9.057,
           "impact": -4.814,
           "recent_games": 0,
           "last_date": "2026-05-30",
           "region": 0.087,
           "tier": -3.15,
-          "idle": 0.117,
+          "idle": 0.114,
           "form_raw": -0.1225,
           "ctx": -1.104,
           "qualities": {
@@ -7967,7 +7967,7 @@
             "deaths_pm": 0.322,
             "dpm_vs": -0.688
           },
-          "champ_score": -1.972
+          "champ_score": -1.927
         },
         {
           "name": "Guwon",
@@ -8216,14 +8216,14 @@
           "games": 13,
           "wins": 3,
           "win_rate": 0.2308,
-          "score": -6.408,
+          "score": -6.261,
           "form": -2.989,
           "impact": -0.459,
           "recent_games": 0,
           "last_date": "2026-08-25",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.871,
+          "idle": 0.851,
           "form_raw": -0.0851,
           "ctx": -0.5718,
           "qualities": {
@@ -8237,7 +8237,7 @@
             "deaths_pm": 0.159,
             "dpm_vs": -0.278
           },
-          "champ_score": -6.966
+          "champ_score": -6.807
         },
         {
           "name": "eXyu",
@@ -8246,14 +8246,14 @@
           "games": 30,
           "wins": 7,
           "win_rate": 0.2333,
-          "score": -6.718,
+          "score": -6.565,
           "form": -12.449,
           "impact": 0.267,
           "recent_games": 0,
           "last_date": "2026-08-01",
           "region": -4.49,
           "tier": 0.0,
-          "idle": 0.5,
+          "idle": 0.489,
           "form_raw": -0.2241,
           "ctx": -0.4756,
           "qualities": {
@@ -8267,7 +8267,7 @@
             "deaths_pm": 1.062,
             "dpm_vs": -0.483
           },
-          "champ_score": -5.916
+          "champ_score": -5.781
         },
         {
           "name": "Raptor",
@@ -8947,7 +8947,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": 0.51,
+            "score": 0.499,
             "form": 15.232,
             "rank": 10
           },
@@ -8969,7 +8969,7 @@
             "games": 6,
             "wins": 3,
             "win_rate": 0.5,
-            "score": -0.066,
+            "score": -0.065,
             "form": -10.715,
             "rank": 12
           },
@@ -8991,9 +8991,20 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -0.992,
+            "score": -0.97,
             "form": -23.083,
             "rank": 14
+          },
+          {
+            "name": "Juhan",
+            "team": "Oh My God",
+            "league": "LPL",
+            "games": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "score": -1.306,
+            "form": -47.993,
+            "rank": 15
           },
           {
             "name": "Oner",
@@ -9004,17 +9015,6 @@
             "win_rate": 0.6,
             "score": -1.32,
             "form": -9.559,
-            "rank": 15
-          },
-          {
-            "name": "Juhan",
-            "team": "Oh My God",
-            "league": "LPL",
-            "games": 3,
-            "wins": 0,
-            "win_rate": 0.0,
-            "score": -1.337,
-            "form": -47.993,
             "rank": 16
           },
           {
@@ -9024,7 +9024,7 @@
             "games": 12,
             "wins": 5,
             "win_rate": 0.4167,
-            "score": -1.643,
+            "score": -1.606,
             "form": -10.109,
             "rank": 17
           },
@@ -9411,7 +9411,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": 0.207,
+            "score": 0.203,
             "form": 12.153,
             "rank": 13
           },
@@ -9444,7 +9444,7 @@
             "games": 10,
             "wins": 5,
             "win_rate": 0.5,
-            "score": -2.158,
+            "score": -2.108,
             "form": -16.674,
             "rank": 16
           },
@@ -9765,7 +9765,7 @@
             "games": 10,
             "wins": 9,
             "win_rate": 0.9,
-            "score": 0.419,
+            "score": 0.41,
             "form": 16.084,
             "rank": 11
           },
@@ -9787,7 +9787,7 @@
             "games": 7,
             "wins": 5,
             "win_rate": 0.7143,
-            "score": -0.046,
+            "score": -0.045,
             "form": -6.436,
             "rank": 13
           },
@@ -9809,7 +9809,7 @@
             "games": 6,
             "wins": 3,
             "win_rate": 0.5,
-            "score": -0.499,
+            "score": -0.488,
             "form": -2.983,
             "rank": 15
           },
@@ -9831,7 +9831,7 @@
             "games": 4,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -2.114,
+            "score": -2.066,
             "form": -18.297,
             "rank": 17
           },
@@ -9869,6 +9869,17 @@
             "rank": 20
           },
           {
+            "name": "eXyu",
+            "team": "Dignitas",
+            "league": "LCS",
+            "games": 7,
+            "wins": 4,
+            "win_rate": 0.5714,
+            "score": -4.571,
+            "form": -12.547,
+            "rank": 21
+          },
+          {
             "name": "Guwon",
             "team": "Ninjas in Pyjamas",
             "league": "LPL",
@@ -9877,17 +9888,6 @@
             "win_rate": 0.5,
             "score": -4.581,
             "form": -3.248,
-            "rank": 21
-          },
-          {
-            "name": "eXyu",
-            "team": "Dignitas",
-            "league": "LCS",
-            "games": 7,
-            "wins": 4,
-            "win_rate": 0.5714,
-            "score": -4.678,
-            "form": -12.547,
             "rank": 22
           },
           {
@@ -10251,7 +10251,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -0.034,
+            "score": -0.033,
             "form": -9.689,
             "rank": 13
           },
@@ -10262,7 +10262,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -0.606,
+            "score": -0.592,
             "form": -10.926,
             "rank": 14
           },
@@ -10284,7 +10284,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -0.815,
+            "score": -0.796,
             "form": -19.434,
             "rank": 16
           },
@@ -10306,7 +10306,7 @@
             "games": 8,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -2.188,
+            "score": -2.138,
             "form": -23.67,
             "rank": 18
           },
@@ -10372,7 +10372,7 @@
             "games": 4,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -6.093,
+            "score": -5.953,
             "form": -23.042,
             "rank": 24
           },
@@ -10715,7 +10715,7 @@
             "games": 8,
             "wins": 4,
             "win_rate": 0.5,
-            "score": -0.098,
+            "score": -0.096,
             "form": -16.221,
             "rank": 13
           },
@@ -10737,7 +10737,7 @@
             "games": 4,
             "wins": 4,
             "win_rate": 1.0,
-            "score": -0.271,
+            "score": -0.265,
             "form": 3.529,
             "rank": 15
           },
@@ -10759,7 +10759,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.846,
+            "score": -0.826,
             "form": -14.045,
             "rank": 17
           },
@@ -10803,7 +10803,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -1.688,
+            "score": -1.649,
             "form": -10.786,
             "rank": 21
           },
@@ -10869,7 +10869,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -7.278,
+            "score": -7.112,
             "form": -27.684,
             "rank": 27
           },
@@ -11456,7 +11456,7 @@
             "games": 5,
             "wins": 2,
             "win_rate": 0.4,
-            "score": -1.769,
+            "score": -1.729,
             "form": -4.423,
             "rank": 16
           },
@@ -11744,7 +11744,7 @@
             "games": 5,
             "wins": 4,
             "win_rate": 0.8,
-            "score": 0.542,
+            "score": 0.53,
             "form": 17.239,
             "rank": 12
           },
@@ -11766,7 +11766,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.775,
+            "score": -0.757,
             "form": -10.926,
             "rank": 14
           },
@@ -11788,7 +11788,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -1.008,
+            "score": -0.985,
             "form": -22.096,
             "rank": 16
           },
@@ -11810,7 +11810,7 @@
             "games": 10,
             "wins": 1,
             "win_rate": 0.1,
-            "score": -2.059,
+            "score": -2.012,
             "form": -16.188,
             "rank": 18
           },
@@ -11892,6 +11892,17 @@
             "rank": 25
           },
           {
+            "name": "eXyu",
+            "team": "Dignitas",
+            "league": "LCS",
+            "games": 5,
+            "wins": 3,
+            "win_rate": 0.6,
+            "score": -6.538,
+            "form": -20.49,
+            "rank": 26
+          },
+          {
             "name": "Sponge",
             "team": "Nongshim RedForce",
             "league": "LCK",
@@ -11900,17 +11911,6 @@
             "win_rate": 0.6111,
             "score": -6.545,
             "form": -1.988,
-            "rank": 26
-          },
-          {
-            "name": "eXyu",
-            "team": "Dignitas",
-            "league": "LCS",
-            "games": 5,
-            "wins": 3,
-            "win_rate": 0.6,
-            "score": -6.691,
-            "form": -20.49,
             "rank": 27
           },
           {
@@ -11920,7 +11920,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -6.966,
+            "score": -6.807,
             "form": -6.945,
             "rank": 28
           },
@@ -12302,7 +12302,7 @@
             "games": 4,
             "wins": 3,
             "win_rate": 0.75,
-            "score": -0.285,
+            "score": -0.279,
             "form": -8.921,
             "rank": 3
           },
@@ -12590,7 +12590,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -2.184,
+            "score": -2.134,
             "form": -20.231,
             "rank": 17
           },
@@ -12959,7 +12959,7 @@
             "games": 5,
             "wins": 5,
             "win_rate": 1.0,
-            "score": 0.557,
+            "score": 0.544,
             "form": 17.254,
             "rank": 9
           },
@@ -12992,7 +12992,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.104,
+            "score": -0.101,
             "form": -11.962,
             "rank": 12
           },
@@ -14026,14 +14026,14 @@
           "games": 31,
           "wins": 16,
           "win_rate": 0.5161,
-          "score": 0.369,
+          "score": 0.36,
           "form": 6.542,
           "impact": 0.543,
           "recent_games": 0,
           "last_date": "2026-05-16",
           "region": 0.003,
           "tier": -1.136,
-          "idle": 0.084,
+          "idle": 0.082,
           "form_raw": 0.1161,
           "ctx": -0.1372,
           "qualities": {
@@ -14047,7 +14047,7 @@
             "deaths_pm": -0.269,
             "dpm_vs": 0.212
           },
-          "champ_score": 0.315
+          "champ_score": 0.308
         },
         {
           "name": "Nemesis",
@@ -14056,14 +14056,14 @@
           "games": 11,
           "wins": 5,
           "win_rate": 0.4545,
-          "score": -0.149,
+          "score": -0.145,
           "form": 0.282,
           "impact": -0.013,
           "recent_games": 0,
           "last_date": "2026-03-14",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.02,
+          "idle": 0.019,
           "form_raw": 0.009,
           "ctx": -0.8473,
           "qualities": {
@@ -14077,7 +14077,7 @@
             "deaths_pm": -0.292,
             "dpm_vs": -0.491
           },
-          "champ_score": -0.124
+          "champ_score": -0.121
         },
         {
           "name": "Saber",
@@ -14086,14 +14086,14 @@
           "games": 25,
           "wins": 9,
           "win_rate": 0.36,
-          "score": -0.22,
+          "score": -0.215,
           "form": 2.908,
           "impact": -0.496,
           "recent_games": 0,
           "last_date": "2026-05-15",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.082,
+          "idle": 0.081,
           "form_raw": 0.057,
           "ctx": -0.5608,
           "qualities": {
@@ -14107,7 +14107,7 @@
             "deaths_pm": -0.487,
             "dpm_vs": 0.018
           },
-          "champ_score": -0.104
+          "champ_score": -0.102
         },
         {
           "name": "Caps",
@@ -14146,14 +14146,14 @@
           "games": 34,
           "wins": 12,
           "win_rate": 0.3529,
-          "score": -0.362,
+          "score": -0.354,
           "form": 1.034,
           "impact": -0.784,
           "recent_games": 0,
           "last_date": "2026-05-15",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.082,
+          "idle": 0.081,
           "form_raw": 0.0176,
           "ctx": -0.589,
           "qualities": {
@@ -14167,7 +14167,7 @@
             "deaths_pm": -0.225,
             "dpm_vs": -0.136
           },
-          "champ_score": -0.332
+          "champ_score": -0.325
         },
         {
           "name": "Daystar",
@@ -14176,14 +14176,14 @@
           "games": 10,
           "wins": 4,
           "win_rate": 0.4,
-          "score": -0.431,
+          "score": -0.422,
           "form": -4.238,
           "impact": -0.568,
           "recent_games": 0,
           "last_date": "2026-04-26",
           "region": 0.087,
           "tier": -3.15,
-          "idle": 0.053,
+          "idle": 0.052,
           "form_raw": -0.1441,
           "ctx": -0.5559,
           "qualities": {
@@ -14197,7 +14197,7 @@
             "deaths_pm": 0.275,
             "dpm_vs": -0.853
           },
-          "champ_score": -0.598
+          "champ_score": -0.584
         },
         {
           "name": "Renard",
@@ -14206,14 +14206,14 @@
           "games": 20,
           "wins": 8,
           "win_rate": 0.4,
-          "score": -0.843,
+          "score": -0.823,
           "form": -2.812,
           "impact": -1.634,
           "recent_games": 0,
           "last_date": "2026-05-23",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.099,
+          "idle": 0.097,
           "form_raw": -0.0619,
           "ctx": -0.7035,
           "qualities": {
@@ -14227,7 +14227,7 @@
             "deaths_pm": 0.099,
             "dpm_vs": -0.417
           },
-          "champ_score": -0.993
+          "champ_score": -0.97
         },
         {
           "name": "LIDER",
@@ -14236,14 +14236,14 @@
           "games": 32,
           "wins": 10,
           "win_rate": 0.3125,
-          "score": -1.027,
+          "score": -1.003,
           "form": -12.227,
           "impact": -0.578,
           "recent_games": 0,
           "last_date": "2026-05-02",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.061,
+          "idle": 0.06,
           "form_raw": -0.214,
           "ctx": -0.8107,
           "qualities": {
@@ -14257,7 +14257,7 @@
             "deaths_pm": 0.691,
             "dpm_vs": -0.694
           },
-          "champ_score": -0.924
+          "champ_score": -0.902
         },
         {
           "name": "Humanoid",
@@ -14266,14 +14266,14 @@
           "games": 48,
           "wins": 27,
           "win_rate": 0.5625,
-          "score": -1.03,
+          "score": -1.006,
           "form": 0.68,
           "impact": -0.612,
           "recent_games": 0,
           "last_date": "2026-05-31",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.119,
+          "idle": 0.117,
           "form_raw": 0.0102,
           "ctx": -0.9858,
           "qualities": {
@@ -14287,7 +14287,7 @@
             "deaths_pm": 0.056,
             "dpm_vs": 0.196
           },
-          "champ_score": -1.113
+          "champ_score": -1.087
         },
         {
           "name": "Care",
@@ -14326,14 +14326,14 @@
           "games": 46,
           "wins": 30,
           "win_rate": 0.6522,
-          "score": -1.326,
+          "score": -1.296,
           "form": 0.636,
           "impact": -0.269,
           "recent_games": 0,
           "last_date": "2026-06-13",
           "region": -4.49,
           "tier": 0.0,
-          "idle": 0.161,
+          "idle": 0.157,
           "form_raw": 0.0097,
           "ctx": -0.9422,
           "qualities": {
@@ -14347,7 +14347,7 @@
             "deaths_pm": 0.145,
             "dpm_vs": -0.026
           },
-          "champ_score": -1.282
+          "champ_score": -1.252
         },
         {
           "name": "kyeahoo",
@@ -15652,7 +15652,7 @@
             "games": 5,
             "wins": 4,
             "win_rate": 0.8,
-            "score": -0.755,
+            "score": -0.738,
             "form": 8.98,
             "rank": 13
           },
@@ -16184,7 +16184,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": 0.794,
+            "score": 0.776,
             "form": 19.186,
             "rank": 10
           },
@@ -16206,7 +16206,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.286,
+            "score": -0.28,
             "form": 4.276,
             "rank": 12
           },
@@ -16228,7 +16228,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.884,
+            "score": -0.864,
             "form": -2.653,
             "rank": 14
           },
@@ -16239,7 +16239,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.997,
+            "score": -0.974,
             "form": 3.184,
             "rank": 15
           },
@@ -16250,7 +16250,7 @@
             "games": 4,
             "wins": 4,
             "win_rate": 1.0,
-            "score": -1.163,
+            "score": -1.136,
             "form": 4.396,
             "rank": 16
           },
@@ -16670,7 +16670,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": 0.404,
+            "score": 0.395,
             "form": 9.302,
             "rank": 12
           },
@@ -16681,7 +16681,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": 0.107,
+            "score": 0.104,
             "form": 10.888,
             "rank": 13
           },
@@ -16692,7 +16692,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.089,
+            "score": -0.087,
             "form": 6.41,
             "rank": 14
           },
@@ -16703,7 +16703,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -0.124,
+            "score": -0.121,
             "form": 0.792,
             "rank": 15
           },
@@ -16730,6 +16730,17 @@
             "rank": 17
           },
           {
+            "name": "LIDER",
+            "team": "SK Gaming",
+            "league": "LEC",
+            "games": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "score": -0.812,
+            "form": -15.609,
+            "rank": 18
+          },
+          {
             "name": "Ucal",
             "team": "Kiwoom DRX",
             "league": "LCK",
@@ -16738,17 +16749,6 @@
             "win_rate": 0.5882,
             "score": -0.83,
             "form": 7.538,
-            "rank": 18
-          },
-          {
-            "name": "LIDER",
-            "team": "SK Gaming",
-            "league": "LEC",
-            "games": 3,
-            "wins": 1,
-            "win_rate": 0.3333,
-            "score": -0.831,
-            "form": -15.609,
             "rank": 19
           },
           {
@@ -16758,7 +16758,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -1.115,
+            "score": -1.089,
             "form": -2.742,
             "rank": 20
           },
@@ -17167,7 +17167,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.299,
+            "score": -0.292,
             "form": 4.94,
             "rank": 13
           },
@@ -17466,7 +17466,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": 0.042,
+            "score": 0.041,
             "form": 4.842,
             "rank": 10
           },
@@ -17477,7 +17477,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -0.085,
+            "score": -0.083,
             "form": 9.761,
             "rank": 11
           },
@@ -17776,7 +17776,7 @@
             "games": 8,
             "wins": 5,
             "win_rate": 0.625,
-            "score": -1.059,
+            "score": -1.035,
             "form": 5.112,
             "rank": 9
           },
@@ -17787,7 +17787,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -1.358,
+            "score": -1.327,
             "form": -4.173,
             "rank": 10
           },
@@ -18299,7 +18299,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": 0.458,
+            "score": 0.448,
             "form": 9.698,
             "rank": 10
           },
@@ -18332,7 +18332,7 @@
             "games": 6,
             "wins": 2,
             "win_rate": 0.3333,
-            "score": -0.38,
+            "score": -0.372,
             "form": 1.474,
             "rank": 13
           },
@@ -18343,7 +18343,7 @@
             "games": 6,
             "wins": 5,
             "win_rate": 0.8333,
-            "score": -0.623,
+            "score": -0.608,
             "form": 7.847,
             "rank": 14
           },
@@ -18653,7 +18653,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.31,
+            "score": -0.303,
             "form": 3.973,
             "rank": 6
           },
@@ -18864,7 +18864,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.453,
+            "score": -0.443,
             "form": -2.273,
             "rank": 8
           },
@@ -18875,7 +18875,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.598,
+            "score": -0.584,
             "form": -15.616,
             "rank": 9
           },
@@ -19119,7 +19119,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -1.101,
+            "score": -1.075,
             "form": -0.561,
             "rank": 3
           },
@@ -19554,7 +19554,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.993,
+            "score": -0.97,
             "form": -18.123,
             "rank": 10
           },
@@ -19754,7 +19754,7 @@
             "games": 7,
             "wins": 3,
             "win_rate": 0.4286,
-            "score": 0.337,
+            "score": 0.33,
             "form": 7.359,
             "rank": 9
           },
@@ -19776,7 +19776,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -0.362,
+            "score": -0.353,
             "form": -0.767,
             "rank": 11
           },
@@ -19787,7 +19787,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -1.107,
+            "score": -1.082,
             "form": 1.442,
             "rank": 12
           },
@@ -19798,7 +19798,7 @@
             "games": 9,
             "wins": 5,
             "win_rate": 0.5556,
-            "score": -1.24,
+            "score": -1.212,
             "form": -5.045,
             "rank": 13
           },
@@ -20130,7 +20130,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.875,
+            "score": -0.855,
             "form": 1.921,
             "rank": 7
           },
@@ -20330,7 +20330,7 @@
             "games": 6,
             "wins": 4,
             "win_rate": 0.6667,
-            "score": -1.912,
+            "score": -1.868,
             "form": -4.211,
             "rank": 12
           },
@@ -20657,7 +20657,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -2.324,
+            "score": -2.271,
             "form": -5.819,
             "rank": 2
           }
@@ -20670,7 +20670,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.116,
+            "score": -0.113,
             "form": 14.011,
             "rank": 1
           }
@@ -21057,7 +21057,7 @@
           "games": 16,
           "wins": 1,
           "win_rate": 0.0625,
-          "score": -0.045,
+          "score": -0.044,
           "form": -8.962,
           "impact": -0.723,
           "recent_games": 0,
@@ -21078,7 +21078,7 @@
             "deaths_pm": 0.115,
             "dpm_vs": -0.711
           },
-          "champ_score": -0.091
+          "champ_score": -0.088
         },
         {
           "name": "Shaoye",
@@ -21147,14 +21147,14 @@
           "games": 11,
           "wins": 5,
           "win_rate": 0.4545,
-          "score": -0.201,
+          "score": -0.196,
           "form": -3.069,
           "impact": -0.013,
           "recent_games": 0,
           "last_date": "2026-03-14",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.02,
+          "idle": 0.019,
           "form_raw": -0.0976,
           "ctx": -0.8438,
           "qualities": {
@@ -21168,7 +21168,7 @@
             "deaths_pm": -0.064,
             "dpm_vs": -0.309
           },
-          "champ_score": -0.228
+          "champ_score": -0.223
         },
         {
           "name": "Hans Sama",
@@ -21207,14 +21207,14 @@
           "games": 27,
           "wins": 11,
           "win_rate": 0.4074,
-          "score": -0.491,
+          "score": -0.479,
           "form": -9.471,
           "impact": -0.382,
           "recent_games": 0,
           "last_date": "2026-04-17",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.043,
+          "idle": 0.042,
           "form_raw": -0.1789,
           "ctx": -0.55,
           "qualities": {
@@ -21228,7 +21228,7 @@
             "deaths_pm": 0.4,
             "dpm_vs": -0.441
           },
-          "champ_score": -0.625
+          "champ_score": -0.61
         },
         {
           "name": "Gumayusi",
@@ -21267,14 +21267,14 @@
           "games": 36,
           "wins": 10,
           "win_rate": 0.2778,
-          "score": -0.923,
+          "score": -0.902,
           "form": -11.299,
           "impact": -1.158,
           "recent_games": 0,
           "last_date": "2026-05-03",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.062,
+          "idle": 0.061,
           "form_raw": -0.1883,
           "ctx": -0.7735,
           "qualities": {
@@ -21288,7 +21288,7 @@
             "deaths_pm": 0.405,
             "dpm_vs": -0.484
           },
-          "champ_score": -1.062
+          "champ_score": -1.038
         },
         {
           "name": "Zven",
@@ -21297,14 +21297,14 @@
           "games": 46,
           "wins": 30,
           "win_rate": 0.6522,
-          "score": -1.221,
+          "score": -1.193,
           "form": 4.163,
           "impact": -0.269,
           "recent_games": 0,
           "last_date": "2026-06-13",
           "region": -4.49,
           "tier": 0.0,
-          "idle": 0.161,
+          "idle": 0.157,
           "form_raw": 0.0633,
           "ctx": -1.0441,
           "qualities": {
@@ -21318,7 +21318,7 @@
             "deaths_pm": -0.19,
             "dpm_vs": 0.079
           },
-          "champ_score": -1.155
+          "champ_score": -1.129
         },
         {
           "name": "Noah",
@@ -21327,14 +21327,14 @@
           "games": 50,
           "wins": 24,
           "win_rate": 0.48,
-          "score": -1.617,
+          "score": -1.58,
           "form": -8.087,
           "impact": 0.154,
           "recent_games": 0,
           "last_date": "2026-06-01",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.122,
+          "idle": 0.119,
           "form_raw": -0.1197,
           "ctx": -0.8265,
           "qualities": {
@@ -21348,7 +21348,7 @@
             "deaths_pm": 0.554,
             "dpm_vs": -0.407
           },
-          "champ_score": -1.667
+          "champ_score": -1.629
         },
         {
           "name": "JackeyLove",
@@ -21477,14 +21477,14 @@
           "games": 77,
           "wins": 41,
           "win_rate": 0.5325,
-          "score": -4.13,
+          "score": -4.035,
           "form": -1.477,
           "impact": -0.957,
           "recent_games": 2,
           "last_date": "2026-08-09",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.602,
+          "idle": 0.588,
           "form_raw": -0.0194,
           "ctx": -0.6121,
           "qualities": {
@@ -21498,7 +21498,7 @@
             "deaths_pm": 0.037,
             "dpm_vs": -0.002
           },
-          "champ_score": -4.643
+          "champ_score": -4.537
         },
         {
           "name": "Tactical",
@@ -21717,14 +21717,14 @@
           "games": 41,
           "wins": 15,
           "win_rate": 0.3659,
-          "score": -8.207,
+          "score": -8.02,
           "form": -11.352,
           "impact": -0.335,
           "recent_games": 0,
           "last_date": "2026-08-20",
           "region": 0.087,
           "tier": -3.15,
-          "idle": 0.776,
+          "idle": 0.758,
           "form_raw": -0.18,
           "ctx": -0.352,
           "qualities": {
@@ -21738,7 +21738,7 @@
             "deaths_pm": 0.401,
             "dpm_vs": -0.448
           },
-          "champ_score": -8.136
+          "champ_score": -7.95
         },
         {
           "name": "Flakked",
@@ -21921,6 +21921,36 @@
           "champ_score": -8.387
         },
         {
+          "name": "Hazel",
+          "team": "Karmine Corp Blue",
+          "league": "LEC",
+          "games": 11,
+          "wins": 2,
+          "win_rate": 0.1818,
+          "score": -10.514,
+          "form": -5.804,
+          "impact": -0.393,
+          "recent_games": 0,
+          "last_date": "2026-08-25",
+          "region": -4.65,
+          "tier": 0.0,
+          "idle": 0.851,
+          "form_raw": -0.1847,
+          "ctx": -0.8848,
+          "qualities": {
+            "gd10": -0.588,
+            "gd15": -0.939,
+            "xd15": -0.219,
+            "cd15": -0.417,
+            "dpm": -0.156,
+            "cspm": -0.486,
+            "vspm": -0.353,
+            "deaths_pm": 0.386,
+            "dpm_vs": -0.489
+          },
+          "champ_score": -13.447
+        },
+        {
           "name": "Bvoy",
           "team": "Shopify Rebellion",
           "league": "LCS",
@@ -21949,36 +21979,6 @@
             "dpm_vs": -0.187
           },
           "champ_score": -9.858
-        },
-        {
-          "name": "Hazel",
-          "team": "Karmine Corp Blue",
-          "league": "LEC",
-          "games": 11,
-          "wins": 2,
-          "win_rate": 0.1818,
-          "score": -10.76,
-          "form": -5.804,
-          "impact": -0.393,
-          "recent_games": 0,
-          "last_date": "2026-08-25",
-          "region": -4.65,
-          "tier": 0.0,
-          "idle": 0.871,
-          "form_raw": -0.1847,
-          "ctx": -0.8848,
-          "qualities": {
-            "gd10": -0.588,
-            "gd15": -0.939,
-            "xd15": -0.219,
-            "cd15": -0.417,
-            "dpm": -0.156,
-            "cspm": -0.486,
-            "vspm": -0.353,
-            "deaths_pm": 0.386,
-            "dpm_vs": -0.489
-          },
-          "champ_score": -13.762
         },
         {
           "name": "SamD",
@@ -22373,7 +22373,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -0.865,
+            "score": -0.845,
             "form": 7.768,
             "rank": 14
           },
@@ -22395,7 +22395,7 @@
             "games": 7,
             "wins": 2,
             "win_rate": 0.2857,
-            "score": -1.031,
+            "score": -1.008,
             "form": -20.048,
             "rank": 16
           },
@@ -22417,7 +22417,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -1.828,
+            "score": -1.786,
             "form": -15.886,
             "rank": 18
           },
@@ -22483,7 +22483,7 @@
             "games": 13,
             "wins": 6,
             "win_rate": 0.4615,
-            "score": -4.208,
+            "score": -4.112,
             "form": -4.188,
             "rank": 24
           },
@@ -22804,7 +22804,7 @@
             "games": 9,
             "wins": 4,
             "win_rate": 0.4444,
-            "score": -1.634,
+            "score": -1.597,
             "form": -9.623,
             "rank": 15
           },
@@ -22815,7 +22815,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -1.778,
+            "score": -1.737,
             "form": 1.646,
             "rank": 16
           },
@@ -22842,6 +22842,17 @@
             "rank": 18
           },
           {
+            "name": "Assum",
+            "team": "Ninjas in Pyjamas",
+            "league": "LPL",
+            "games": 5,
+            "wins": 3,
+            "win_rate": 0.6,
+            "score": -3.615,
+            "form": 3.037,
+            "rank": 19
+          },
+          {
             "name": "Hans Sama",
             "team": "G2 Esports",
             "league": "LEC",
@@ -22850,17 +22861,6 @@
             "win_rate": 0.5556,
             "score": -3.69,
             "form": 7.693,
-            "rank": 19
-          },
-          {
-            "name": "Assum",
-            "team": "Ninjas in Pyjamas",
-            "league": "LPL",
-            "games": 5,
-            "wins": 3,
-            "win_rate": 0.6,
-            "score": -3.7,
-            "form": 3.037,
             "rank": 20
           },
           {
@@ -22980,7 +22980,7 @@
             "games": 9,
             "wins": 3,
             "win_rate": 0.3333,
-            "score": -9.063,
+            "score": -8.856,
             "form": -17.225,
             "rank": 31
           },
@@ -23268,7 +23268,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -0.439,
+            "score": -0.429,
             "form": -13.884,
             "rank": 14
           },
@@ -23279,7 +23279,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.922,
+            "score": -0.901,
             "form": -20.142,
             "rank": 15
           },
@@ -23290,7 +23290,7 @@
             "games": 5,
             "wins": 4,
             "win_rate": 0.8,
-            "score": -1.353,
+            "score": -1.322,
             "form": 3.923,
             "rank": 16
           },
@@ -23301,7 +23301,7 @@
             "games": 6,
             "wins": 4,
             "win_rate": 0.6667,
-            "score": -1.612,
+            "score": -1.575,
             "form": -14.601,
             "rank": 17
           },
@@ -23356,7 +23356,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -2.507,
+            "score": -2.45,
             "form": 3.675,
             "rank": 22
           },
@@ -23644,7 +23644,7 @@
             "games": 4,
             "wins": 3,
             "win_rate": 0.75,
-            "score": -0.215,
+            "score": -0.21,
             "form": -7.254,
             "rank": 10
           },
@@ -24009,7 +24009,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -1.564,
+            "score": -1.528,
             "form": -11.838,
             "rank": 12
           },
@@ -24086,7 +24086,7 @@
             "games": 10,
             "wins": 5,
             "win_rate": 0.5,
-            "score": -3.978,
+            "score": -3.887,
             "form": -1.467,
             "rank": 19
           },
@@ -24240,7 +24240,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -11.613,
+            "score": -11.348,
             "form": -29.553,
             "rank": 33
           },
@@ -24440,7 +24440,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.056,
+            "score": -0.054,
             "form": -18.723,
             "rank": 13
           },
@@ -24451,7 +24451,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -0.572,
+            "score": -0.559,
             "form": -21.627,
             "rank": 14
           },
@@ -24462,7 +24462,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -1.0,
+            "score": -0.977,
             "form": -23.005,
             "rank": 15
           },
@@ -24495,7 +24495,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -1.781,
+            "score": -1.74,
             "form": -17.864,
             "rank": 18
           },
@@ -24506,7 +24506,7 @@
             "games": 8,
             "wins": 3,
             "win_rate": 0.375,
-            "score": -1.808,
+            "score": -1.767,
             "form": -3.282,
             "rank": 19
           },
@@ -24588,6 +24588,17 @@
             "rank": 26
           },
           {
+            "name": "Assum",
+            "team": "Ninjas in Pyjamas",
+            "league": "LPL",
+            "games": 13,
+            "wins": 5,
+            "win_rate": 0.3846,
+            "score": -5.763,
+            "form": -10.93,
+            "rank": 27
+          },
+          {
             "name": "About",
             "team": "Team WE",
             "league": "LPL",
@@ -24596,17 +24607,6 @@
             "win_rate": 0.2,
             "score": -5.845,
             "form": -16.058,
-            "rank": 27
-          },
-          {
-            "name": "Assum",
-            "team": "Ninjas in Pyjamas",
-            "league": "LPL",
-            "games": 13,
-            "wins": 5,
-            "win_rate": 0.3846,
-            "score": -5.898,
-            "form": -10.93,
             "rank": 28
           },
           {
@@ -24627,7 +24627,7 @@
             "games": 11,
             "wins": 4,
             "win_rate": 0.3636,
-            "score": -7.288,
+            "score": -7.121,
             "form": -16.704,
             "rank": 30
           },
@@ -24709,6 +24709,17 @@
             "rank": 37
           },
           {
+            "name": "Hazel",
+            "team": "Karmine Corp Blue",
+            "league": "LEC",
+            "games": 4,
+            "wins": 2,
+            "win_rate": 0.5,
+            "score": -13.593,
+            "form": -20.01,
+            "rank": 38
+          },
+          {
             "name": "deokdam",
             "team": "DN SOOPers",
             "league": "LCK",
@@ -24717,17 +24728,6 @@
             "win_rate": 0.2222,
             "score": -13.847,
             "form": -20.501,
-            "rank": 38
-          },
-          {
-            "name": "Hazel",
-            "team": "Karmine Corp Blue",
-            "league": "LEC",
-            "games": 4,
-            "wins": 2,
-            "win_rate": 0.5,
-            "score": -13.911,
-            "form": -20.01,
             "rank": 39
           },
           {
@@ -25082,7 +25082,7 @@
             "games": 4,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.096,
+            "score": -0.093,
             "form": -22.756,
             "rank": 10
           },
@@ -25104,7 +25104,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -0.58,
+            "score": -0.567,
             "form": -15.994,
             "rank": 12
           },
@@ -25115,7 +25115,7 @@
             "games": 5,
             "wins": 5,
             "win_rate": 1.0,
-            "score": -0.59,
+            "score": -0.577,
             "form": 17.629,
             "rank": 13
           },
@@ -25126,7 +25126,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -1.027,
+            "score": -1.003,
             "form": -17.728,
             "rank": 14
           },
@@ -25159,7 +25159,7 @@
             "games": 6,
             "wins": 4,
             "win_rate": 0.6667,
-            "score": -1.59,
+            "score": -1.554,
             "form": -8.727,
             "rank": 17
           },
@@ -25803,7 +25803,7 @@
             "games": 6,
             "wins": 5,
             "win_rate": 0.8333,
-            "score": -1.145,
+            "score": -1.119,
             "form": -7.196,
             "rank": 7
           },
@@ -25907,6 +25907,17 @@
             "rank": 16
           },
           {
+            "name": "Hazel",
+            "team": "Karmine Corp Blue",
+            "league": "LEC",
+            "games": 3,
+            "wins": 0,
+            "win_rate": 0.0,
+            "score": -13.253,
+            "form": -20.43,
+            "rank": 17
+          },
+          {
             "name": "Rahel",
             "team": "Sentinels",
             "league": "LCS",
@@ -25915,17 +25926,6 @@
             "win_rate": 0.4286,
             "score": -13.432,
             "form": -14.944,
-            "rank": 17
-          },
-          {
-            "name": "Hazel",
-            "team": "Karmine Corp Blue",
-            "league": "LEC",
-            "games": 3,
-            "wins": 0,
-            "win_rate": 0.0,
-            "score": -13.563,
-            "form": -20.43,
             "rank": 18
           },
           {
@@ -26192,7 +26192,7 @@
             "games": 3,
             "wins": 3,
             "win_rate": 1.0,
-            "score": -3.594,
+            "score": -3.512,
             "form": 1.756,
             "rank": 16
           },
@@ -26403,7 +26403,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.112,
+            "score": -0.109,
             "form": -22.166,
             "rank": 9
           },
@@ -26436,7 +26436,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.966,
+            "score": -0.944,
             "form": -29.982,
             "rank": 12
           },
@@ -26502,7 +26502,7 @@
             "games": 6,
             "wins": 3,
             "win_rate": 0.5,
-            "score": -6.564,
+            "score": -6.414,
             "form": -7.986,
             "rank": 18
           },
@@ -26513,7 +26513,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -6.755,
+            "score": -6.601,
             "form": -8.292,
             "rank": 19
           },
@@ -26713,7 +26713,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -0.239,
+            "score": -0.234,
             "form": -12.2,
             "rank": 13
           },
@@ -26735,7 +26735,7 @@
             "games": 10,
             "wins": 9,
             "win_rate": 0.9,
-            "score": -0.836,
+            "score": -0.817,
             "form": 10.117,
             "rank": 15
           },
@@ -26779,7 +26779,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -1.773,
+            "score": -1.732,
             "form": -18.472,
             "rank": 19
           },
@@ -26790,7 +26790,7 @@
             "games": 7,
             "wins": 4,
             "win_rate": 0.5714,
-            "score": -2.405,
+            "score": -2.35,
             "form": 2.332,
             "rank": 20
           },
@@ -27113,7 +27113,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.719,
+            "score": -0.702,
             "form": -16.29,
             "rank": 8
           },
@@ -27124,7 +27124,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -1.422,
+            "score": -1.39,
             "form": -22.964,
             "rank": 9
           },
@@ -27135,7 +27135,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -2.499,
+            "score": -2.441,
             "form": -18.087,
             "rank": 10
           },
@@ -27179,7 +27179,7 @@
             "games": 5,
             "wins": 3,
             "win_rate": 0.6,
-            "score": -8.137,
+            "score": -7.951,
             "form": -9.852,
             "rank": 14
           },
@@ -27286,7 +27286,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.651,
+            "score": -0.636,
             "form": 4.944,
             "rank": 1
           },
@@ -27709,7 +27709,7 @@
           "last_date": "2026-03-14",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.02,
+          "idle": 0.019,
           "form_raw": 0.2349,
           "ctx": -0.8523,
           "qualities": {
@@ -27723,7 +27723,7 @@
             "deaths_pm": -1.089,
             "dpm_vs": -0.084
           },
-          "champ_score": 0.994
+          "champ_score": 0.971
         },
         {
           "name": "Hang",
@@ -27732,14 +27732,14 @@
           "games": 27,
           "wins": 10,
           "win_rate": 0.3704,
-          "score": -0.421,
+          "score": -0.412,
           "form": -1.834,
           "impact": -0.99,
           "recent_games": 0,
           "last_date": "2026-05-02",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.061,
+          "idle": 0.06,
           "form_raw": -0.0346,
           "ctx": -0.6211,
           "qualities": {
@@ -27753,7 +27753,7 @@
             "deaths_pm": 0.115,
             "dpm_vs": 0.107
           },
-          "champ_score": -0.641
+          "champ_score": -0.626
         },
         {
           "name": "CoreJJ",
@@ -27792,14 +27792,14 @@
           "games": 11,
           "wins": 4,
           "win_rate": 0.3636,
-          "score": -0.486,
+          "score": -0.475,
           "form": -0.858,
           "impact": -0.337,
           "recent_games": 0,
           "last_date": "2026-08-07",
           "region": 0.087,
           "tier": 0.0,
-          "idle": 0.574,
+          "idle": 0.561,
           "form_raw": -0.0273,
           "ctx": -0.094,
           "qualities": {
@@ -27813,7 +27813,7 @@
             "deaths_pm": 0.002,
             "dpm_vs": -0.04
           },
-          "champ_score": 0.885
+          "champ_score": 0.865
         },
         {
           "name": "Xiaoxia",
@@ -27822,14 +27822,14 @@
           "games": 25,
           "wins": 9,
           "win_rate": 0.36,
-          "score": -0.789,
+          "score": -0.771,
           "form": -5.793,
           "impact": -0.496,
           "recent_games": 0,
           "last_date": "2026-05-15",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.082,
+          "idle": 0.081,
           "form_raw": -0.1135,
           "ctx": -0.5693,
           "qualities": {
@@ -27843,7 +27843,7 @@
             "deaths_pm": 0.238,
             "dpm_vs": 0.132
           },
-          "champ_score": -0.968
+          "champ_score": -0.946
         },
         {
           "name": "Trymbi",
@@ -27852,14 +27852,14 @@
           "games": 33,
           "wins": 11,
           "win_rate": 0.3333,
-          "score": -0.873,
+          "score": -0.853,
           "form": -5.756,
           "impact": -0.201,
           "recent_games": 0,
           "last_date": "2026-05-14",
           "region": -4.65,
           "tier": 0.0,
-          "idle": 0.081,
+          "idle": 0.079,
           "form_raw": -0.0994,
           "ctx": -0.6987,
           "qualities": {
@@ -27873,7 +27873,7 @@
             "deaths_pm": 0.281,
             "dpm_vs": -0.216
           },
-          "champ_score": -1.117
+          "champ_score": -1.092
         },
         {
           "name": "Meiko",
@@ -27942,14 +27942,14 @@
           "games": 18,
           "wins": 2,
           "win_rate": 0.1111,
-          "score": -1.679,
+          "score": -1.64,
           "form": -15.81,
           "impact": -2.286,
           "recent_games": 0,
           "last_date": "2026-05-18",
           "region": 0.087,
           "tier": -3.15,
-          "idle": 0.088,
+          "idle": 0.086,
           "form_raw": -0.3689,
           "ctx": -0.7066,
           "qualities": {
@@ -27963,7 +27963,7 @@
             "deaths_pm": 1.372,
             "dpm_vs": -0.764
           },
-          "champ_score": -2.58
+          "champ_score": -2.521
         },
         {
           "name": "MISSING",
@@ -27972,14 +27972,14 @@
           "games": 45,
           "wins": 27,
           "win_rate": 0.6,
-          "score": -1.833,
+          "score": -1.791,
           "form": 2.482,
           "impact": -0.624,
           "recent_games": 4,
           "last_date": "2026-08-09",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.602,
+          "idle": 0.588,
           "form_raw": 0.0381,
           "ctx": -0.5828,
           "qualities": {
@@ -27993,7 +27993,7 @@
             "deaths_pm": 0.332,
             "dpm_vs": -0.082
           },
-          "champ_score": -3.293
+          "champ_score": -3.218
         },
         {
           "name": "Busio",
@@ -28301,14 +28301,14 @@
           "games": 73,
           "wins": 26,
           "win_rate": 0.3562,
-          "score": -4.643,
+          "score": -4.537,
           "form": -4.115,
           "impact": -0.828,
           "recent_games": 0,
           "last_date": "2026-07-30",
           "region": 0.003,
           "tier": -3.15,
-          "idle": 0.477,
+          "idle": 0.467,
           "form_raw": -0.0547,
           "ctx": -0.7203,
           "qualities": {
@@ -28322,7 +28322,7 @@
             "deaths_pm": -0.023,
             "dpm_vs": -0.237
           },
-          "champ_score": -4.953
+          "champ_score": -4.84
         },
         {
           "name": "Labrov",
@@ -29055,7 +29055,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -0.771,
+            "score": -0.754,
             "form": -12.191,
             "rank": 12
           },
@@ -29115,6 +29115,17 @@
             "rank": 17
           },
           {
+            "name": "Jwei",
+            "team": "Invictus Gaming",
+            "league": "LPL",
+            "games": 10,
+            "wins": 7,
+            "win_rate": 0.7,
+            "score": -3.632,
+            "form": -7.22,
+            "rank": 18
+          },
+          {
             "name": "huhi",
             "team": "Sentinels",
             "league": "LCS",
@@ -29123,17 +29134,6 @@
             "win_rate": 0.6667,
             "score": -3.698,
             "form": 2.424,
-            "rank": 18
-          },
-          {
-            "name": "Jwei",
-            "team": "Invictus Gaming",
-            "league": "LPL",
-            "games": 10,
-            "wins": 7,
-            "win_rate": 0.7,
-            "score": -3.716,
-            "form": -7.22,
             "rank": 19
           },
           {
@@ -29447,6 +29447,17 @@
             "rank": 10
           },
           {
+            "name": "MISSING",
+            "team": "LNG Esports",
+            "league": "LPL",
+            "games": 3,
+            "wins": 1,
+            "win_rate": 0.3333,
+            "score": -2.306,
+            "form": 5.874,
+            "rank": 11
+          },
+          {
             "name": "Erha",
             "team": "Weibo Gaming",
             "league": "LPL",
@@ -29455,17 +29466,6 @@
             "win_rate": 0.4,
             "score": -2.352,
             "form": -2.099,
-            "rank": 11
-          },
-          {
-            "name": "MISSING",
-            "team": "LNG Esports",
-            "league": "LPL",
-            "games": 3,
-            "wins": 1,
-            "win_rate": 0.3333,
-            "score": -2.36,
-            "form": 5.874,
             "rank": 12
           },
           {
@@ -29541,7 +29541,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -5.768,
+            "score": -5.636,
             "form": -6.335,
             "rank": 19
           },
@@ -29829,7 +29829,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -3.815,
+            "score": -3.728,
             "form": -7.109,
             "rank": 15
           },
@@ -29906,7 +29906,7 @@
             "games": 8,
             "wins": 2,
             "win_rate": 0.25,
-            "score": -6.481,
+            "score": -6.333,
             "form": -18.955,
             "rank": 22
           },
@@ -30205,7 +30205,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.515,
+            "score": -0.503,
             "form": -2.732,
             "rank": 11
           },
@@ -30260,7 +30260,7 @@
             "games": 7,
             "wins": 5,
             "win_rate": 0.7143,
-            "score": -2.803,
+            "score": -2.739,
             "form": 3.441,
             "rank": 16
           },
@@ -30337,7 +30337,7 @@
             "games": 10,
             "wins": 1,
             "win_rate": 0.1,
-            "score": -5.326,
+            "score": -5.205,
             "form": -5.891,
             "rank": 23
           },
@@ -30592,7 +30592,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -1.086,
+            "score": -1.061,
             "form": -10.51,
             "rank": 9
           },
@@ -30680,7 +30680,7 @@
             "games": 5,
             "wins": 2,
             "win_rate": 0.4,
-            "score": -4.982,
+            "score": -4.869,
             "form": -3.84,
             "rank": 17
           },
@@ -30979,7 +30979,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.761,
+            "score": -0.743,
             "form": -5.27,
             "rank": 13
           },
@@ -30990,7 +30990,7 @@
             "games": 7,
             "wins": 1,
             "win_rate": 0.1429,
-            "score": -1.278,
+            "score": -1.249,
             "form": -9.481,
             "rank": 14
           },
@@ -31045,7 +31045,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": -3.734,
+            "score": -3.649,
             "form": 3.744,
             "rank": 19
           },
@@ -31100,7 +31100,7 @@
             "games": 6,
             "wins": 5,
             "win_rate": 0.8333,
-            "score": -5.594,
+            "score": -5.466,
             "form": -0.829,
             "rank": 24
           },
@@ -31355,7 +31355,7 @@
             "games": 4,
             "wins": 1,
             "win_rate": 0.25,
-            "score": -0.658,
+            "score": -0.643,
             "form": -3.407,
             "rank": 9
           },
@@ -31377,7 +31377,7 @@
             "games": 5,
             "wins": 2,
             "win_rate": 0.4,
-            "score": -0.991,
+            "score": -0.968,
             "form": -6.579,
             "rank": 11
           },
@@ -31454,7 +31454,7 @@
             "games": 3,
             "wins": 0,
             "win_rate": 0.0,
-            "score": -2.58,
+            "score": -2.521,
             "form": -35.142,
             "rank": 18
           },
@@ -31509,7 +31509,7 @@
             "games": 7,
             "wins": 1,
             "win_rate": 0.1429,
-            "score": -5.38,
+            "score": -5.257,
             "form": -2.502,
             "rank": 23
           },
@@ -31819,7 +31819,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -1.192,
+            "score": -1.165,
             "form": -14.183,
             "rank": 14
           },
@@ -31896,7 +31896,7 @@
             "games": 4,
             "wins": 3,
             "win_rate": 0.75,
-            "score": -3.15,
+            "score": -3.078,
             "form": 0.471,
             "rank": 21
           },
@@ -31907,7 +31907,7 @@
             "games": 5,
             "wins": 1,
             "win_rate": 0.2,
-            "score": -4.095,
+            "score": -4.002,
             "form": -2.961,
             "rank": 22
           },
@@ -32250,7 +32250,7 @@
             "games": 3,
             "wins": 3,
             "win_rate": 1.0,
-            "score": -0.669,
+            "score": -0.654,
             "form": -3.339,
             "rank": 14
           },
@@ -32261,7 +32261,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -1.048,
+            "score": -1.024,
             "form": 5.048,
             "rank": 15
           },
@@ -32371,7 +32371,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -5.507,
+            "score": -5.381,
             "form": -8.023,
             "rank": 25
           },
@@ -32927,7 +32927,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -0.995,
+            "score": -0.972,
             "form": -15.089,
             "rank": 7
           },
@@ -32987,6 +32987,17 @@
             "rank": 12
           },
           {
+            "name": "Jwei",
+            "team": "Invictus Gaming",
+            "league": "LPL",
+            "games": 8,
+            "wins": 4,
+            "win_rate": 0.5,
+            "score": -4.322,
+            "form": -8.265,
+            "rank": 13
+          },
+          {
             "name": "Jun",
             "team": "GiantX",
             "league": "LEC",
@@ -32995,17 +33006,6 @@
             "win_rate": 0.75,
             "score": -4.376,
             "form": 1.42,
-            "rank": 13
-          },
-          {
-            "name": "Jwei",
-            "team": "Invictus Gaming",
-            "league": "LPL",
-            "games": 8,
-            "wins": 4,
-            "win_rate": 0.5,
-            "score": -4.423,
-            "form": -8.265,
             "rank": 14
           },
           {
@@ -33562,7 +33562,7 @@
             "games": 4,
             "wins": 3,
             "win_rate": 0.75,
-            "score": 0.07,
+            "score": 0.068,
             "form": 23.071,
             "rank": 11
           },
@@ -33595,7 +33595,7 @@
             "games": 5,
             "wins": 2,
             "win_rate": 0.4,
-            "score": -0.633,
+            "score": -0.618,
             "form": -4.454,
             "rank": 14
           },
@@ -33617,7 +33617,7 @@
             "games": 4,
             "wins": 2,
             "win_rate": 0.5,
-            "score": -1.067,
+            "score": -1.042,
             "form": -9.695,
             "rank": 16
           },
@@ -33639,7 +33639,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": -3.079,
+            "score": -3.009,
             "form": 3.794,
             "rank": 18
           },
@@ -34045,7 +34045,7 @@
             "games": 3,
             "wins": 1,
             "win_rate": 0.3333,
-            "score": 2.227,
+            "score": 2.176,
             "form": 24.989,
             "rank": 1
           },
@@ -34056,7 +34056,7 @@
             "games": 3,
             "wins": 2,
             "win_rate": 0.6667,
-            "score": 0.885,
+            "score": 0.865,
             "form": 2.065,
             "rank": 2
           },
@@ -34171,6 +34171,6 @@
   "games": 1811,
   "from": "2026-01-14",
   "to": "2026-09-27",
-  "synced": "2026-09-30T23:08:20",
+  "synced": "2026-10-01T23:17:51",
   "half_life": 40.0
 }
