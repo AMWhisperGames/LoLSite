@@ -96,7 +96,9 @@
   cursor: pointer;
 }
 
-.rec-card img.is-blind {
+.champ img.is-blind,
+.rec-card img.is-blind,
+.pick img.is-blind {
   box-shadow: 0 0 0 2px #e2c56a;
 }
 
@@ -213,6 +215,26 @@
   font: inherit;
   font-size: 11px;
   cursor: pointer;
+}
+
+.comfort-mode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.comfort-mode input {
+  margin: 0;
+}
+
+.comfort-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 #draft-board .team {

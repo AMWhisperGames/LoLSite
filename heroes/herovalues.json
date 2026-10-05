@@ -7,7 +7,8 @@
     "TeamSustain": 5,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Alarak",
@@ -17,7 +18,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Alexstrasza",
@@ -27,7 +29,8 @@
     "TeamSustain": 7,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Ana",
@@ -37,7 +40,8 @@
     "TeamSustain": 7,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Anduin",
@@ -47,7 +51,8 @@
     "TeamSustain": 8,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Anub'arak",
@@ -57,7 +62,8 @@
     "TeamSustain": 0,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Artanis",
@@ -67,7 +73,8 @@
     "TeamSustain": 0,
     "SelfSustain": 6,
     "Jungler": 1,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 6
   },
   {
     "Hero Name": "Arthas",
@@ -77,7 +84,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Auriel",
@@ -87,7 +95,8 @@
     "TeamSustain": 8,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Azmodan",
@@ -97,7 +106,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Blaze",
@@ -107,7 +117,8 @@
     "TeamSustain": 3,
     "SelfSustain": 7,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 5
   },
   {
     "Hero Name": "Brightwing",
@@ -117,7 +128,8 @@
     "TeamSustain": 8,
     "SelfSustain": 9,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Cassia",
@@ -127,7 +139,8 @@
     "TeamSustain": 3,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 4
   },
   {
     "Hero Name": "Chen",
@@ -137,7 +150,8 @@
     "TeamSustain": 2,
     "SelfSustain": 6,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 4
   },
   {
     "Hero Name": "Cho",
@@ -147,7 +161,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 3
   },
   {
     "Hero Name": "Chromie",
@@ -157,7 +172,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 6
   },
   {
     "Hero Name": "D.Va",
@@ -167,7 +183,8 @@
     "TeamSustain": 4,
     "SelfSustain": 5,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Deathwing",
@@ -177,7 +194,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Deckard",
@@ -187,7 +205,8 @@
     "TeamSustain": 8,
     "SelfSustain": 6,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Dehaka",
@@ -197,7 +216,8 @@
     "TeamSustain": 0,
     "SelfSustain": 8,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Diablo",
@@ -207,7 +227,8 @@
     "TeamSustain": 0,
     "SelfSustain": 9,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "E.T.C.",
@@ -217,7 +238,8 @@
     "TeamSustain": 2,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 3
   },
   {
     "Hero Name": "Falstad",
@@ -227,7 +249,8 @@
     "TeamSustain": 0,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 3
   },
   {
     "Hero Name": "Fenix",
@@ -237,7 +260,8 @@
     "TeamSustain": 0,
     "SelfSustain": 7,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 6
   },
   {
     "Hero Name": "Gall",
@@ -247,7 +271,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 3
   },
   {
     "Hero Name": "Garrosh",
@@ -257,7 +282,8 @@
     "TeamSustain": 2,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Gazlowe",
@@ -267,7 +293,8 @@
     "TeamSustain": 0,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 6
   },
   {
     "Hero Name": "Genji",
@@ -277,7 +304,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 1
   },
   {
     "Hero Name": "Greymane",
@@ -287,7 +315,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 9
   },
   {
     "Hero Name": "Gul'dan",
@@ -297,7 +326,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 2
   },
   {
     "Hero Name": "Hanzo",
@@ -307,7 +337,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 9
   },
   {
     "Hero Name": "Hogger",
@@ -317,7 +348,8 @@
     "TeamSustain": 3,
     "SelfSustain": 7,
     "Jungler": 1,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 6
   },
   {
     "Hero Name": "Illidan",
@@ -327,7 +359,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Imperius",
@@ -337,7 +370,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Jaina",
@@ -347,7 +381,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 4
   },
   {
     "Hero Name": "Johanna",
@@ -357,7 +392,8 @@
     "TeamSustain": 3,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Junkrat",
@@ -367,7 +403,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Kael'thas",
@@ -377,7 +414,8 @@
     "TeamSustain": 0,
     "SelfSustain": 6,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Kel'Thuzad",
@@ -387,7 +425,8 @@
     "TeamSustain": 6,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 4
   },
   {
     "Hero Name": "Kerrigan",
@@ -397,7 +436,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Kharazim",
@@ -407,7 +447,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 3
   },
   {
     "Hero Name": "Leoric",
@@ -417,7 +458,8 @@
     "TeamSustain": 4,
     "SelfSustain": 6,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Li Li",
@@ -427,7 +469,8 @@
     "TeamSustain": 7,
     "SelfSustain": 6,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Li-Ming",
@@ -437,7 +480,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1.5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 8
   },
   {
     "Hero Name": "Lt. Morales",
@@ -447,7 +491,8 @@
     "TeamSustain": 7,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "L?cio",
@@ -457,7 +502,8 @@
     "TeamSustain": 8.5,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Lunara",
@@ -467,7 +513,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 4
   },
   {
     "Hero Name": "Maiev",
@@ -477,7 +524,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "MalGanis",
@@ -487,7 +535,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Malfurion",
@@ -497,7 +546,8 @@
     "TeamSustain": 7,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Malthael",
@@ -507,7 +557,8 @@
     "TeamSustain": 0,
     "SelfSustain": 6,
     "Jungler": 1,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 2
   },
   {
     "Hero Name": "Medivh",
@@ -517,7 +568,8 @@
     "TeamSustain": 4,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Mei",
@@ -527,7 +579,8 @@
     "TeamSustain": 2,
     "SelfSustain": 7,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Mephisto",
@@ -537,7 +590,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Muradin",
@@ -547,7 +601,8 @@
     "TeamSustain": 1,
     "SelfSustain": 6,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Murky",
@@ -557,7 +612,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Nazeebo",
@@ -567,7 +623,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4.5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 5
   },
   {
     "Hero Name": "Nova",
@@ -577,7 +634,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Orphea",
@@ -587,7 +645,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Probius",
@@ -597,7 +656,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Qhira",
@@ -607,7 +667,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 6
   },
   {
     "Hero Name": "Ragnaros",
@@ -617,7 +678,8 @@
     "TeamSustain": 0,
     "SelfSustain": 3,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Raynor",
@@ -627,7 +689,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 7
   },
   {
     "Hero Name": "Rehgar",
@@ -637,7 +700,8 @@
     "TeamSustain": 6,
     "SelfSustain": 2,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Rexxar",
@@ -647,7 +711,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 1
   },
   {
     "Hero Name": "Samuro",
@@ -657,7 +722,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Sgt. Hammer",
@@ -667,7 +733,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 2
   },
   {
     "Hero Name": "Sonya",
@@ -677,7 +744,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 1,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 9
   },
   {
     "Hero Name": "Stitches",
@@ -687,7 +755,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Stukov",
@@ -697,7 +766,8 @@
     "TeamSustain": 6.75,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Sylvanas",
@@ -707,7 +777,8 @@
     "TeamSustain": 0,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 1
   },
   {
     "Hero Name": "Tassadar",
@@ -717,7 +788,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 1
   },
   {
     "Hero Name": "The Butcher",
@@ -727,7 +799,8 @@
     "TeamSustain": 0,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 3
   },
   {
     "Hero Name": "The Lost Vikings",
@@ -737,7 +810,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 1,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Thrall",
@@ -747,7 +821,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 5
   },
   {
     "Hero Name": "Tracer",
@@ -757,7 +832,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 2
   },
   {
     "Hero Name": "Tychus",
@@ -767,7 +843,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Tyrael",
@@ -777,7 +854,8 @@
     "TeamSustain": 3,
     "SelfSustain": 8,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Tyrande",
@@ -787,7 +865,8 @@
     "TeamSustain": 5.75,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 4
   },
   {
     "Hero Name": "Uther",
@@ -797,7 +876,8 @@
     "TeamSustain": 7,
     "SelfSustain": 4.5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Valeera",
@@ -807,7 +887,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Valla",
@@ -817,7 +898,8 @@
     "TeamSustain": 0,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 10
   },
   {
     "Hero Name": "Varian",
@@ -827,7 +909,8 @@
     "TeamSustain": 0,
     "SelfSustain": 1,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Whitemane",
@@ -837,7 +920,19 @@
     "TeamSustain": 7,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
+  },
+  {
+    "Hero Name": "Xal'atath",
+    "Wave Clear": 7,
+    "Engage": 2,
+    "Peel": 2,
+    "TeamSustain": 0,
+    "SelfSustain": 2,
+    "Jungler": 1,
+    "Anchor": 1,
+    "Race": 7
   },
   {
     "Hero Name": "Xul",
@@ -847,7 +942,8 @@
     "TeamSustain": 0,
     "SelfSustain": 5,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Yrel",
@@ -857,7 +953,8 @@
     "TeamSustain": 3,
     "SelfSustain": 7,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 0
   },
   {
     "Hero Name": "Zagara",
@@ -867,7 +964,8 @@
     "TeamSustain": 0,
     "SelfSustain": 0,
     "Jungler": 0,
-    "Anchor": 1
+    "Anchor": 1,
+    "Race": 6
   },
   {
     "Hero Name": "Zarya",
@@ -877,7 +975,8 @@
     "TeamSustain": 4,
     "SelfSustain": 2,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 4
   },
   {
     "Hero Name": "Zeratul",
@@ -887,7 +986,8 @@
     "TeamSustain": 0,
     "SelfSustain": 3,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   },
   {
     "Hero Name": "Zul'jin",
@@ -897,7 +997,8 @@
     "TeamSustain": 0,
     "SelfSustain": 4,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 8
   },
   {
     "Hero Name": "DEFAULT",
@@ -907,6 +1008,7 @@
     "TeamSustain": 0.001,
     "SelfSustain": 0.001,
     "Jungler": 0,
-    "Anchor": 0
+    "Anchor": 0,
+    "Race": 0
   }
 ]

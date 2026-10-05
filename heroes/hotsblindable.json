@@ -336,6 +336,10 @@
     "Blindable": 0
   },
   {
+    "Hero Name": "Xal'atath",
+    "Blindable": 1.0
+  },
+  {
     "Hero Name": "Xul",
     "Blindable": 0.0
   },

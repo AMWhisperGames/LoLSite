@@ -8,10 +8,10 @@
   const SAMPLE_PRIOR = 200;
   const BLIND_SCALE = 100;
   const BLIND_FLOOR = 0.5;
-  const QUIET_HEROES = { Kerrigan: 75, Probius: 100, "Sgt. Hammer": 75, Rehgar: 30, Samuro: 30 };
+  const QUIET_HEROES = { Kerrigan: 75, Probius: 100, "Sgt. Hammer": 75, Rehgar: 50, Samuro: 30, "The Lost Vikings": 80, Alexstrasza: 20 };
   const ANCHOR_BONUS = 30;
   const STEEP_COUNTER = 100;
-  const ROLE_TARGETS = { tank: 11, dps: 11.5, healer: 8.5, flex: 13, offlane: 11.5 };
+  const ROLE_TARGETS = { tank: 12, dps: 11.5, healer: 10.5, flex: 13, offlane: 11.5 };
   const ROLE_FLOOR = 0.1;
   const ROLE_EARLY = 2.5;
   const ROLE_LATE = 8;
@@ -22,6 +22,12 @@
   const DUO_SYNERGY = 0.5;
   const SYLVANAS_MAIEV = 160;
   const DEATHWING_UTHER = 400;
+  const ALEX_MEPHISTO = 40;
+  const COMFORT_LINE = 5;
+  const ROLE_ORDER = ["tank", "healer", "dps", "flex", "offlane"];
+  const FULL_ROLES = 31;
+  const RACE_TARGET = 14;
+  const RACE_UNIT = 6;
   const LINKED = { Cho: "Gall", Gall: "Cho" };
   const DEFAULT_STATS = {
     waveclear: 0.001,
@@ -30,6 +36,7 @@
     teamSustain: 0.001,
     selfSustain: 0.001,
     anchor: 0,
+    race: 0,
   };
 
   const state = {
@@ -47,6 +54,7 @@
     staged: [],
     recShape: null,
     comfort: { blue: null, red: null },
+    comfortMode: { blue: false, red: false },
   };
 
   const DRAFT = [
@@ -63,7 +71,7 @@
     { side: "blue", kind: "picks", count: 2 },
     { side: "red", kind: "picks", count: 1 },
   ];
-  const PATCH_KICKER = "Storm League · Platinum+ · 2.55 + 2.57";
+  const PATCH_KICKER = "HotS Draft Practice";
   let botTimer = null;
 
   const roster = new Map(data.roster.map(function (hero) { return [hero.name, hero]; }));
@@ -157,6 +165,9 @@
     let score = shrink(row.score, row.games);
     if ((hero === "Deathwing" && ally === "Uther") || (hero === "Uther" && ally === "Deathwing")) {
       score -= DEATHWING_UTHER;
+    }
+    if ((hero === "Alexstrasza" && ally === "Mephisto") || (hero === "Mephisto" && ally === "Alexstrasza")) {
+      score -= ALEX_MEPHISTO;
     }
     return { score: score, games: row.games || 0 };
   }
@@ -255,6 +266,163 @@
     return roles.tank + roles.dps + roles.healer + roles.flex + roles.offlane > 0;
   }
 
+  let legalKey = "";
+  let legalCache = null;
+
+  function comfortMask(name, side) {
+    const sheet = state.comfort[side];
+    if (!sheet || !Object.prototype.hasOwnProperty.call(sheet.roles, name)) return 0;
+    const roles = sheet.roles[name];
+    let mask = 0;
+    ROLE_ORDER.forEach(function (role, index) {
+      if (roles[role] > COMFORT_LINE) mask |= 1 << index;
+    });
+    return mask;
+  }
+
+  function canFillRoles(roleBits, pool) {
+    const roles = [];
+    for (let i = 0; i < 5; i++) {
+      if (roleBits & (1 << i)) roles.push(1 << i);
+    }
+    if (!roles.length) return true;
+    const heroRole = new Array(pool.length).fill(-1);
+    function dfs(roleIndex, seen) {
+      const bit = roles[roleIndex];
+      for (let h = 0; h < pool.length; h++) {
+        if (seen[h] || !(pool[h].mask & bit)) continue;
+        seen[h] = 1;
+        const prev = heroRole[h];
+        if (prev === -1 || dfs(prev, seen)) {
+          heroRole[h] = roleIndex;
+          return true;
+        }
+      }
+      return false;
+    }
+    for (let r = 0; r < roles.length; r++) {
+      if (!dfs(r, new Array(pool.length).fill(0))) return false;
+    }
+    return true;
+  }
+
+  function canWith(required, pool) {
+    if (required.length > 5) return false;
+    function assign(index, usedBits) {
+      if (index === required.length) return canFillRoles(FULL_ROLES ^ usedBits, pool);
+      let bits = required[index].mask & ~usedBits;
+      while (bits) {
+        const bit = bits & -bits;
+        if (assign(index + 1, usedBits | bit)) return true;
+        bits ^= bit;
+      }
+      return false;
+    }
+    return assign(0, 0);
+  }
+
+  function pairKey(left, right) {
+    return left < right ? left + "|" + right : right + "|" + left;
+  }
+
+  function comfortPlan(side) {
+    const allies = state[side].picks.filter(Boolean);
+    const stamp = state.comfort[side] ? state.comfort[side].stamp : "";
+    const key = [side, stamp, allies.join("|"), Array.from(taken()).sort().join("|")].join("~");
+    if (key === legalKey && legalCache) return legalCache;
+    const heroes = {};
+    const pairs = {};
+    const fail = { heroes: heroes, pairs: pairs, ok: false };
+    const base = [];
+    let blocked = false;
+    allies.forEach(function (name) {
+      const mask = comfortMask(name, side);
+      if (!mask) blocked = true;
+      base.push({ name: name, mask: mask });
+    });
+    const required = {};
+    allies.forEach(function (name) {
+      const partner = linkedPartner(name);
+      if (partner && allies.indexOf(partner) === -1 && !taken().has(partner)) required[partner] = true;
+    });
+    Object.keys(required).forEach(function (name) {
+      const mask = comfortMask(name, side);
+      if (!mask) blocked = true;
+      base.push({ name: name, mask: mask });
+    });
+    if (blocked || base.length > 5) {
+      legalKey = key;
+      legalCache = fail;
+      return legalCache;
+    }
+    const pool = [];
+    data.roster.forEach(function (hero) {
+      if (taken().has(hero.name) || lockedOut(hero.name)) return;
+      if (allies.indexOf(hero.name) !== -1 || required[hero.name]) return;
+      const mask = comfortMask(hero.name, side);
+      if (!mask) return;
+      pool.push({ name: hero.name, mask: mask });
+    });
+    if (!canWith(base, pool)) {
+      legalKey = key;
+      legalCache = fail;
+      return legalCache;
+    }
+    base.forEach(function (hero) {
+      if (allies.indexOf(hero.name) === -1) heroes[hero.name] = true;
+    });
+    const legal = [];
+    pool.forEach(function (hero) {
+      const others = pool.filter(function (row) { return row.name !== hero.name; });
+      if (!canWith(base.concat([hero]), others)) return;
+      heroes[hero.name] = true;
+      legal.push(hero);
+    });
+    if (base.length + 2 <= 5) {
+      for (let a = 0; a < legal.length; a++) {
+        for (let b = a + 1; b < legal.length; b++) {
+          const others = pool.filter(function (row) {
+            return row.name !== legal[a].name && row.name !== legal[b].name;
+          });
+          if (canWith(base.concat([legal[a], legal[b]]), others)) {
+            pairs[pairKey(legal[a].name, legal[b].name)] = true;
+          }
+        }
+      }
+    }
+    const forcedNames = Object.keys(required);
+    forcedNames.forEach(function (name) {
+      legal.forEach(function (hero) {
+        pairs[pairKey(name, hero.name)] = true;
+      });
+    });
+    if (forcedNames.length === 2) pairs[pairKey(forcedNames[0], forcedNames[1])] = true;
+    legalKey = key;
+    legalCache = { heroes: heroes, pairs: pairs, ok: Object.keys(heroes).length > 0 || base.length === 5 };
+    return legalCache;
+  }
+
+  function comfortAllows(side, names) {
+    if (!state.comfortMode[side] || !state.comfort[side]) return true;
+    const plan = comfortPlan(side);
+    if (names.length === 1) return !!plan.heroes[names[0]];
+    if (names.length === 2) {
+      const left = names[0] < names[1] ? names[0] : names[1];
+      const right = names[0] < names[1] ? names[1] : names[0];
+      return !!plan.pairs[left + "|" + right];
+    }
+    return true;
+  }
+
+  function noteComfortGap(side) {
+    if (!state.comfortMode[side] || !state.comfort[side] || els.recsList.children.length) return;
+    if (comfortPlan(side).ok) return;
+    const note = document.createElement("p");
+    note.className = "comfort-note";
+    note.textContent = "No set of picks covers every role with comfort above 5.";
+    els.recsList.append(note);
+  }
+
   function roleCoverage(allies, side) {
     const cover = { tank: 0, dps: 0, healer: 0, flex: 0, offlane: 0 };
     allies.forEach(function (ally) {
@@ -329,6 +497,15 @@
     const count = allies.filter(function (ally) { return heroStats(ally).anchor === 1; }).length;
     if (count >= 1.5) return 0;
     return heroStats(name).anchor === 1 ? ANCHOR_BONUS : 0;
+  }
+
+  function raceBoost(name, allies) {
+    if (!valuesReady || state.map !== "Battlefield of Eternity") return 0;
+    let have = 0;
+    allies.forEach(function (ally) { have += heroStats(ally).race || 0; });
+    const gap = RACE_TARGET - have;
+    if (gap <= 0) return 0;
+    return (heroStats(name).race || 0) * (gap / RACE_TARGET) * RACE_UNIT * state.weights.values;
   }
 
   function linkedPartner(name) {
@@ -411,9 +588,10 @@
     const role = roleBoost(name, allies, side);
     const blind = valuesReady && pickCount() < 2 && countsAsBlind(name) ? blindable(name) * BLIND_SCALE : 0;
     const anchor = anchorBoost(name, allies);
+    const race = raceBoost(name, allies);
     const threat = poolThreat(name, allies);
     const threatPenalty = threat.penalty * state.weights.counter;
-    const draft = base + stats + role + blind + anchor - threatPenalty;
+    const draft = base + stats + role + blind + anchor + race - threatPenalty;
     if (!hasContext && !state.map && draft === 0 && !threatPenalty) return null;
     const matchup = hasContext ? base * factor : 0;
     const total = state.map ? (draft === 0 && !threatPenalty ? factor : draft * factor) : draft;
@@ -426,6 +604,7 @@
       role: role,
       blind: blind,
       anchor: anchor,
+      race: race,
       threat: threatPenalty,
       threatName: threat.name,
       map: factor,
@@ -441,6 +620,7 @@
     data.roster.forEach(function (hero) {
       if (used.has(hero.name) || lockedOut(hero.name)) return;
       if (!hasComfort(hero.name, state.recSide)) return;
+      if (!comfortAllows(state.recSide, [hero.name])) return;
       if (linkedPartner(hero.name)) return;
       if (state.role !== "All" && hero.role !== state.role) return;
       if (query && hero.name.toLowerCase().indexOf(query) === -1) return;
@@ -450,8 +630,7 @@
         if (cursor.step.count === 2 && cursor.filled === 0 && state.staged.length === 0) return;
         const already = state.staged.length ? state.staged : heroesThisTurn(cursor);
         if (already.indexOf(hero.name) !== -1) return;
-        if (!canAddDuringTurn(hero.name, cursor.step, already)) return;
-      } else if (valuesReady && pickCount() < 2 && !countsAsBlind(hero.name)) return;
+      }
       const score = scoreHero(hero.name, state.recSide);
       if (!score) return;
       ranked.push({ hero: hero, score: score });
@@ -478,16 +657,18 @@
   }
 
   function portrait(hero, className) {
+    const opener = pickCount() < 2 && countsAsBlind(hero.name);
+    const classes = [className, opener ? "is-blind" : ""].filter(Boolean).join(" ");
     if (hero.icon) {
       const img = document.createElement("img");
       img.src = hero.icon;
       img.alt = hero.name;
       img.draggable = false;
-      if (className) img.className = className;
+      if (classes) img.className = classes;
       return img;
     }
     const fallback = document.createElement("span");
-    fallback.className = (className || "") + " fallback";
+    fallback.className = (classes + " fallback").trim();
     fallback.textContent = hero.name.slice(0, 1);
     return fallback;
   }
@@ -573,16 +754,8 @@
     });
   }
 
-  function earlyBlindBlock(name, kind) {
-    if (!valuesReady || kind !== "picks" || countsAsBlind(name)) return false;
-    const alreadyPicked = state.blue.picks.indexOf(name) !== -1 || state.red.picks.indexOf(name) !== -1;
-    if (alreadyPicked) return false;
-    return pickCount() < 2;
-  }
-
   function placePair(a, b, side) {
     if (lockedOut(a) || lockedOut(b) || taken().has(a) || taken().has(b)) return;
-    if (earlyBlindBlock(a, "picks") || earlyBlindBlock(b, "picks")) return;
     let room = 0;
     state[side].picks.forEach(function (current) {
       if (!current || current === a || current === b) room += 1;
@@ -614,7 +787,6 @@
     }
     if (linkedPartner(a) || linkedPartner(b)) return;
     if (taken().has(a) || taken().has(b) || lockedOut(a) || lockedOut(b)) return;
-    if (valuesReady && pickCount() < 2 && !duoCoversBlinds([a, b])) return;
     let room = 0;
     state[side].picks.forEach(function (current) {
       if (!current || current === a || current === b) room += 1;
@@ -646,7 +818,6 @@
       placePair(name, linkedPartner(name), side);
       return;
     }
-    if (earlyBlindBlock(name, kind)) return;
     remember();
     if (from) {
       const parts = from.split(":");
@@ -713,9 +884,8 @@
       if (suggested.has(hero.name)) card.classList.add("suggested");
       if (out) card.title = "Requires " + linkedPartner(hero.name);
       else if (locked === "linked") card.title = "Cho and Gall pick together";
-      else if (locked === "blind") card.title = "Not a blind pick";
       else if (locked === "bot") card.title = "Bot turn";
-      else card.title = hero.role;
+      else card.title = (pickCount() < 2 && countsAsBlind(hero.name) ? "Opener · " : "") + hero.role;
       card.append(portrait(hero), labelFor(hero.name));
       if (!used.has(hero.name) && locked !== "bot" && locked !== "done") {
         card.addEventListener("dragstart", function (event) {
@@ -775,7 +945,7 @@
     if (allies.length && enemies.length) els.recsLabel.textContent = "Best with " + sideName + " into the other side";
     else if (enemies.length) els.recsLabel.textContent = "Best into the other side";
     else if (allies.length) els.recsLabel.textContent = "Best with " + sideName;
-    else if (early) els.recsLabel.textContent = "Blindable openers";
+    else if (early) els.recsLabel.textContent = "Opening picks";
     else if (state.map) els.recsLabel.textContent = "Best on " + state.map;
     else els.recsLabel.textContent = "Best with " + sideName;
     els.recsList.innerHTML = "";
@@ -806,6 +976,7 @@
         });
         els.recsList.append(card);
       });
+      noteComfortGap(state.recSide);
       return;
     }
     const ranked = recommendations().slice(0, 8);
@@ -845,6 +1016,7 @@
         "Comfort " + formatScore(row.score.role),
       ];
       if (row.score.blind) bits.push("Blind " + formatScore(row.score.blind));
+      if (row.score.race) bits.push("Race " + formatScore(row.score.race));
       if (row.score.threat) bits.push("Open " + row.score.threatName + " " + formatScore(-row.score.threat));
       bits.push("Map " + row.score.map.toFixed(2) + "×");
       card.title = bits.join(" · ");
@@ -866,6 +1038,7 @@
       els.recsList.append(card);
     });
     if (linkedTotal != null && !linkedShown && ranked.length < 8) appendLinked();
+    noteComfortGap(state.recSide);
   }
 
   function renderWin() {
@@ -986,7 +1159,6 @@
     const partner = linkedPartner(name);
     if (!state.practice) {
       if (state.selected && state.selected.split(":")[1] === "bans") return "";
-      if (earlyBlindBlock(name, "picks")) return "blind";
       if (partner && state[state.recSide].picks.filter(function (pick) { return !pick; }).length < 2) return "linked";
       return "";
     }
@@ -996,11 +1168,8 @@
     if (cursor.step.kind === "bans") return "";
     if (partner) {
       if (cursor.step.count < 2 || state.staged.length) return "linked";
-      if (!canAddDuringTurn(partner, cursor.step, [name])) return "blind";
       return "";
     }
-    const already = state.staged.length ? state.staged : heroesThisTurn(cursor);
-    if (!canAddDuringTurn(name, cursor.step, already)) return "blind";
     return "";
   }
 
@@ -1028,7 +1197,6 @@
     if (step.kind === "picks" && step.count === 2 && linkedPartner(name)) {
       const partner = linkedPartner(name);
       if (state.staged.length || taken().has(partner) || lockedOut(partner)) return;
-      if (!canAddDuringTurn(partner, step, [name])) return;
       state.staged = [];
       commitNames(orderForBlind([name, partner]), step.side, step.kind);
       render();
@@ -1037,7 +1205,6 @@
     if (step.kind === "picks" && linkedPartner(name)) return;
     if (step.kind === "picks" && step.count === 2) {
       if (state.staged.indexOf(name) !== -1) return;
-      if (!canAddDuringTurn(name, step, state.staged)) return;
       if (state.staged.length + 1 < step.count) {
         state.staged = state.staged.concat([name]);
         render();
@@ -1049,7 +1216,6 @@
       render();
       return;
     }
-    if (step.kind === "picks" && !canAddDuringTurn(name, step, heroesThisTurn(cursor))) return;
     state.staged = [];
     commitNames([name], step.side, step.kind);
     render();
@@ -1176,7 +1342,7 @@
     duo.classList.toggle("active", shape === "duo");
   }
 
-  function duoRecommendations(side, step, filterUi) {
+  function duoRecommendations(side, step, filterUi, blindOnly) {
     const key = [
       side,
       step ? step.kind + step.count : "",
@@ -1188,6 +1354,8 @@
       state.weights.values,
       state.weights.role,
       state.comfort[side] ? state.comfort[side].stamp : "base",
+      state.comfortMode[side] ? "comfort" : "",
+      blindOnly ? "blind" : "",
       pickCount(),
       Array.from(taken()).sort().join("|"),
     ].join("~");
@@ -1201,6 +1369,7 @@
       for (let j = i + 1; j < names.length; j++) {
         const pair = [names[i], names[j]];
         if (!hasComfort(pair[0], side) || !hasComfort(pair[1], side)) continue;
+        if (!comfortAllows(side, pair)) continue;
         if (linkedPartner(pair[0]) && linkedPartner(pair[0]) !== pair[1]) continue;
         if (linkedPartner(pair[1]) && linkedPartner(pair[1]) !== pair[0]) continue;
         if (filterUi && query) {
@@ -1212,8 +1381,8 @@
           const right = roster.get(pair[1]);
           if ((!left || left.role !== state.role) && (!right || right.role !== state.role)) continue;
         }
-        if (valuesReady && pickCount() < 2 && !duoCoversBlinds(pair)) continue;
-        if (step && step.count >= 2 && !canAddDuringTurn(pair[1], step, [pair[0]])) continue;
+        if (blindOnly && valuesReady && pickCount() < 2 && !duoCoversBlinds(pair)) continue;
+        if (blindOnly && step && step.count >= 2 && !canAddDuringTurn(pair[1], step, [pair[0]])) continue;
         ranked.push({ names: pair, total: pairTotal(pair[0], pair[1], side) });
       }
     }
@@ -1223,7 +1392,7 @@
     return ranked;
   }
 
-  function rankedChoices(cursor, shape) {
+  function rankedChoices(cursor, shape, blindOnly) {
     const step = cursor.step;
     const names = data.roster.map(function (hero) { return hero.name; }).filter(function (name) {
       return !taken().has(name) && !lockedOut(name);
@@ -1239,19 +1408,21 @@
     } else if (step.count === 2 && state.staged.length === 1) {
       const held = state.staged[0];
       names.forEach(function (name) {
-        if (name === held || !hasComfort(name, step.side) || !canAddDuringTurn(name, step, state.staged)) return;
+        if (name === held || !hasComfort(name, step.side) || !comfortAllows(step.side, [held, name])) return;
+        if (blindOnly && !canAddDuringTurn(name, step, state.staged)) return;
         if (linkedPartner(held) && name !== linkedPartner(held)) return;
         if (linkedPartner(name) && linkedPartner(name) !== held) return;
         ranked.push({ names: [name], total: pairTotal(held, name, step.side) });
       });
     } else if (shape === "duo" || (shape !== "single" && step.count === 2 && state.staged.length === 0 && cursor.filled === 0)) {
-      duoRecommendations(step.side, step).forEach(function (row) { ranked.push(row); });
+      duoRecommendations(step.side, step, false, blindOnly).forEach(function (row) { ranked.push(row); });
     } else {
       const already = heroesThisTurn(cursor);
       names.forEach(function (name) {
         if (linkedPartner(name)) return;
         if (!hasComfort(name, step.side)) return;
-        if (!canAddDuringTurn(name, step, already)) return;
+        if (!comfortAllows(step.side, [name])) return;
+        if (blindOnly && !canAddDuringTurn(name, step, already)) return;
         const extra = already.slice();
         const score = scoreHero(name, step.side, extra);
         ranked.push({ names: [name], total: score ? score.total : 0 });
@@ -1276,7 +1447,7 @@
   function runBot() {
     const cursor = draftCursor();
     if (!state.practice || !valuesReady || !cursor.step || cursor.step.side === state.human) return;
-    const choice = weightedTop(rankedChoices(cursor));
+    const choice = weightedTop(rankedChoices(cursor, null, true));
     if (!choice) return;
     const names = cursor.step.kind === "picks" ? orderForBlind(choice.names) : choice.names;
     commitNames(names, cursor.step.side, cursor.step.kind);
@@ -1357,6 +1528,7 @@
       });
       els.recsList.append(card);
     });
+    if (cursor.step.kind === "picks") noteComfortGap(cursor.step.side);
   }
 
   function renderPhase() {
@@ -1626,6 +1798,13 @@
       } else {
         status.textContent = "Drop a CSV to override roles";
         clear.hidden = true;
+        state.comfortMode[side] = false;
+      }
+      const mode = box.querySelector(".comfort-mode");
+      const toggle = box.querySelector(".comfort-mode-input");
+      if (mode && toggle) {
+        mode.hidden = !sheet;
+        toggle.checked = !!state.comfortMode[side];
       }
     });
   }
@@ -1634,7 +1813,7 @@
     const box = document.getElementById(side + "-comfort");
     const input = box.querySelector(".comfort-file");
     box.addEventListener("click", function (event) {
-      if (event.target.closest(".comfort-clear")) return;
+      if (event.target.closest(".comfort-clear") || event.target.closest(".comfort-mode")) return;
       input.click();
     });
     input.addEventListener("click", function (event) { event.stopPropagation(); });
@@ -1669,8 +1848,17 @@
       event.preventDefault();
       event.stopPropagation();
       state.comfort[side] = null;
+      state.comfortMode[side] = false;
       render();
     });
+    const toggle = box.querySelector(".comfort-mode-input");
+    if (toggle) {
+      toggle.addEventListener("click", function (event) { event.stopPropagation(); });
+      toggle.addEventListener("change", function () {
+        state.comfortMode[side] = toggle.checked;
+        render();
+      });
+    }
   }
 
   bindComfort("blue");
@@ -1686,10 +1874,10 @@
   }
 
   Promise.all([
-    fetch("hots_map_matrix.json").then(function (response) { return response.json(); }),
-    fetch("hotsblindable.json").then(function (response) { return response.json(); }),
-    fetch("herovalues.json?v=4").then(function (response) { return response.json(); }),
-    fetch("hotsroles.json?v=2").then(function (response) { return response.json(); }),
+    fetch("hots_map_matrix.json?v=2").then(function (response) { return response.json(); }),
+    fetch("hotsblindable.json?v=2").then(function (response) { return response.json(); }),
+    fetch("herovalues.json?v=6").then(function (response) { return response.json(); }),
+    fetch("hotsroles.json?v=3").then(function (response) { return response.json(); }),
   ]).then(function (loaded) {
     const matrix = loaded[0];
     mapMatrix = matrix;
@@ -1713,6 +1901,7 @@
         teamSustain: Number(row.TeamSustain) || 0,
         selfSustain: Number(row.SelfSustain) || 0,
         anchor: Number(row.Anchor) || 0,
+        race: Number(row.Race) || 0,
       };
     });
     indexRows(loaded[3], function (name, row) {

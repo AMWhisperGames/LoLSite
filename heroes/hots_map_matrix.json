@@ -1169,7 +1169,7 @@
  },
  "The Lost Vikings": {
  "Alterac Pass": 0.8396637985,
- "Battlefield of Eternity": 0.259354029,
+ "Battlefield of Eternity": 0.000000259354029,
  "Blackheart's Bay": 0.7791372534,
  "Braxis Holdout": 0.259427471,
  "Cursed Hollow": 0.815536532,
@@ -1178,7 +1178,7 @@
  "Hanamura Temple": 0.7713250149,
  "Infernal Shrines": 0.6981918965,
  "Sky Temple": 0.800204374,
- "Tomb of the Spider Queen": 0.6130266781,
+ "Tomb of the Spider Queen": 0.00000130266781,
  "Towers of Doom": 0.8615225961,
  "Volskaya Foundry": 0.7917201981,
  "Warhead Junction": 0.7852233001
@@ -1342,6 +1342,22 @@
  "Towers of Doom": 0.8355062332,
  "Volskaya Foundry": 0.8355845917,
  "Warhead Junction": 0.6601999387
+ },
+ "Xal'atath": {
+ "Alterac Pass": 0.8208410336,
+ "Battlefield of Eternity": 0.8031414141,
+ "Blackheart's Bay": 0.7990670555,
+ "Braxis Holdout": 0.7941780326,
+ "Cursed Hollow": 0.8070519780,
+ "Dragon Shire": 0.8055374969,
+ "Garden of Terror": 0.8067261546,
+ "Hanamura Temple": 0.7973111749,
+ "Infernal Shrines": 0.8160775331,
+ "Sky Temple": 0.8051738127,
+ "Tomb of the Spider Queen": 0.8014758508,
+ "Towers of Doom": 0.8283115282,
+ "Volskaya Foundry": 0.8045424102,
+ "Warhead Junction": 0.7891666216
  },
  "Xul": {
  "Alterac Pass": 0.7806313651,
