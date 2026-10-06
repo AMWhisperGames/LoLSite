@@ -47,7 +47,7 @@
     recSide: "blue",
     selected: null,
     history: [],
-    weights: { counter: 0.5, pairing: 2, values: 1.8, role: 1.4 },
+    weights: { counter: 0.5, pairing: 2, values: 2, role: 1.4 },
     map: "",
     practice: false,
     human: "blue",
@@ -1876,7 +1876,7 @@
   Promise.all([
     fetch("hots_map_matrix.json?v=2").then(function (response) { return response.json(); }),
     fetch("hotsblindable.json?v=2").then(function (response) { return response.json(); }),
-    fetch("herovalues.json?v=6").then(function (response) { return response.json(); }),
+    fetch("herovalues.json?v=7").then(function (response) { return response.json(); }),
     fetch("hotsroles.json?v=3").then(function (response) { return response.json(); }),
   ]).then(function (loaded) {
     const matrix = loaded[0];
