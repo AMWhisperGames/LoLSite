@@ -231,6 +231,25 @@
   margin: 0;
 }
 
+.tier-page .champ .fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: #141a22;
+  color: #d5dde6;
+  font-family: Sora, Manrope, sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.tier-page .top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .comfort-note {
   margin: 8px 0 0;
   color: var(--muted);

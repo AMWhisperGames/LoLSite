@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whisper Draft — Heroes tier list</title>
+    <meta name="description" content="Build a Heroes of the Storm tier list. Drag portraits into customizable S–F rows and copy an image to share." />
+    <link rel="preconnect" href="https://nexuscompendium.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css?v=55" />
+    <link rel="stylesheet" href="heroes.css?v=12" />
+  </head>
+  <body class="tier-page">
+    <div class="vignette"></div>
+    <div id="boot" class="boot">
+      <div class="boot-mark">W</div>
+      <h1>Whisper Draft</h1>
+      <p id="boot-status">Loading heroes…</p>
+    </div>
+
+    <div id="app" class="app tier-app" hidden>
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">W</span>
+          <div>
+            <strong>Whisper Draft</strong>
+            <nav class="site-nav">
+              <a href="../index.html">League</a>
+              <a href="./">Heroes</a>
+              <a href="tier.html" aria-current="page">Tiers</a>
+            </nav>
+          </div>
+        </div>
+        <div class="phase-wrap">
+          <p class="phase-kicker">Heroes of the Storm</p>
+          <input
+            id="tier-title"
+            class="phase-title done tier-title"
+            value="My tier list"
+            maxlength="40"
+            aria-label="Tier list title"
+          />
+        </div>
+        <div class="top-actions">
+          <button id="tier-share" type="button">Copy image</button>
+          <button id="tier-add" type="button">Add tier</button>
+          <button id="tier-reset" type="button">Reset</button>
+        </div>
+      </header>
+
+      <main class="tier-board">
+        <section id="tier-rows" class="tier-rows" aria-label="Tiers"></section>
+        <section class="tier-pool" aria-label="Hero pool">
+          <div class="pool-tools">
+            <input
+              id="tier-search"
+              type="search"
+              placeholder="Search heroes"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <div id="tier-roles" class="chips" role="tablist" aria-label="Hero roles"></div>
+          </div>
+          <div id="tier-grid" class="grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="tier-modal" class="tier-modal" hidden>
+      <div id="tier-modal-backdrop" class="tier-modal-backdrop"></div>
+      <div class="tier-modal-card" role="dialog" aria-modal="true" aria-labelledby="tier-modal-heading">
+        <p class="phase-kicker">Edit tier</p>
+        <h3 id="tier-modal-heading">S</h3>
+        <label class="tier-modal-field">
+          <span>Name</span>
+          <input id="tier-modal-name" type="text" maxlength="12" autocomplete="off" />
+        </label>
+        <label class="tier-modal-field">
+          <span>Color</span>
+          <input id="tier-modal-color" type="color" />
+        </label>
+        <div class="tier-modal-actions">
+          <button type="button" id="tier-modal-above">Add tier above</button>
+          <button type="button" id="tier-modal-below">Add tier below</button>
+          <button type="button" id="tier-modal-delete">Delete tier</button>
+        </div>
+        <button type="button" id="tier-modal-done">Done</button>
+      </div>
+    </div>
+
+    <script src="data.js?v=3"></script>
+    <script src="tier.js?v=2"></script>
+  </body>
+</html>
