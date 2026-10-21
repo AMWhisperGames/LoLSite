@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whisper Draft — UFC head to head</title>
+    <meta
+      name="description"
+      content="Pick two fighters and get the model's prediction, the reasons behind it, and how much to trust it."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css?v=59" />
+    <link rel="stylesheet" href="ufc.css?v=3" />
+  </head>
+  <body class="ufc-page">
+    <div class="vignette"></div>
+
+    <div class="ufc-app">
+      <header class="topbar">
+        <div class="brand">
+          <a class="brand-mark" href="../index.html" aria-label="Whisper Draft home">W</a>
+          <div>
+            <strong>Whisper Draft</strong>
+            <nav class="site-nav">
+              <a href="./">Rankings</a>
+              <a href="h2h.html" aria-current="page">Head to Head</a>
+            </nav>
+          </div>
+        </div>
+        <div class="phase-wrap">
+          <p class="phase-kicker">UFC</p>
+          <h1 class="phase-title done">Head to head</h1>
+        </div>
+        <div class="top-actions">
+          <span id="ufc-summary" class="game-label">Loading ratings…</span>
+        </div>
+      </header>
+
+      <main class="ufc-main">
+        <section class="h2h-pick">
+          <div class="h2h-card">
+            <label for="fighter-a">Fighter A</label>
+            <input id="fighter-a" list="fighter-list" autocomplete="off" spellcheck="false" />
+          </div>
+          <button type="button" id="h2h-swap" class="h2h-swap" aria-label="Swap fighters">⇄</button>
+          <div class="h2h-card">
+            <label for="fighter-b">Fighter B</label>
+            <input id="fighter-b" list="fighter-list" autocomplete="off" spellcheck="false" />
+          </div>
+          <datalist id="fighter-list"></datalist>
+        </section>
+
+        <section id="h2h-result" class="h2h-result" hidden>
+          <p class="phase-kicker">Model prediction</p>
+          <h2 id="h2h-call"></h2>
+          <div class="prob-bar" role="img" aria-label="Win probability split">
+            <div id="prob-a" class="prob-fill is-a"></div>
+            <div id="prob-b" class="prob-fill is-b"></div>
+          </div>
+          <div class="prob-labels">
+            <span id="prob-a-label"></span>
+            <span id="prob-b-label"></span>
+          </div>
+
+          <div class="h2h-cols">
+            <div>
+              <h3>Why — edges for <span id="why-a-name"></span></h3>
+              <ul id="why-a" class="driver-list"></ul>
+              <h3>Why — edges for <span id="why-b-name"></span></h3>
+              <ul id="why-b" class="driver-list"></ul>
+            </div>
+            <div>
+              <h3>How much to trust it</h3>
+              <p class="confidence-line"><span id="confidence-badge" class="confidence-badge"></span></p>
+              <ul id="confidence-reasons" class="confidence-reasons"></ul>
+              <h3>Tale of the tape</h3>
+              <table class="tape-table">
+                <tbody id="tape-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <p id="h2h-note" class="ufc-detail-note"></p>
+        </section>
+
+        <footer class="ufc-notes">
+          <p>
+            Predictions use the same fitted model as the rankings: latent class plus each fighter’s
+            current statistical profile, age past 33, reach, and layoff as of the latest data. Edges are
+            the model’s own log-odds contributions, biggest first — they always add up to the call.
+            Confidence reflects both the margin and how much evidence sits behind each fighter; a
+            near-even line with thin résumés is a coin flip wearing a suit. In walk-forward tests the
+            model called 66% of 2025–26 fights between established fighters correctly.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <script src="model.js?v=3"></script>
+    <script src="h2h.js?v=3"></script>
+  </body>
+</html>

@@ -3345,7 +3345,7 @@ body.home-page {
 }
 
 .home-main {
-  width: min(880px, 100%);
+  width: min(1120px, 100%);
   margin: 0 auto;
   padding: 48px 20px 32px;
   display: grid;
@@ -3354,7 +3354,7 @@ body.home-page {
 
 .home-choices {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 16px;
 }
 

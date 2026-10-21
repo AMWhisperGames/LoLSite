@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whisper Draft — UFC model rankings</title>
+    <meta
+      name="description"
+      content="UFC rankings from a predictive model filterable by weight class, with round-robin win rates, style tags, and full fight history."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css?v=59" />
+    <link rel="stylesheet" href="ufc.css?v=3" />
+  </head>
+  <body class="ufc-page">
+    <div class="vignette"></div>
+
+    <div class="ufc-app">
+      <header class="topbar">
+        <div class="brand">
+          <a class="brand-mark" href="../index.html" aria-label="Whisper Draft home">W</a>
+          <div>
+            <strong>Whisper Draft</strong>
+            <nav class="site-nav">
+              <a href="./" aria-current="page">Rankings</a>
+              <a href="h2h.html">Head to Head</a>
+            </nav>
+          </div>
+        </div>
+        <div class="phase-wrap">
+          <p class="phase-kicker">UFC</p>
+          <h1 class="phase-title done">Model rankings</h1>
+        </div>
+        <div class="top-actions">
+          <span id="ufc-summary" class="game-label">Loading ratings…</span>
+        </div>
+      </header>
+
+      <main class="ufc-main">
+        <section class="ufc-controls">
+          <div class="chips" role="tablist" aria-label="Ranking view">
+            <button type="button" id="view-score" class="active">Score</button>
+            <button type="button" id="view-roundrobin">Round Robin</button>
+          </div>
+          <input
+            id="ufc-search"
+            type="search"
+            placeholder="Search a fighter"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search a fighter"
+          />
+        </section>
+
+        <div id="ufc-divisions" class="chips ufc-divisions" role="tablist" aria-label="Weight classes"></div>
+
+        <p id="ufc-blurb" class="ufc-blurb"></p>
+        <p id="ufc-status" class="ufc-status"></p>
+
+        <div class="ufc-layout">
+          <div class="ufc-table-wrap">
+            <table class="ufc-table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Fighter</th>
+                  <th scope="col">Score</th>
+                  <th scope="col">Record</th>
+                  <th scope="col">Class</th>
+                  <th scope="col">Form</th>
+                  <th scope="col">Win%</th>
+                  <th scope="col">Last 5</th>
+                  <th scope="col">Last fight</th>
+                </tr>
+              </thead>
+              <tbody id="ufc-body"></tbody>
+            </table>
+          </div>
+
+          <aside id="ufc-detail" class="ufc-detail" hidden>
+            <p class="phase-kicker" id="detail-kicker"></p>
+            <h2 id="detail-name"></h2>
+            <p class="ufc-detail-meta" id="detail-meta"></p>
+            <dl class="ufc-stats" id="detail-stats"></dl>
+            <h3>Fight history</h3>
+            <ul class="ufc-history" id="detail-history"></ul>
+            <p class="ufc-detail-note" id="detail-note"></p>
+          </aside>
+        </div>
+
+        <footer class="ufc-notes">
+          <p>
+            These rankings come from a predictive model, not Elo. Every rated fight since 2011 is fitted
+            at once: each fighter gets a latent strength (their demonstrated class), and a pre-fight
+            statistical profile — striking and takedown differentials, control, knockdowns, finishing,
+            recent form, layoff, age past 33, reach — explains the rest, so losing to elite competition
+            is priced by what those opponents are actually worth. Statistics are opponent-adjusted and
+            weighted by cage time and recency. The score is class plus half of current form; strength
+            itself never decays, so a championship run stays on a fighter’s record even through a losing
+            streak. Round Robin instead matches everyone in a division against everyone else through the
+            model and ranks by average predicted win chance. Tags mark the top or bottom quarter of a
+            division on a statistical dimension. Doctor stoppages from cuts count as wins; freak-injury
+            and foul endings are on the record but not rated, and fighters inactive for over two years
+            are not ranked. In walk-forward tests (both fighters with at least three UFC fights), this
+            model called 66% of 2025–26 fights correctly; the old Elo called 58%.
+          </p>
+        </footer>
+      </main>
+    </div>
+
+    <script src="model.js?v=3"></script>
+    <script src="rankings.js?v=3"></script>
+  </body>
+</html>

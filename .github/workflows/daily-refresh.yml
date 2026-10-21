@@ -73,6 +73,7 @@ jobs:
           cp -f *.html *.css *.js _site/
           if [ -d assets ]; then cp -a assets _site/assets; fi
           if [ -d heroes ]; then cp -a heroes _site/heroes; fi
+          if [ -d ufc ]; then cp -a ufc _site/ufc; fi
           if [ -f riot.txt ]; then cp -f riot.txt _site/; fi
           touch _site/.nojekyll
 
