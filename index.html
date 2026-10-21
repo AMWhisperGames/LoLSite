@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Whisper Draft — League of Legends Draft Board</title>
+    <title>Whisper Draft — Make a selection</title>
     <meta
       name="description"
-      content="A quiet League of Legends draft board. Drag champions onto picks and bans in any order."
+      content="Whisper Draft home. Make a selection: League of Legends or Heroes of the Storm."
     />
     <link rel="preconnect" href="https://ddragon.leagueoflegends.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,261 +15,51 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=55" />
-    <script>
-      window.addEventListener("error", function (event) {
-        var status = document.getElementById("boot-status");
-        if (status) {
-          status.textContent = "Script error: " + event.message;
-        }
-      });
-    </script>
+    <link rel="stylesheet" href="styles.css?v=58" />
   </head>
-  <body>
-    <div id="splash" class="splash" aria-hidden="true"></div>
+  <body class="home-page">
     <div class="vignette"></div>
 
-    <div id="boot" class="boot">
-      <div class="boot-mark">W</div>
-      <h1>Whisper Draft</h1>
-      <p id="boot-status">Gathering the board…</p>
-    </div>
-
-    <div id="app" class="app" hidden>
-      <header class="topbar">
+    <div class="home-app">
+      <header class="topbar home-topbar">
         <div class="brand">
-          <span class="brand-mark">W</span>
+          <a class="brand-mark" href="index.html" aria-current="page" aria-label="Whisper Draft home">W</a>
           <div>
             <strong>Whisper Draft</strong>
-            <nav class="site-nav">
-              <a href="index.html" aria-current="page">Draft</a>
-              <a href="tier.html">Tiers</a>
-              <a href="guess.html">Guess</a>
-              <a href="meta.html">Meta</a>
-              <a href="pro.html">Pro-Meta</a>
-              <a href="matches.html">Matches</a>
-              <a href="player.html">Players</a>
-              <a href="team.html">Teams</a>
-            <a href="heroes/">Heroes</a>
-            </nav>
           </div>
         </div>
-
         <div class="phase-wrap">
-          <p id="phase-kicker" class="phase-kicker">Free draft</p>
-          <h2 id="phase-title" class="phase-title done">Drop a champion on any slot</h2>
+          <p class="phase-kicker">Home</p>
+          <h1 class="phase-title done">Make a selection</h1>
         </div>
-
-        <div class="top-actions">
-          <button id="chart-btn" type="button" class="chart-toggle" aria-pressed="false">
-            Practice draft
-          </button>
-          <label class="toggle">
-            <input id="fearless-toggle" type="checkbox" />
-            <span class="switch" aria-hidden="true"></span>
-            <span>Fearless</span>
-          </label>
-          <select id="series-select" aria-label="Series length">
-            <option value="1">Best of 1</option>
-            <option value="3">Best of 3</option>
-            <option value="5">Best of 5</option>
-          </select>
-          <span id="game-label" class="game-label">Game 1</span>
-        </div>
+        <div class="top-actions home-top-actions" aria-hidden="true"></div>
       </header>
 
-      <main class="board" id="draft-board">
-        <section class="team team-blue" aria-label="Blue side">
-          <header class="team-head">
-            <div class="team-select">
-              <div class="filter-combo team-combo">
-                <input
-                  id="blue-name"
-                  class="team-name"
-                  value="Blue Side"
-                  maxlength="40"
-                  placeholder="Blue Side"
-                  autocomplete="off"
-                  autocorrect="off"
-                  autocapitalize="off"
-                  spellcheck="false"
-                  aria-label="Blue team"
-                />
-                <div id="blue-team-menu" class="filter-menu" hidden></div>
-              </div>
-              <p id="blue-roster" class="team-roster" hidden></p>
-            </div>
-            <span>Blue</span>
-          </header>
-          <div id="blue-bans" class="bans"></div>
-          <div id="blue-picks" class="picks"></div>
-        </section>
-
-        <section class="pool" aria-label="Champion pool">
-          <div class="pool-tools">
-            <input
-              id="search"
-              type="search"
-              placeholder="Search champions"
-              autocomplete="off"
-              spellcheck="false"
+      <main class="home-main">
+        <section class="home-choices" aria-label="Make a selection">
+          <a class="home-choice" href="league.html">
+            <img
+              class="home-choice-logo"
+              src="assets/league-logo.jpg"
+              alt=""
             />
-            <div id="tag-filters" class="chips" role="tablist" aria-label="Champion classes"></div>
-          </div>
-          <div id="recs" class="recs" hidden>
-            <div class="recs-head">
-              <span id="recs-label">Suggested picks</span>
-              <div class="recs-sides">
-                <button type="button" id="recs-blue">For Blue</button>
-                <button type="button" id="recs-red">For Red</button>
-              </div>
-            </div>
-            <div id="recs-roles" class="recs-roles" role="tablist" aria-label="Recommendation positions"></div>
-            <div id="recs-weights" class="recs-weights" title="Recommendation mix">
-              <label>
-                <span>Winrate <b id="w-wr-val">1.00</b></span>
-                <input id="w-wr" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Popularity <b id="w-pop-val">1.00</b></span>
-                <input id="w-pop" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Safety <b id="w-safety-val">1.00</b></span>
-                <input id="w-safety" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Counter <b id="w-counter-val">1.00</b></span>
-                <input id="w-counter" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Pairing <b id="w-pairing-val">1.00</b></span>
-                <input id="w-pairing" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Unique <b id="w-unique-val">1.25</b></span>
-                <input id="w-unique" type="range" min="0" max="3" step="0.05" value="1.25" />
-              </label>
-            </div>
-            <div id="recs-list" class="recs-list"></div>
-          </div>
-          <div class="pool-main">
-            <div id="grid" class="grid"></div>
-          </div>
-          <div class="pool-footer">
-            <button id="undo-btn" type="button">Undo</button>
-            <button id="reset-btn" type="button">Reset game</button>
-            <button id="next-btn" type="button">Next game</button>
-            <button id="swap-btn" type="button">Swap sides</button>
-          </div>
-        </section>
+            <span>League of Legends</span>
+          </a>
 
-        <section class="team team-red" aria-label="Red side">
-          <header class="team-head">
-            <div class="team-select">
-              <div class="filter-combo team-combo">
-                <input
-                  id="red-name"
-                  class="team-name"
-                  value="Red Side"
-                  maxlength="40"
-                  placeholder="Red Side"
-                  autocomplete="off"
-                  autocorrect="off"
-                  autocapitalize="off"
-                  spellcheck="false"
-                  aria-label="Red team"
-                />
-                <div id="red-team-menu" class="filter-menu" hidden></div>
-              </div>
-              <p id="red-roster" class="team-roster" hidden></p>
-            </div>
-            <span>Red</span>
-          </header>
-          <div id="red-bans" class="bans"></div>
-          <div id="red-picks" class="picks"></div>
+          <a class="home-choice" href="heroes/">
+            <img
+              class="home-choice-logo"
+              src="assets/heroes-logo.jpg"
+              alt=""
+            />
+            <span>Heroes of the Storm</span>
+          </a>
         </section>
       </main>
 
-      <main id="chart-screen" class="chart-screen" hidden>
-        <section id="chart-setup" class="chart-setup">
-          <p class="chart-setup-kicker">Practice draft</p>
-          <h2>Practice against a bot</h2>
-          <p class="muted">
-            Competitive pick/ban order. The bot target-bans your best remaining champions
-            and drafts its own side.
-          </p>
-          <p class="muted chart-setup-hint">
-            Set your team on Blue for first pick, or on Red for second pick, before you start.
-          </p>
-          <div class="chart-side-picks">
-            <button type="button" id="chart-first" class="chart-side-btn">
-              <span class="chart-side-label">First pick</span>
-              <strong id="chart-first-team" class="chart-side-team">Blue Side</strong>
-              <span class="muted">Blue · you ban and pick first</span>
-            </button>
-            <button type="button" id="chart-second" class="chart-side-btn">
-              <span class="chart-side-label">Second pick</span>
-              <strong id="chart-second-team" class="chart-side-team">Red Side</strong>
-              <span class="muted">Red · you pick second</span>
-            </button>
-          </div>
-        </section>
-        <section id="chart-play" class="chart-play" hidden>
-          <p id="chart-turn" class="chart-turn"></p>
-          <div class="chart-play-layout">
-            <div id="chart-timeline" class="chart-timeline"></div>
-            <div class="chart-play-pool">
-              <input
-                id="chart-search"
-                type="search"
-                placeholder="Search champions"
-                autocomplete="off"
-                spellcheck="false"
-              />
-              <div id="chart-recs" class="chart-recs"></div>
-              <div id="chart-grid" class="grid"></div>
-              <div class="chart-play-foot">
-                <button type="button" id="chart-undo">Undo</button>
-                <button type="button" id="chart-reset">Reset draft</button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer class="draft-foot">
-        <div class="expect-bar" id="expect-bar">
-          <div class="expect-side expect-blue">
-            <span id="expect-blue-name">Blue</span>
-            <strong id="expect-blue-pct">50.0%</strong>
-          </div>
-          <div class="expect-meter" id="expect-meter" title="Expected win% from counters and pairings">
-            <div class="expect-meter-fill" id="expect-fill"></div>
-            <span class="expect-meter-mid" aria-hidden="true"></span>
-          </div>
-          <div class="expect-side expect-red">
-            <strong id="expect-red-pct">50.0%</strong>
-            <span id="expect-red-name">Red</span>
-          </div>
-          <p class="expect-sub" id="expect-sub">Drop picks to estimate win%</p>
-        </div>
-        <div class="used-bar" id="used-bar" hidden>
-          <span>Fearless pool</span>
-          <div id="used-champs" class="used-champs"></div>
-        </div>
+      <footer class="home-foot">
+        <p>Whisper Draft — click the W on any page to return here.</p>
       </footer>
     </div>
-
-    <div id="toast" class="toast" hidden></div>
-    <script src="champions.js" onerror="document.getElementById('boot-status').textContent='Could not load champions.js'"></script>
-    <script src="counters.js" onerror="document.getElementById('boot-status').textContent='Could not load counters.js'"></script>
-    <script src="oracles.js?v=5"></script>
-    <script src="winrates.js"></script>
-    <script src="synergies.js"></script>
-    <script src="pro-games.js?v=4"></script>
-    <script src="player-ratings.js?v=16"></script>
-    <script src="predict.js?v=8"></script>
-    <script src="app.js?v=26" onerror="document.getElementById('boot-status').textContent='Could not load app.js'"></script>
   </body>
 </html>

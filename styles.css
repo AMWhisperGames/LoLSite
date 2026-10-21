@@ -131,6 +131,17 @@ input[type="search"],
   border-radius: 16px;
 }
 
+a.brand-mark {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.brand-mark:hover,
+a.brand-mark:focus-visible {
+  border-color: var(--accent);
+  color: var(--gold-bright);
+}
+
 .boot p {
   color: var(--muted);
   margin: 0;
@@ -3315,4 +3326,109 @@ body.guess-page {
 
 .guess-next:hover {
   filter: brightness(1.06);
+}
+
+body.home-page {
+  overflow: auto;
+}
+
+.home-app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.home-topbar .top-actions {
+  min-width: 40px;
+}
+
+.home-main {
+  width: min(880px, 100%);
+  margin: 0 auto;
+  padding: 48px 20px 32px;
+  display: grid;
+  align-content: center;
+}
+
+.home-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-choice {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 18px;
+  min-height: 260px;
+  padding: 28px 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-family: Sora, Manrope, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  text-decoration: none;
+}
+
+.home-choice:hover,
+.home-choice:focus-visible {
+  border-color: var(--line-strong);
+  background: rgba(22, 25, 31, 0.9);
+}
+
+.home-choice-logo {
+  display: block;
+  width: 200px;
+  height: 200px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: #000;
+}
+
+.home-foot {
+  padding: 0 20px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.home-foot p {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .home-main {
+    padding-top: 28px;
+    align-content: start;
+  }
+
+  .home-choices {
+    grid-template-columns: 1fr;
+  }
+
+  .home-choice {
+    min-height: 210px;
+  }
+
+  .home-topbar {
+    display: flex;
+  }
+
+  .home-topbar .phase-wrap {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .home-top-actions {
+    display: none;
+  }
 }
