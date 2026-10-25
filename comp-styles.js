@@ -32,31 +32,31 @@
       id: "hook",
       major: "pick",
       label: "Hook",
-      short: "Hard CC grab that turns a misstep into a free kill.",
+      short: "Ranged CC that isolates a target and presents a kill opportunity.",
     },
     skirmish: {
       id: "skirmish",
       major: "pick",
       label: "Skirmish",
-      short: "Win short 2–3 person scraps, then collapse on the leftover.",
+      short: "Win short 1–3 person scraps spread across the map",
     },
     burst: {
       id: "burst",
       major: "pick",
       label: "Burst",
-      short: "One combo deletes a carry before peel can matter.",
+      short: "High tempo assassins that can delete an enemy in one combo.",
     },
     engage: {
       id: "engage",
       major: "fight",
       label: "Engage",
-      short: "Flash or ultimate starts a 5v5 on your terms.",
+      short: "Layering AOE CC and ultimates starts a 5v5 on your terms.",
     },
     dive: {
       id: "dive",
       major: "fight",
       label: "Dive",
-      short: "Jump the backline under tower or over walls.",
+      short: "Pressure the enemy backline and force them to react.",
     },
     protect: {
       id: "protect",
@@ -221,7 +221,7 @@
     Taric: ["protect", "engage"],
     Teemo: ["artillery", "siege"],
     Thresh: ["hook", "protect"],
-    Tristana: ["dive", "siege"],
+    Tristana: ["siege", "dive"],
     Trundle: ["skirmish"],
     Tryndamere: ["dive", "skirmish"],
     TwistedFate: ["burst", "skirmish"],
@@ -321,30 +321,33 @@
     };
   }
 
-  /* Secondary only when it clears this share of total style mass. */
+  /* Secondary must clear this share of total style mass.
+     Same-major seconds (Siege/Artillery) get a slightly lower bar.
+     Cross-major seconds must clear the full bar on the SUB itself —
+     not just the runner-up major — so one Dive champ can't mint a Dive tag. */
   var SECONDARY_SHARE = 0.28;
+  var SECONDARY_SAME_MAJOR = 0.18;
 
   function pickSecondary(scores, primarySub, total) {
-    if (!total) return null;
+    if (!total || !primarySub || !SUBS[primarySub]) return null;
+    var primaryMajor = SUBS[primarySub].major;
     var ranked = SUB_ORDER.slice().sort(function (a, b) {
       return (scores[b] || 0) - (scores[a] || 0);
     });
+    var same = null;
+    var cross = null;
     var i;
     for (i = 0; i < ranked.length; i += 1) {
       var id = ranked[i];
-      if (id === primarySub) continue;
-      if ((scores[id] || 0) / total < SECONDARY_SHARE) continue;
-      return id;
+      if (id === primarySub || !SUBS[id]) continue;
+      var share = (scores[id] || 0) / total;
+      if (SUBS[id].major === primaryMajor) {
+        if (!same && share >= SECONDARY_SAME_MAJOR) same = id;
+      } else if (!cross && share >= SECONDARY_SHARE) {
+        cross = id;
+      }
     }
-    var soft = softMajors(scores);
-    var majors = MAJOR_ORDER.slice().sort(function (a, b) {
-      return soft[b] - soft[a];
-    });
-    if (soft[majors[1]] < SECONDARY_SHARE) return null;
-    var group = subsForMajor(majors[1]);
-    var best = topKey(scores, group);
-    if (!best.score || best.id === primarySub) return null;
-    return best.id;
+    return same || cross;
   }
 
   function classify(champIds) {
@@ -613,6 +616,7 @@
     STYLE_SUB_MULT: STYLE_SUB_MULT,
     STYLE_SOFT_MULT: STYLE_SOFT_MULT,
     SECONDARY_SHARE: SECONDARY_SHARE,
+    SECONDARY_SAME_MAJOR: SECONDARY_SAME_MAJOR,
     classify: classify,
     matchup: matchup,
     chipHtml: chipHtml,
