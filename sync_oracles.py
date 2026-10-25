@@ -54,9 +54,36 @@ POS = {
     "support": "sup",
 }
 
+# Domestic majors (also used by ratings as the home-league set).
 MAJOR_LEAGUES = ("LPL", "LCK", "LEC", "LCS")
+# International events published into pro-games / oracles for the site.
+# OE `league` spellings vary by year; normalize_league() maps them.
+INTL_LEAGUE_ALIASES = {
+    "MSI": "MSI",
+    "WLDS": "Worlds",
+    "WRLDS": "Worlds",
+    "WORLDS": "Worlds",
+    "WCS": "Worlds",
+    "IWCS": "Worlds",
+}
+SITE_LEAGUES = MAJOR_LEAGUES + ("Worlds", "MSI")
 EARLY_PICK_SLOTS = 3
 PICK_SLOT_KEYS = ("s0", "s1", "s2", "s3", "s4")
+
+
+def normalize_league(raw: str) -> str | None:
+    """Map an OE league cell to a site league label, or None to skip."""
+    lg = (raw or "").strip().upper().replace(" ", "").replace("-", "")
+    if not lg:
+        return None
+    if lg in MAJOR_LEAGUES:
+        return lg
+    if lg in INTL_LEAGUE_ALIASES:
+        return INTL_LEAGUE_ALIASES[lg]
+    for code, label in INTL_LEAGUE_ALIASES.items():
+        if lg.startswith(code) or lg.endswith(code):
+            return label
+    return None
 
 ROOT = Path(__file__).resolve().parent
 DOWNLOADS = Path.home() / "Downloads"
@@ -400,12 +427,10 @@ def convert(csv_path: Path, champions_js: Path, recent_days: int = 60) -> dict:
     missing: set[str] = set()
     dates: list[str] = []
 
-    allowed = {name.upper() for name in MAJOR_LEAGUES}
-
     with csv_path.open(encoding="utf-8-sig", newline="") as handle:
         for row in csv.DictReader(handle):
-            league = (row.get("league") or "").strip().upper()
-            if league not in allowed:
+            league = normalize_league(row.get("league") or "")
+            if not league:
                 continue
             gid = (row.get("gameid") or "").strip()
             side = (row.get("side") or "").strip()
@@ -599,7 +624,7 @@ def convert(csv_path: Path, champions_js: Path, recent_days: int = 60) -> dict:
         "source": "Oracle's Elixir",
         "file": str(csv_path),
         "drive": f"https://drive.google.com/file/d/{drive_id()}/view",
-        "leagues": list(MAJOR_LEAGUES),
+        "leagues": list(SITE_LEAGUES),
         "games": len(by_game),
         "from": min(dates) if dates else "",
         "to": newest,
@@ -674,7 +699,7 @@ def compact_games(by_game: dict, team_by_game: dict | None = None) -> dict:
     dates = [game["d"] for game in games if game["d"]]
     return {
         "source": "Oracle's Elixir",
-        "leagues": list(MAJOR_LEAGUES),
+        "leagues": list(SITE_LEAGUES),
         "roles": list(order),
         "count": len(games),
         "from": min(dates) if dates else "",
@@ -696,7 +721,7 @@ def write_payload(payload: dict, js_path: Path, json_path: Path) -> None:
     encoded = json.dumps(public, separators=(",", ":"))
     js_path.write_text("window.RIFT_ORACLES = " + encoded + ";\n", encoding="utf-8")
     json_path.write_text(encoded + "\n", encoding="utf-8")
-    leagues = ", ".join(payload.get("leagues") or MAJOR_LEAGUES)
+    leagues = ", ".join(payload.get("leagues") or SITE_LEAGUES)
     print(f"Wrote {payload['games']:,} games ({leagues}), {payload['pairs']:,} matchups")
     recent = payload.get("recent") or {}
     if recent:

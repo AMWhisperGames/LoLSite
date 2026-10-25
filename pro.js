@@ -1,7 +1,7 @@
 const DDRAGON = "https://ddragon.leagueoflegends.com";
 const ROLES = ["All", "TOP", "JNG", "MID", "ADC", "SUP"];
 const ROLE_KEYS = ["top", "jng", "mid", "adc", "sup"];
-const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS"];
+const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS", "Worlds", "MSI"];
 const SOLO = window.RIFT_META_MODE === "solo";
 const MIN_GAMES = 2;
 const SOLO_MIN_ROLE_GAMES = 1000;

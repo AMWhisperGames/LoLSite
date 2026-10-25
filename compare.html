@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whisper Draft — Compare</title>
+    <meta name="description" content="Compare pro League of Legends players or teams side by side." />
+    <link rel="preconnect" href="https://ddragon.leagueoflegends.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=62" />
+  </head>
+  <body>
+    <div class="vignette"></div>
+    <div id="boot" class="boot">
+      <div class="boot-mark">W</div>
+      <h1>Whisper Draft</h1>
+      <p id="boot-status">Loading comparison…</p>
+    </div>
+
+    <div id="app" class="app" hidden>
+      <header class="topbar">
+        <div class="brand">
+          <a class="brand-mark" href="index.html" aria-label="Whisper Draft home">W</a>
+          <div>
+            <strong>Whisper Draft</strong>
+            <nav class="site-nav">
+              <a href="league.html">Draft</a>
+              <a href="tier.html">Tiers</a>
+              <a href="guess.html">Guess</a>
+              <a href="meta.html">Meta</a>
+              <a href="pro.html">Pro-Meta</a>
+              <a href="matches.html">Matches</a>
+              <a href="player.html">Players</a>
+              <a href="team.html">Teams</a>
+              <a href="compare.html" aria-current="page">Compare</a>
+            </nav>
+          </div>
+        </div>
+        <div class="phase-wrap">
+          <p class="phase-kicker">Head to head</p>
+          <h2 class="phase-title done">Compare</h2>
+        </div>
+        <div class="top-actions">
+          <span id="compare-range" class="game-label"></span>
+        </div>
+      </header>
+
+      <main class="player-layout is-compare">
+        <div class="pro-tools">
+          <div id="compare-mode" class="chips" role="tablist" aria-label="Compare mode"></div>
+          <div class="filter-combo">
+            <input
+              id="compare-search"
+              type="search"
+              placeholder="Add a player…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <div id="compare-menu" class="filter-menu" hidden></div>
+          </div>
+          <div id="compare-picks" class="chips filter-picks" hidden></div>
+          <div id="compare-leagues" class="chips" role="tablist" aria-label="Leagues"></div>
+          <div id="compare-windows" class="chips" role="tablist" aria-label="Time window"></div>
+          <div id="compare-patches" class="chips" role="tablist" aria-label="Patches"></div>
+        </div>
+        <p id="compare-hint" class="muted compare-hint"></p>
+
+        <section id="compare-radar-wrap" class="compare-radar-wrap" hidden>
+          <div class="compare-radar-head">
+            <h4 id="compare-radar-title">Radar</h4>
+            <div id="compare-legend" class="compare-legend"></div>
+          </div>
+          <div class="compare-radar-stage">
+            <svg id="compare-radar" class="compare-radar" viewBox="0 0 560 460" role="img" aria-label="Comparison radar chart"></svg>
+            <div id="compare-minis" class="compare-minis"></div>
+          </div>
+          <p id="compare-h2h" class="compare-h2h" hidden></p>
+          <p id="compare-radar-note" class="muted compare-radar-note"></p>
+        </section>
+
+        <div class="pro-board compare-board" hidden>
+          <section class="pro-main">
+            <div class="pro-block-head">
+              <h4 id="compare-board-title">Stat table</h4>
+            </div>
+            <div class="pro-table-wrap">
+              <table class="pro-table compare-table">
+                <thead id="compare-head"></thead>
+                <tbody id="compare-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+        <div id="compare-pools" class="compare-pools"></div>
+      </main>
+    </div>
+
+    <script src="champions.js"></script>
+    <script src="winrates.js"></script>
+    <script src="oracles.js?v=2"></script>
+    <script src="counters.js"></script>
+    <script src="synergies.js"></script>
+    <script src="pro-games.js?v=4"></script>
+    <script src="player-ratings.js?v=16"></script>
+    <script src="predict.js?v=10"></script>
+    <script src="window-days.js"></script>
+    <script src="player.js?v=43"></script>
+    <script src="compare.js?v=5"></script>
+  </body>
+</html>

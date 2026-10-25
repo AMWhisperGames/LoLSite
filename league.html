@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=56" />
+    <link rel="stylesheet" href="styles.css?v=63" />
     <script>
       window.addEventListener("error", function (event) {
         var status = document.getElementById("boot-status");
@@ -50,6 +50,7 @@
               <a href="matches.html">Matches</a>
               <a href="player.html">Players</a>
               <a href="team.html">Teams</a>
+              <a href="compare.html">Compare</a>
             </nav>
           </div>
         </div>
@@ -251,6 +252,7 @@
             <strong id="expect-red-pct">50.0%</strong>
             <span id="expect-red-name">Red</span>
           </div>
+          <div id="expect-styles" class="expect-styles"></div>
           <p class="expect-sub" id="expect-sub">Drop picks to estimate win%</p>
         </div>
         <div class="used-bar" id="used-bar" hidden>
@@ -268,7 +270,8 @@
     <script src="synergies.js"></script>
     <script src="pro-games.js?v=4"></script>
     <script src="player-ratings.js?v=16"></script>
-    <script src="predict.js?v=8"></script>
-    <script src="app.js?v=26" onerror="document.getElementById('boot-status').textContent='Could not load app.js'"></script>
+    <script src="comp-styles.js?v=3"></script>
+    <script src="predict.js?v=10"></script>
+    <script src="app.js?v=27" onerror="document.getElementById('boot-status').textContent='Could not load app.js'"></script>
   </body>
 </html>

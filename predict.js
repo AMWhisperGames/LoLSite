@@ -1,18 +1,22 @@
 (function (root) {
-  // Locked via ratings/tune_predict.py (60d primary, 30d + Brier tie-break).
-  // Draft weight is 0: both LoLalytics and leave-one-out OE hurt once team+comfort are tuned.
+  // Locked via ratings/probe_cs.py + tune_style.py (60d primary; 30d/90d must not regress).
+  // Draft weight is 0: LoLalytics / OE matchups hurt once roster+comfort are tuned.
+  // Roster uses 35% role score + 65% champ-pool score (cs); comfort weight raised with it.
   const ELO_SCALE = 400;
   const ELO_MULT = 0;
   const SYN_MULT = 0;
   const PAIR_PRIOR = 400;
   const OE_PAIR_PRIOR = 40;
-  const TEAM_SCORE_ELO = 18;
-  const CHAMP_SCORE_ELO = 9;
-  const BLUE_SIDE_ELO = 10;
+  const TEAM_SCORE_ELO = 14;
+  const CHAMP_SCORE_ELO = 14;
+  const BLUE_SIDE_ELO = 12;
+  const ROSTER_ROLE_WEIGHT = 0.35;
+  const ROSTER_POOL_WEIGHT = 0.65;
   const CHAMP_SCORE_CLAMP = 15;
   const CHAMP_RESIDUAL_CLAMP = 5;
   const CHAMP_MIN_GAMES = 6;
   const ROLE_KEYS = ["top", "jng", "mid", "adc", "sup"];
+  // Comp style (Pick/Fight/Poke). Weight locked via ratings/tune_style.py.
 
   function matchups() {
     return (root.RIFT_COUNTERS && root.RIFT_COUNTERS.matchups) || {};
@@ -158,21 +162,42 @@
     };
   }
 
-  function playerScore(name, role) {
+  function playerRec(name, role) {
     const key = playerKey(name);
     if (!key) return null;
     const roles = ratings();
     const roleName = String(role || "").toLowerCase();
     if (roleName && roles[roleName] && roles[roleName][key] && roles[roleName][key].s != null) {
-      return roles[roleName][key].s;
+      return roles[roleName][key];
     }
     let best = null;
     for (let i = 0; i < ROLE_KEYS.length; i += 1) {
       const rec = roles[ROLE_KEYS[i]] && roles[ROLE_KEYS[i]][key];
       if (!rec || rec.s == null) continue;
-      if (best == null || rec.s > best) best = rec.s;
+      if (!best || rec.s > best.s) best = rec;
     }
     return best;
+  }
+
+  function playerScore(name, role) {
+    const rec = playerRec(name, role);
+    return rec && rec.s != null ? rec.s : null;
+  }
+
+  function playerPoolScore(name, role) {
+    const rec = playerRec(name, role);
+    if (!rec) return null;
+    if (rec.cs != null && isFinite(rec.cs)) return rec.cs;
+    return rec.s != null ? rec.s : null;
+  }
+
+  function playerTeamScore(name, role) {
+    const roleScore = playerScore(name, role);
+    const poolScore = playerPoolScore(name, role);
+    if (roleScore == null && poolScore == null) return null;
+    if (roleScore == null) return poolScore;
+    if (poolScore == null) return roleScore;
+    return ROSTER_ROLE_WEIGHT * roleScore + ROSTER_POOL_WEIGHT * poolScore;
   }
 
   function playerChampScore(name, champId) {
@@ -226,7 +251,7 @@
     let num = 0;
     let den = 0;
     for (let i = 0; i < (rows || []).length; i += 1) {
-      const score = playerScore(rows[i].name, rows[i].role);
+      const score = playerTeamScore(rows[i].name, rows[i].role);
       if (score == null || !isFinite(score)) continue;
       num += score;
       den += 1;
@@ -533,6 +558,25 @@
     };
   }
 
+  function champIdsOf(rows) {
+    const out = [];
+    for (let i = 0; i < (rows || []).length; i += 1) {
+      if (rows[i] && rows[i].id) out.push(rows[i].id);
+    }
+    return out;
+  }
+
+  function styleOf(blue, red) {
+    const api = root.CompStyles;
+    if (!api || !api.predictFeature) {
+      return { elo: 0, blue: null, red: null, note: null, usedSub: false };
+    }
+    if (champIdsOf(blue).length < 3 || champIdsOf(red).length < 3) {
+      return { elo: 0, blue: null, red: null, note: null, usedSub: false };
+    }
+    return api.predictFeature(champIdsOf(blue), champIdsOf(red));
+  }
+
   function matchPredict(blue, red) {
     const draft = lineupExpect(blue, red);
     const blueScore = rosterScore(blue);
@@ -540,7 +584,9 @@
     const teamElo =
       blueScore != null && redScore != null ? (blueScore - redScore) * TEAM_SCORE_ELO : 0;
     const comfortElo = champLineupElo(blue, red);
-    const elo = (draft.elo || 0) + teamElo + comfortElo + BLUE_SIDE_ELO;
+    const style = styleOf(blue, red);
+    const styleElo = style.elo || 0;
+    const elo = (draft.elo || 0) + teamElo + comfortElo + BLUE_SIDE_ELO + styleElo;
     const p = expectedFromElo(elo);
     return {
       blue: p * 100,
@@ -549,6 +595,8 @@
       draft: draft.elo,
       team: teamElo,
       comfort: comfortElo,
+      style: styleElo,
+      styleRec: style,
       side: BLUE_SIDE_ELO,
       counter: draft.counter,
       pairing: draft.pairing,
@@ -566,5 +614,6 @@
     champResidual: champResidual,
     draftQuality: draftQuality,
     matchPredict: matchPredict,
+    styleOf: styleOf,
   };
 })(window);

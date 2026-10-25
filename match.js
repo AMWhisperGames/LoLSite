@@ -15,6 +15,8 @@ const els = {
   redTeam: document.getElementById("red-team"),
   blueName: document.getElementById("blue-name"),
   redName: document.getElementById("red-name"),
+  blueStyle: document.getElementById("blue-style"),
+  redStyle: document.getElementById("red-style"),
   blueBans: document.getElementById("blue-bans"),
   redBans: document.getElementById("red-bans"),
   bluePicks: document.getElementById("blue-picks"),
@@ -22,6 +24,7 @@ const els = {
   stats: document.getElementById("match-stats"),
   player: document.getElementById("match-player"),
   mvp: document.getElementById("match-mvp"),
+  styleNote: document.getElementById("match-style"),
   mid: document.querySelector(".match-mid"),
 };
 
@@ -557,7 +560,9 @@ function renderExpect(game) {
     " · teams " +
     fmtDelta(rec.team) +
     " · comfort " +
-    fmtDelta(rec.comfort);
+    fmtDelta(rec.comfort) +
+    " · style " +
+    fmtDelta(rec.style || 0);
   const red = node("div", "expect-side expect-red");
   red.append(node("strong", "", rec.red.toFixed(1) + "%"), node("span", "", game.rt || "Red"));
   const sub = node("p", "expect-sub");
@@ -578,6 +583,10 @@ function renderExpect(game) {
     toneClass(rec.comfort) +
     "\">" +
     fmtDelta(rec.comfort) +
+    "</span> · style <span class=\"" +
+    toneClass(rec.style || 0) +
+    "\">" +
+    fmtDelta(rec.style || 0) +
     "</span>";
   bar.append(blue, meter, red, sub);
   els.stats.append(bar);
@@ -816,6 +825,42 @@ function setTeamLink(el, name) {
   else el.removeAttribute("href");
 }
 
+function setStyleChip(el, style) {
+  if (!el) return;
+  if (!style || !window.CompStyles) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = CompStyles.chipHtml(style);
+}
+
+function renderStyles(game) {
+  if (!window.CompStyles) {
+    setStyleChip(els.blueStyle, null);
+    setStyleChip(els.redStyle, null);
+    if (els.styleNote) els.styleNote.hidden = true;
+    return;
+  }
+  const blueStyle = CompStyles.classify(game.b || []);
+  const redStyle = CompStyles.classify(game.r || []);
+  setStyleChip(els.blueStyle, blueStyle);
+  setStyleChip(els.redStyle, redStyle);
+  if (!els.styleNote) return;
+  const note = CompStyles.matchup(blueStyle, redStyle);
+  if (!note) {
+    els.styleNote.hidden = true;
+    els.styleNote.textContent = "";
+    return;
+  }
+  els.styleNote.hidden = false;
+  els.styleNote.innerHTML =
+    '<a class="match-style-link" href="matches.html">' +
+    note.headline +
+    "</a><span class=\"muted\"> · " +
+    note.detail +
+    "</span>";
+}
+
 function render(game) {
   currentGame = game;
   const roster = playersOf(game);
@@ -827,6 +872,7 @@ function render(game) {
   document.title = game.bt + " vs " + game.rt + " — Match preview";
   setTeamLink(els.blueName, game.bt);
   setTeamLink(els.redName, game.rt);
+  renderStyles(game);
   const blueWin = game.w === 1;
   els.blueTeam.classList.toggle("winner", blueWin);
   els.redTeam.classList.toggle("winner", !blueWin);

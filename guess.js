@@ -6,7 +6,7 @@ const MODES = [
   { id: "pick", label: "Guess the pick" },
   { id: "winner", label: "Guess the winner" },
 ];
-const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS"];
+const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS", "Worlds", "MSI"];
 const PICK_TRIES = 3;
 
 const els = {

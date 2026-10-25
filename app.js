@@ -109,6 +109,7 @@ const els = {
   expectFill: document.getElementById("expect-fill"),
   expectMeter: document.getElementById("expect-meter"),
   expectSub: document.getElementById("expect-sub"),
+  expectStyles: document.getElementById("expect-styles"),
   toast: document.getElementById("toast"),
   recs: document.getElementById("recs"),
   recsList: document.getElementById("recs-list"),
@@ -1041,6 +1042,8 @@ function draftExpect() {
       draft: rec.draft,
       team: rec.team,
       comfort: rec.comfort,
+      style: rec.style,
+      styleRec: rec.styleRec,
       side: rec.side,
       counter: rec.counter,
       pairing: rec.pairing,
@@ -1088,7 +1091,8 @@ function renderExpect() {
       state.blue.org || state.red.org
         ? "Select both teams or drop picks to estimate win%"
         : "Drop picks on both sides to estimate win%";
-    if (els.expectMeter) els.expectMeter.title = "Expected win% from draft, teams, and comfort";
+    if (els.expectMeter) els.expectMeter.title = "Expected win% from draft, teams, comfort, and style";
+    if (els.expectStyles) els.expectStyles.innerHTML = "";
     return;
   }
   const bits = [
@@ -1117,8 +1121,28 @@ function renderExpect() {
   if (rec.comfort) {
     bits.push("comfort <span class=\"" + toneClass(rec.comfort) + "\">" + formatDelta(rec.comfort) + "</span>");
   }
+  if (rec.style) {
+    bits.push("style <span class=\"" + toneClass(rec.style) + "\">" + formatDelta(rec.style) + "</span>");
+  }
   if (rec.side) {
     bits.push("side <span class=\"" + toneClass(rec.side) + "\">" + formatDelta(rec.side) + "</span>");
+  }
+  const styleRec = rec.styleRec;
+  if (els.expectStyles && window.CompStyles && styleRec && styleRec.blue && styleRec.red) {
+    const note = styleRec.note;
+    els.expectStyles.innerHTML =
+      CompStyles.chipHtml(styleRec.blue, { compact: true }) +
+      '<span class="expect-style-vs">vs</span>' +
+      CompStyles.chipHtml(styleRec.red, { compact: true }) +
+      (note
+        ? '<span class="expect-style-note" title="' +
+          String(note.detail || "").replace(/"/g, "&quot;") +
+          '">' +
+          note.headline +
+          "</span>"
+        : "");
+  } else if (els.expectStyles) {
+    els.expectStyles.innerHTML = "";
   }
   els.expectSub.innerHTML = bits.join(" · ");
   if (els.expectMeter) {

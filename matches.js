@@ -1,5 +1,5 @@
 const DDRAGON = "https://ddragon.leagueoflegends.com";
-const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS"];
+const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS", "Worlds", "MSI"];
 const RECENT_DAYS = 60;
 const ROLE_KEYS = ["TOP", "JNG", "MID", "ADC", "SUP"];
 const ROLE_ALIASES = {
@@ -479,10 +479,12 @@ function champActive(id, team) {
   return champIndex(id, team) !== -1 || champIndex(id, "") !== -1;
 }
 
-function champCell(ids, team, win) {
+function champCell(ids, team, win, style) {
   const td = document.createElement("td");
   const wrap = document.createElement("div");
   wrap.className = "match-side" + (win ? " win" : "");
+  const head = document.createElement("div");
+  head.className = "match-side-head";
   const name = document.createElement("a");
   name.className = "match-side-name";
   name.textContent = team || "—";
@@ -492,6 +494,13 @@ function champCell(ids, team, win) {
     name.addEventListener("click", function (event) {
       event.stopPropagation();
     });
+  }
+  head.append(name);
+  if (style && window.CompStyles) {
+    const chip = document.createElement("span");
+    chip.className = "match-side-style";
+    chip.innerHTML = CompStyles.chipHtml(style, { compact: true });
+    head.append(chip);
   }
   const icons = document.createElement("div");
   icons.className = "match-icons";
@@ -511,7 +520,7 @@ function champCell(ids, team, win) {
     });
     icons.append(img);
   }
-  wrap.append(name, icons);
+  wrap.append(head, icons);
   td.append(wrap);
   return td;
 }
@@ -761,21 +770,25 @@ function render() {
     winner.textContent = (game.w === 1 ? game.bt : game.rt) || "—";
     const rec = predictGame(game);
     const pick = predictedWinner(game, rec);
+    const styleRec = rec && rec.styleRec;
     if (rec && pick) {
-      winner.title =
+      let tip =
         "Predicted " +
         (pick === "blue" ? game.bt : game.rt) +
         " " +
         Math.max(rec.blue, rec.red).toFixed(1) +
         "%";
+      if (styleRec && styleRec.note) tip += " · " + styleRec.note.headline;
+      if (rec.style) tip += " · style " + (rec.style > 0 ? "+" : "") + rec.style.toFixed(1);
+      winner.title = tip;
     }
     tr.append(
       date,
       leagueCell,
       gameNo,
       patchCell,
-      champCell(game.b, game.bt, game.w === 1),
-      champCell(game.r, game.rt, game.w === 0),
+      champCell(game.b, game.bt, game.w === 1, styleRec && styleRec.blue),
+      champCell(game.r, game.rt, game.w === 0, styleRec && styleRec.red),
       winner
     );
     els.body.append(tr);
