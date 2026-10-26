@@ -127,8 +127,8 @@
             </div>
             <div id="recs-roles" class="recs-roles" role="tablist" aria-label="Recommendation positions"></div>
             <div id="recs-weights" class="recs-weights" title="Recommendation mix">
-              <label title="How much predicted win% (same model as the bar) shapes the list">
-                <span>Win% <b id="w-predict-val">1.00</b></span>
+              <label title="Blend in predicted win% from the same model as the bottom bar. 0 = draft heuristics only; higher favors the bar.">
+                <span>Predict <b id="w-predict-val">1.00</b></span>
                 <input id="w-predict" type="range" min="0" max="3" step="0.05" value="1" />
               </label>
               <label>
@@ -277,6 +277,6 @@
     <script src="player-ratings.js?v=16"></script>
     <script src="comp-styles.js?v=5"></script>
     <script src="predict.js?v=10"></script>
-    <script src="app.js?v=30" onerror="document.getElementById('boot-status').textContent='Could not load app.js'"></script>
+    <script src="app.js?v=31" onerror="document.getElementById('boot-status').textContent='Could not load app.js'"></script>
   </body>
 </html>

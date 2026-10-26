@@ -54,9 +54,9 @@ const ROLE_FILL_LOCK = 0.75;
 const POPULARITY_SCALE = 4.7;
 const TEAM_POP_BLEND = 1;
 const TEAM_COMFORT_SCALE = 0.55;
-// Win% term (matchPredict Δpp) blended with draft heuristics. At weight 1,
-// ~0.45pp win ≈ +10 heuristic points — middle ground between pro-pick shape and the bar.
-const PREDICT_UNIT = 22;
+// Predict term (matchPredict Δpp) blended with draft heuristics. At weight 1,
+// ~0.3pp win ≈ +10 heuristic points so the Predict slider visibly reorders the list.
+const PREDICT_UNIT = 34;
 const TEAM_RARE_RATE = 0.04;
 const TEAM_RARE_PENALTY = 3.5;
 const ELO_SCALE = 400;
@@ -939,16 +939,17 @@ function lineupFor(side) {
   const extra = [];
   for (let i = 0; i < 5; i += 1) {
     const id = team.picks[i];
-    if (!id) continue;
-    const assigned = team.roles[i] || inferredSlotRole(id) || "";
-    const role = assigned.toLowerCase();
+    const assigned = (team.roles[i] || (id && inferredSlotRole(id)) || "").toLowerCase();
+    // Keep empty slots that already have a role so predict Δ is "fill this pick".
+    if (!id && !assigned) continue;
+    const role = assigned;
     const row = {
-      id: id,
+      id: id || "",
       role: role,
       name: (org && role && org.starters[role]) || "",
     };
     if (role && ROLE_KEYS.indexOf(role) !== -1 && !byRole[role]) byRole[role] = row;
-    else extra.push(row);
+    else if (id) extra.push(row);
   }
   if (org) {
     for (let i = 0; i < ROLE_KEYS.length; i += 1) {
@@ -957,6 +958,17 @@ function lineupFor(side) {
       const player = org.starters[role];
       if (!player) continue;
       byRole[role] = { role: role, name: player };
+    }
+  }
+  // If recommending a concrete role and that slot is still open, ensure a placeholder.
+  if (side === recSide && recRole && recRole !== "All") {
+    const want = recRole.toLowerCase();
+    if (ROLE_KEYS.indexOf(want) !== -1 && !byRole[want]) {
+      byRole[want] = {
+        id: "",
+        role: want,
+        name: (org && org.starters[want]) || "",
+      };
     }
   }
   const rows = [];
@@ -2538,7 +2550,9 @@ function renderRecs() {
     const sample = document.createElement("em");
     if (rec.predictReady && rec.predict != null) {
       sample.textContent =
-        "win " +
+        "predict " +
+        formatDelta(rec.predictTerm || 0) +
+        " · win " +
         formatDelta(rec.predict) +
         (rec.power ? " · " + rec.power.wr.toFixed(1) + "% " + roleLabel(rec.power.role) : "");
     } else if (rec.power) {
