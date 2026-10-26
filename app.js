@@ -2516,7 +2516,7 @@ function renderRecs() {
   const roleBit = recRole === "All" ? "" : recRole + " ";
   const predictBit =
     weights.predict > 0
-      ? " · predict ×" + weights.predict.toFixed(2)
+      ? " · predict x" + weights.predict.toFixed(2)
       : " · predict off";
   if (enemies.length && allies.length) {
     els.recsLabel.textContent =
