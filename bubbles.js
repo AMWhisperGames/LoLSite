@@ -3,20 +3,28 @@
   const ROLES = ["TOP", "JNG", "MID", "ADC", "SUP"];
   const ROLE_KEYS = ["top", "jng", "mid", "adc", "sup"];
   const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS", "Worlds", "MSI"];
+  const SOURCES = [
+    { id: "pro", label: "Pro" },
+    { id: "solo", label: "Solo" },
+  ];
   const EDGE_PRIOR = 20;
   const MIN_STRENGTH = 3; // overview graph only; focus uses min-games alone
   const MAX_EDGE_PER_NODE = 6;
   const MAX_FOCUS_LINKS = 24;
   const ELO_SCALE = 400;
   const TEAM_SCORE_ELO = 14;
+  const SOLO_LANE_PCT = 8;
 
   const els = {
     boot: document.getElementById("boot"),
     bootStatus: document.getElementById("boot-status"),
     app: document.getElementById("app"),
     range: document.getElementById("bubble-range"),
+    kicker: document.getElementById("bubble-kicker"),
+    hint: document.getElementById("bubble-hint"),
     search: document.getElementById("bubble-search"),
     searchMenu: document.getElementById("bubble-search-menu"),
+    sources: document.getElementById("bubble-sources"),
     leagues: document.getElementById("bubble-leagues"),
     roles: document.getElementById("bubble-roles"),
     windows: document.getElementById("bubble-windows"),
@@ -44,6 +52,7 @@
   let patch = "";
   let champMap = new Map();
   let bundle = { games: [], leagues: LEAGUES.filter(function (l) { return l !== "All"; }), to: "" };
+  let source = "pro"; // pro = Oracle's Elixir, solo = LoLalytics
   let league = "All";
   let role = "MID";
   let topN = 36;
@@ -184,7 +193,102 @@
     map[us][them].exp += expected;
   }
 
-  function tally(games) {
+  function isPro() {
+    return source !== "solo";
+  }
+
+  function soloLane(id, roleKey) {
+    const lanes = (window.RIFT_WINRATES && window.RIFT_WINRATES.lanes) || {};
+    const lane = lanes[roleKey];
+    return (lane && lane.champs && lane.champs[id]) || null;
+  }
+
+  function soloInRole(id, roleKey) {
+    const rec = soloLane(id, roleKey);
+    if (rec && (rec.lane_pct || 0) >= SOLO_LANE_PCT) return true;
+    if (rec && (rec.games || 0) > 0) {
+      // Primary role fallback.
+      let best = "";
+      let n = 0;
+      for (let i = 0; i < ROLE_KEYS.length; i += 1) {
+        const row = soloLane(id, ROLE_KEYS[i]);
+        const games = row && row.games ? row.games : 0;
+        if (games > n) {
+          n = games;
+          best = ROLE_KEYS[i];
+        }
+      }
+      return best === roleKey;
+    }
+    return false;
+  }
+
+  function soloTally() {
+    const roleKey = role.toLowerCase();
+    const lanes = (window.RIFT_WINRATES && window.RIFT_WINRATES.lanes) || {};
+    const lane = lanes[roleKey] || {};
+    const champs = lane.champs || {};
+    const counters = (window.RIFT_COUNTERS && window.RIFT_COUNTERS.matchups) || {};
+    const stats = {};
+    const matchups = {};
+    let pickSum = 0;
+    const ids = Object.keys(champs);
+    for (let i = 0; i < ids.length; i += 1) {
+      const id = ids[i];
+      const rec = champs[id];
+      const games = rec && rec.games ? rec.games : 0;
+      if (!games) continue;
+      const wr = ((rec.wr != null ? rec.wr : 50) / 100);
+      const wins = games * wr;
+      const exp = games * 0.5;
+      stats[id] = {
+        picks: games,
+        wins: wins,
+        adj: wins - exp,
+        exp: exp,
+        roles: {},
+      };
+      stats[id].roles[roleKey] = games;
+      pickSum += games;
+    }
+    const focusIds = Object.keys(stats);
+    for (let i = 0; i < focusIds.length; i += 1) {
+      const id = focusIds[i];
+      const vs = counters[id] || {};
+      const themIds = Object.keys(vs);
+      matchups[id] = {};
+      for (let j = 0; j < themIds.length; j += 1) {
+        const them = themIds[j];
+        if (them === id) continue;
+        if (!soloInRole(them, roleKey) && !stats[them]) continue;
+        const entry = vs[them];
+        const games = entry && entry.games ? entry.games : 0;
+        if (!games) continue;
+        const shift = entry && typeof entry.delta === "number" ? entry.delta : 0;
+        const wins = games * (0.5 + shift / 100);
+        const exp = games * 0.5;
+        matchups[id][them] = { games: games, wins: wins, adj: wins - exp, exp: exp };
+        if (!stats[them]) {
+          const laneRec = soloLane(them, roleKey);
+          const g = laneRec && laneRec.games ? laneRec.games : Math.max(games, 1);
+          const wr = laneRec && laneRec.wr != null ? laneRec.wr / 100 : 0.5;
+          const w = g * wr;
+          const e = g * 0.5;
+          stats[them] = {
+            picks: g,
+            wins: w,
+            adj: w - e,
+            exp: e,
+            roles: {},
+          };
+          stats[them].roles[roleKey] = g;
+        }
+      }
+    }
+    return { games: pickSum / 2, stats: stats, matchups: matchups, source: "solo" };
+  }
+
+  function proTally(games) {
     const stats = {};
     const matchups = {};
     for (let g = 0; g < games.length; g += 1) {
@@ -211,7 +315,12 @@
         }
       }
     }
-    return { games: games.length, stats: stats, matchups: matchups };
+    return { games: games.length, stats: stats, matchups: matchups, source: "pro" };
+  }
+
+  function tally(games) {
+    if (!isPro()) return soloTally();
+    return proTally(games);
   }
 
   function primaryRole(roles) {
@@ -289,7 +398,16 @@
       keepSet[selected] = true;
       for (let i = 0; i < links.length; i += 1) {
         const other = links[i].other;
-        if (!keepSet[other] && data.stats[other]) {
+        if (!keepSet[other]) {
+          if (!data.stats[other]) {
+            data.stats[other] = {
+              picks: links[i].games || 1,
+              wins: (links[i].games || 1) * 0.5,
+              adj: 0,
+              exp: (links[i].games || 1) * 0.5,
+              roles: {},
+            };
+          }
           keep.push(other);
           keepSet[other] = true;
         }
@@ -904,6 +1022,19 @@
 
   function openMatchupHistory(us, them) {
     if (!us || !them) return;
+    if (!isPro()) {
+      historyPair = { us: us, them: them };
+      if (els.detailCounters) els.detailCounters.hidden = true;
+      if (els.detailHistory) els.detailHistory.hidden = false;
+      els.historyTitle.textContent = champName(us) + " vs " + champName(them);
+      els.historySub.textContent = "Solo queue uses LoLalytics aggregates — no individual game log.";
+      els.historyList.textContent = "";
+      const li = document.createElement("li");
+      li.className = "muted";
+      li.textContent = "Switch to Pro for Oracle's Elixir match history.";
+      els.historyList.appendChild(li);
+      return;
+    }
     let pov = us;
     let foe = them;
     if (selected === them) {
@@ -1051,19 +1182,42 @@
     renderHistory();
   }
 
+  function syncSourceUi() {
+    const pro = isPro();
+    if (els.leagues) els.leagues.hidden = !pro;
+    if (els.windows) els.windows.hidden = !pro;
+    if (els.kicker) els.kicker.textContent = pro ? "Pro network" : "Solo network";
+    if (els.hint) {
+      els.hint.textContent = pro
+        ? "Bubble size = pick rate. Pro counters are skill-adjusted then compared to each champ’s own baseline. Green = good for the focused champ, red = bad."
+        : "Bubble size = pick rate. Solo counters come from LoLalytics and are compared to each champ’s lane baseline. Green = good for the focused champ, red = bad.";
+    }
+  }
+
   function refresh() {
-    const games = filteredGames();
+    syncSourceUi();
+    const games = isPro() ? filteredGames() : [];
     const data = tally(games);
     lastData = data;
     buildGraph(data);
-    const winLabel = RIFT_WINDOW.key === "season" ? "Season" : RIFT_WINDOW.days + "d";
-    els.range.textContent =
-      data.games.toLocaleString() +
-      " games · " +
-      (league === "All" ? "All leagues" : league) +
-      " · " +
-      winLabel +
-      (selected ? " · " + champName(selected) : "");
+    if (isPro()) {
+      const winLabel = RIFT_WINDOW.key === "season" ? "Season" : RIFT_WINDOW.days + "d";
+      els.range.textContent =
+        data.games.toLocaleString() +
+        " games · " +
+        (league === "All" ? "All leagues" : league) +
+        " · " +
+        winLabel +
+        (selected ? " · " + champName(selected) : "");
+    } else {
+      const wr = window.RIFT_WINRATES || {};
+      const patchBit = wr.patch || wr.patch_query || wr.tier || "";
+      els.range.textContent =
+        Math.round(data.games).toLocaleString() +
+        " games · LoLalytics" +
+        (patchBit ? " · " + patchBit : "") +
+        (selected ? " · " + champName(selected) : "");
+    }
     renderDetail(data);
     startSim();
   }
@@ -1085,9 +1239,15 @@
 
   function syncUrl() {
     const url = new URL(location.href);
-    url.searchParams.set("league", league);
+    url.searchParams.set("source", source);
+    if (isPro()) {
+      url.searchParams.set("league", league);
+      url.searchParams.set("window", RIFT_WINDOW.param());
+    } else {
+      url.searchParams.delete("league");
+      url.searchParams.delete("window");
+    }
     url.searchParams.set("role", role);
-    url.searchParams.set("window", RIFT_WINDOW.param());
     url.searchParams.set("n", String(topN));
     url.searchParams.set("min", String(minGames));
     if (selected) url.searchParams.set("champ", selected);
@@ -1099,6 +1259,8 @@
 
   function readUrl() {
     const url = new URL(location.href);
+    const src = url.searchParams.get("source");
+    source = src === "solo" || src === "normal" ? "solo" : "pro";
     const lg = url.searchParams.get("league");
     const rl = url.searchParams.get("role");
     league = LEAGUES.indexOf(lg) >= 0 ? lg : "All";
@@ -1257,8 +1419,39 @@
     bundle = window.RIFT_PRO_GAMES || bundle;
     if (!bundle.games || !bundle.games.length) throw new Error("Missing pro game logs");
     bundle.to = bundle.to || (bundle.games[0] && bundle.games[0].d) || "";
+    if (!window.RIFT_WINRATES || !window.RIFT_COUNTERS) {
+      throw new Error("Missing solo queue winrates/counters");
+    }
 
     readUrl();
+    if (els.sources) {
+      els.sources.textContent = "";
+      for (let i = 0; i < SOURCES.length; i += 1) {
+        const item = SOURCES[i];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = item.label;
+        btn.title =
+          item.id === "pro"
+            ? "Oracle's Elixir pro games (skill-adjusted)"
+            : "LoLalytics solo queue matchups";
+        if (item.id === source) btn.classList.add("active");
+        btn.addEventListener("click", function () {
+          if (source === item.id) return;
+          source = item.id;
+          clearHistory();
+          syncUrl();
+          if (els.sources) {
+            const kids = els.sources.querySelectorAll("button");
+            for (let k = 0; k < kids.length; k += 1) {
+              kids[k].classList.toggle("active", kids[k].textContent === item.label);
+            }
+          }
+          refresh();
+        });
+        els.sources.appendChild(btn);
+      }
+    }
     renderChips(els.leagues, LEAGUES, league, function (v) {
       league = v;
       syncUrl();

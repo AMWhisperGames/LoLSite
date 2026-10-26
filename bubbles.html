@@ -6,7 +6,7 @@
     <title>Whisper Draft — Meta Bubbles</title>
     <meta
       name="description"
-      content="Pro meta network: champion pick popularity with counter links from Oracle's Elixir."
+      content="Meta network: champion pick popularity with counter links from pro play (Oracle's Elixir) or solo queue (LoLalytics)."
     />
     <link rel="preconnect" href="https://ddragon.leagueoflegends.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -23,7 +23,7 @@
     <div id="boot" class="boot">
       <div class="boot-mark">W</div>
       <h1>Whisper Draft</h1>
-      <p id="boot-status">Loading pro meta…</p>
+      <p id="boot-status">Loading meta…</p>
     </div>
 
     <div id="app" class="app" hidden>
@@ -48,7 +48,7 @@
         </div>
 
         <div class="phase-wrap">
-          <p class="phase-kicker">Pro network</p>
+          <p id="bubble-kicker" class="phase-kicker">Meta network</p>
           <h2 id="bubble-title" class="phase-title done">Meta bubbles</h2>
         </div>
 
@@ -69,6 +69,7 @@
             />
             <div id="bubble-search-menu" class="filter-menu" hidden></div>
           </div>
+          <div id="bubble-sources" class="chips" role="tablist" aria-label="Data source"></div>
           <div id="bubble-leagues" class="chips" role="tablist" aria-label="Leagues"></div>
           <div id="bubble-roles" class="chips" role="tablist" aria-label="Positions"></div>
           <div id="bubble-windows" class="pro-windows chips" role="tablist" aria-label="Time window"></div>
@@ -85,7 +86,7 @@
             </label>
           </div>
           <p id="bubble-hint" class="bubble-hint muted">
-            Bubble size = pick rate. Counters are skill-adjusted then compared to each champ’s own baseline (so a 51% WR is bad if they usually sit at 54%). Green = good for the focused champ, red = bad.
+            Bubble size = pick rate. Counters are compared to each champ’s own baseline. Green = good for the focused champ, red = bad.
           </p>
         </div>
 
@@ -121,9 +122,11 @@
     </div>
 
     <script src="champions.js"></script>
+    <script src="winrates.js"></script>
+    <script src="counters.js"></script>
     <script src="pro-games.js?v=5"></script>
     <script src="player-ratings.js?v=17"></script>
     <script src="window-days.js"></script>
-    <script src="bubbles.js?v=11"></script>
+    <script src="bubbles.js?v=12"></script>
   </body>
 </html>
