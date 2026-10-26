@@ -6,6 +6,7 @@ const ROLE_FILTERS = ["All"].concat(ROLES);
 const POWER_PRIOR_GAMES = 4000;
 const SHARP_COUNTER_DELTA = -2;
 const WEIGHT_DEFAULTS = {
+  predict: 1,
   wr: 1,
   pop: 1,
   safety: 1,
@@ -14,6 +15,7 @@ const WEIGHT_DEFAULTS = {
   unique: 1.25,
 };
 const BOT_WEIGHTS = Object.freeze({
+  predict: 0.85,
   wr: 0.1,
   pop: 1.2,
   safety: 0,
@@ -26,9 +28,10 @@ const BOT_WEIGHTS = Object.freeze({
 const BOT_SPICE_RATE = 0.1;
 const BOT_SPICE_OPTIONS = 3;
 const BOT_SPICE_RELATIVE_GAP = 0.1;
-const WEIGHT_STORAGE = "riftDraft.weights.v5";
-const LEGACY_WEIGHT_STORAGE = "riftDraft.weights.v4";
-const LEGACY_WEIGHT_STORAGE_V2 = "riftDraft.weights.v2";
+const WEIGHT_STORAGE = "riftDraft.weights.v6";
+const LEGACY_WEIGHT_STORAGE = "riftDraft.weights.v5";
+const LEGACY_WEIGHT_STORAGE_V2 = "riftDraft.weights.v4";
+const LEGACY_WEIGHT_STORAGE_V3 = "riftDraft.weights.v2";
 const PAIR_PRIOR_GAMES = 400;
 const UNIQUE_ROLE_SCALE = 8;
 const UNIQUE_PRIMARY_SCALE = 0.4;
@@ -51,9 +54,9 @@ const ROLE_FILL_LOCK = 0.75;
 const POPULARITY_SCALE = 4.7;
 const TEAM_POP_BLEND = 1;
 const TEAM_COMFORT_SCALE = 0.55;
-// Recs must track the win bar: matchPredict ignores LoLalytics counters (draft weight 0).
-// When predict context is ready, rank purely by Δwin%; heuristics are tie-break only.
-const PREDICT_TIEBREAK_EPS = 0.05; // pp — closer than this, fall back to heuristics
+// Win% term (matchPredict Δpp) blended with draft heuristics. At weight 1,
+// ~0.45pp win ≈ +10 heuristic points — middle ground between pro-pick shape and the bar.
+const PREDICT_UNIT = 22;
 const TEAM_RARE_RATE = 0.04;
 const TEAM_RARE_PENALTY = 3.5;
 const ELO_SCALE = 400;
@@ -121,12 +124,14 @@ const els = {
   recsRed: document.getElementById("recs-red"),
   recsRoles: document.getElementById("recs-roles"),
   recsWeights: document.getElementById("recs-weights"),
+  wPredict: document.getElementById("w-predict"),
   wWr: document.getElementById("w-wr"),
   wPop: document.getElementById("w-pop"),
   wSafety: document.getElementById("w-safety"),
   wCounter: document.getElementById("w-counter"),
   wPairing: document.getElementById("w-pairing"),
   wUnique: document.getElementById("w-unique"),
+  wPredictVal: document.getElementById("w-predict-val"),
   wWrVal: document.getElementById("w-wr-val"),
   wPopVal: document.getElementById("w-pop-val"),
   wSafetyVal: document.getElementById("w-safety-val"),
@@ -1342,12 +1347,15 @@ function scoreChampion(id, enemies, allies, scoreWeights, predictOpts) {
     comfort +
     teamWr -
     rare;
-  // When the win bar has enough draft context, the shown/sorted score IS Δwin%.
-  const avg = predictReady ? predictPp : heuristic;
+  const predictW = mix.predict != null ? mix.predict : WEIGHT_DEFAULTS.predict;
+  const predictTerm =
+    predictReady && predictPp != null ? predictW * predictPp * PREDICT_UNIT : 0;
+  const avg = heuristic + predictTerm;
   return {
     avg: avg,
     heuristic: heuristic,
     predict: predictPp,
+    predictTerm: predictTerm,
     predictReady: predictReady,
     power: power,
     blind: blind,
@@ -1411,6 +1419,7 @@ function recommendedPicks() {
       avg: score.avg,
       heuristic: score.heuristic,
       predict: score.predict,
+      predictTerm: score.predictTerm,
       predictReady: score.predictReady,
       power: score.power,
       blind: score.blind,
@@ -1432,11 +1441,6 @@ function recommendedPicks() {
     });
   }
   recs.sort(function (a, b) {
-    if (a.predictReady && b.predictReady && a.predict != null && b.predict != null) {
-      const gap = b.predict - a.predict;
-      if (Math.abs(gap) >= PREDICT_TIEBREAK_EPS) return gap > 0 ? 1 : -1;
-      return (b.heuristic || 0) - (a.heuristic || 0);
-    }
     return b.avg - a.avg;
   });
   return recs;
@@ -1446,9 +1450,17 @@ function scoreTooltip(champ, score) {
   if (!score) return champ.name + " · drag onto a pick or ban";
   const lines = [champ.name + "  " + formatDelta(score.avg)];
   if (score.predictReady && score.predict != null) {
-    lines.push("win%  " + formatDelta(score.predict) + "  (same model as the bar)");
+    lines.push(
+      "win%  " +
+        formatDelta(score.predict) +
+        "  → " +
+        formatDelta(score.predictTerm || 0) +
+        "  (×" +
+        (weights.predict != null ? weights.predict : WEIGHT_DEFAULTS.predict).toFixed(2) +
+        ")"
+    );
     if (score.heuristic != null) {
-      lines.push("heuristics  " + formatDelta(score.heuristic) + "  (tie-break only)");
+      lines.push("draft heuristics  " + formatDelta(score.heuristic));
     }
   }
   if (score.power) {
@@ -2316,11 +2328,9 @@ function renderChartRecs() {
     img.alt = rec.champ.name;
     const name = document.createElement("strong");
     name.textContent = rec.champ.name;
-    const shown =
-      rec.predictReady && rec.predict != null ? rec.predict : rec.avg;
     const delta = document.createElement("span");
-    delta.className = shown >= 0 ? "up" : "down";
-    delta.textContent = formatDelta(shown);
+    delta.className = rec.avg >= 0 ? "up" : "down";
+    delta.textContent = formatDelta(rec.avg);
     card.append(img, name, delta);
     card.addEventListener("click", function () {
       lockChartChamp(rec.champ.id);
@@ -2521,18 +2531,16 @@ function renderRecs() {
     meta.className = "rec-meta";
     const name = document.createElement("strong");
     name.textContent = rec.champ.name;
-    const shown =
-      rec.predictReady && rec.predict != null ? rec.predict : rec.avg;
     const delta = document.createElement("span");
-    delta.className = shown >= 0 ? "up" : "down";
-    delta.textContent = formatDelta(shown);
+    delta.className = rec.avg >= 0 ? "up" : "down";
+    delta.textContent = formatDelta(rec.avg);
     meta.append(name, delta);
     const sample = document.createElement("em");
-    if (rec.predictReady && rec.predict != null && rec.power) {
+    if (rec.predictReady && rec.predict != null) {
       sample.textContent =
-        rec.power.wr.toFixed(1) + "% " + roleLabel(rec.power.role);
-    } else if (rec.predictReady && rec.predict != null) {
-      sample.textContent = "predicted win%";
+        "win " +
+        formatDelta(rec.predict) +
+        (rec.power ? " · " + rec.power.wr.toFixed(1) + "% " + roleLabel(rec.power.role) : "");
     } else if (rec.power) {
       sample.textContent =
         rec.power.wr.toFixed(1) + "% " + roleLabel(rec.power.role);
@@ -2759,9 +2767,16 @@ function loadWeights() {
     }
     if (!saved) {
       saved = JSON.parse(localStorage.getItem(LEGACY_WEIGHT_STORAGE_V2) || "null");
+    }
+    if (!saved) {
+      saved = JSON.parse(localStorage.getItem(LEGACY_WEIGHT_STORAGE_V3) || "null");
       if (saved && Number(saved.unique) === 1) saved.unique = WEIGHT_DEFAULTS.unique;
     }
     if (saved && typeof saved === "object") {
+      weights.predict = clampWeight(
+        saved.predict != null ? saved.predict : WEIGHT_DEFAULTS.predict,
+        WEIGHT_DEFAULTS.predict
+      );
       weights.wr = clampWeight(saved.wr, WEIGHT_DEFAULTS.wr);
       weights.pop = clampWeight(saved.pop, WEIGHT_DEFAULTS.pop);
       weights.safety = clampWeight(saved.safety, WEIGHT_DEFAULTS.safety);
@@ -2770,6 +2785,7 @@ function loadWeights() {
       weights.unique = clampWeight(saved.unique, WEIGHT_DEFAULTS.unique);
     }
   } catch (err) {}
+  if (els.wPredict) els.wPredict.value = String(weights.predict);
   if (els.wWr) els.wWr.value = String(weights.wr);
   if (els.wPop) els.wPop.value = String(weights.pop);
   if (els.wSafety) els.wSafety.value = String(weights.safety);
@@ -2786,6 +2802,7 @@ function saveWeights() {
 }
 
 function syncWeightLabels() {
+  if (els.wPredictVal) els.wPredictVal.textContent = weights.predict.toFixed(2);
   if (els.wWrVal) els.wWrVal.textContent = weights.wr.toFixed(2);
   if (els.wPopVal) els.wPopVal.textContent = weights.pop.toFixed(2);
   if (els.wSafetyVal) els.wSafetyVal.textContent = weights.safety.toFixed(2);
@@ -2795,6 +2812,7 @@ function syncWeightLabels() {
 }
 
 function readWeightSliders() {
+  weights.predict = clampWeight(els.wPredict && els.wPredict.value, WEIGHT_DEFAULTS.predict);
   weights.wr = clampWeight(els.wWr && els.wWr.value, WEIGHT_DEFAULTS.wr);
   weights.pop = clampWeight(els.wPop && els.wPop.value, WEIGHT_DEFAULTS.pop);
   weights.safety = clampWeight(els.wSafety && els.wSafety.value, WEIGHT_DEFAULTS.safety);
@@ -2809,7 +2827,7 @@ function readWeightSliders() {
 
 function bindWeights() {
   loadWeights();
-  ["wWr", "wPop", "wSafety", "wCounter", "wPairing", "wUnique"].forEach(function (key) {
+  ["wPredict", "wWr", "wPop", "wSafety", "wCounter", "wPairing", "wUnique"].forEach(function (key) {
     if (!els[key]) return;
     els[key].addEventListener("input", readWeightSliders);
   });
