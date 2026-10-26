@@ -51,6 +51,9 @@ const ROLE_FILL_LOCK = 0.75;
 const POPULARITY_SCALE = 4.7;
 const TEAM_POP_BLEND = 1;
 const TEAM_COMFORT_SCALE = 0.55;
+// Recs must track the win bar: matchPredict ignores LoLalytics counters (draft weight 0).
+// When predict context is ready, rank purely by Δwin%; heuristics are tie-break only.
+const PREDICT_TIEBREAK_EPS = 0.05; // pp — closer than this, fall back to heuristics
 const TEAM_RARE_RATE = 0.04;
 const TEAM_RARE_PENALTY = 3.5;
 const ELO_SCALE = 400;
@@ -958,6 +961,58 @@ function lineupFor(side) {
   return rows.concat(extra);
 }
 
+function lineupWithPick(rows, champId, role, side) {
+  const roleKey = String(role || "").toLowerCase();
+  const org = orgOf(side || recSide);
+  const out = [];
+  let placed = false;
+  for (let i = 0; i < (rows || []).length; i += 1) {
+    const row = rows[i];
+    if (!placed && roleKey && row.role === roleKey) {
+      out.push({
+        id: champId,
+        role: roleKey,
+        name: row.name || (org && org.starters[roleKey]) || "",
+      });
+      placed = true;
+    } else {
+      out.push({ id: row.id, role: row.role, name: row.name || "" });
+    }
+  }
+  if (!placed && champId) {
+    out.push({
+      id: champId,
+      role: roleKey,
+      name: (org && roleKey && org.starters[roleKey]) || "",
+    });
+  }
+  return out;
+}
+
+function predictContextReady(blueRows, redRows) {
+  let blueN = 0;
+  let redN = 0;
+  for (let i = 0; i < (blueRows || []).length; i += 1) if (blueRows[i] && blueRows[i].id) blueN += 1;
+  for (let i = 0; i < (redRows || []).length; i += 1) if (redRows[i] && redRows[i].id) redN += 1;
+  if (blueN >= 3 && redN >= 2) return true;
+  if (blueN >= 2 && redN >= 3) return true;
+  return !!(state.blue.org && state.red.org);
+}
+
+function predictPickDelta(champId, role, baseBlue, baseRed, baseRec) {
+  const predict = window.RIFT_PREDICT;
+  if (!predict || !predict.matchPredict || !champId || !role) return null;
+  const blue =
+    recSide === "blue" ? lineupWithPick(baseBlue, champId, role, "blue") : baseBlue;
+  const red =
+    recSide === "red" ? lineupWithPick(baseRed, champId, role, "red") : baseRed;
+  const next = predict.matchPredict(blue, red);
+  const before = recSide === "blue" ? baseRec.blue : baseRec.red;
+  const after = recSide === "blue" ? next.blue : next.red;
+  if (!isFinite(before) || !isFinite(after)) return null;
+  return after - before;
+}
+
 function expectLaneWeight(us, them, usRole, themRole) {
   if (usRole && themRole) {
     return usRole.toLowerCase() === themRole.toLowerCase() ? 1 : 0.2;
@@ -1155,7 +1210,7 @@ function renderExpect() {
   }
 }
 
-function scoreChampion(id, enemies, allies, scoreWeights) {
+function scoreChampion(id, enemies, allies, scoreWeights, predictOpts) {
   const mix = scoreWeights || weights;
   const power = champPower(id);
   const blind = power ? blindPick(id, power, mix) : null;
@@ -1163,6 +1218,11 @@ function scoreChampion(id, enemies, allies, scoreWeights) {
   const pairs = [];
   allies = allies || [];
   enemies = enemies || [];
+  const predictPp =
+    predictOpts && typeof predictOpts.delta === "number" && isFinite(predictOpts.delta)
+      ? predictOpts.delta
+      : null;
+  const predictReady = !!(predictOpts && predictOpts.ready && predictPp != null);
   for (let i = 0; i < enemies.length; i += 1) {
     const delta = matchupDelta(id, enemies[i]);
     if (delta == null) continue;
@@ -1266,22 +1326,29 @@ function scoreChampion(id, enemies, allies, scoreWeights) {
     !rare &&
     !teamWr &&
     !response &&
-    !earlyPick
+    !earlyPick &&
+    predictPp == null
   ) {
     return null;
   }
+  const heuristic =
+    base +
+    mix.counter * counter +
+    mix.pairing * pairing +
+    mix.unique * unique +
+    (mix.response || 0) * response +
+    earlyPick +
+    popShift +
+    comfort +
+    teamWr -
+    rare;
+  // When the win bar has enough draft context, the shown/sorted score IS Δwin%.
+  const avg = predictReady ? predictPp : heuristic;
   return {
-    avg:
-      base +
-      mix.counter * counter +
-      mix.pairing * pairing +
-      mix.unique * unique +
-      (mix.response || 0) * response +
-      earlyPick +
-      popShift +
-      comfort +
-      teamWr -
-      rare,
+    avg: avg,
+    heuristic: heuristic,
+    predict: predictPp,
+    predictReady: predictReady,
     power: power,
     blind: blind,
     counter: counter,
@@ -1309,6 +1376,17 @@ function recommendedPicks() {
   const taken = takenIds();
   const filled = filledRoles();
   const org = orgOf(recSide);
+  const predict = window.RIFT_PREDICT;
+  let baseBlue = null;
+  let baseRed = null;
+  let baseRec = null;
+  let predictReady = false;
+  if (predict && predict.matchPredict) {
+    baseBlue = lineupFor("blue");
+    baseRed = lineupFor("red");
+    predictReady = predictContextReady(baseBlue, baseRed);
+    if (predictReady) baseRec = predict.matchPredict(baseBlue, baseRed);
+  }
   const recs = [];
   for (let i = 0; i < champions.length; i += 1) {
     const champ = champions[i];
@@ -1320,11 +1398,20 @@ function recommendedPicks() {
       const bag = org.roles[recRole.toLowerCase()];
       if (bag && bag.n >= 8 && !(bag.champs[champ.id] > 0)) continue;
     }
-    const score = scoreChampion(champ.id, enemies, allies);
+    const role = powerRoleFor(champ.id);
+    let predictOpts = null;
+    if (predictReady && baseRec && role) {
+      const delta = predictPickDelta(champ.id, role, baseBlue, baseRed, baseRec);
+      if (delta != null) predictOpts = { delta: delta, ready: true };
+    }
+    const score = scoreChampion(champ.id, enemies, allies, null, predictOpts);
     if (!score) continue;
     recs.push({
       champ: champ,
       avg: score.avg,
+      heuristic: score.heuristic,
+      predict: score.predict,
+      predictReady: score.predictReady,
       power: score.power,
       blind: score.blind,
       counter: score.counter,
@@ -1345,6 +1432,11 @@ function recommendedPicks() {
     });
   }
   recs.sort(function (a, b) {
+    if (a.predictReady && b.predictReady && a.predict != null && b.predict != null) {
+      const gap = b.predict - a.predict;
+      if (Math.abs(gap) >= PREDICT_TIEBREAK_EPS) return gap > 0 ? 1 : -1;
+      return (b.heuristic || 0) - (a.heuristic || 0);
+    }
     return b.avg - a.avg;
   });
   return recs;
@@ -1353,6 +1445,12 @@ function recommendedPicks() {
 function scoreTooltip(champ, score) {
   if (!score) return champ.name + " · drag onto a pick or ban";
   const lines = [champ.name + "  " + formatDelta(score.avg)];
+  if (score.predictReady && score.predict != null) {
+    lines.push("win%  " + formatDelta(score.predict) + "  (same model as the bar)");
+    if (score.heuristic != null) {
+      lines.push("heuristics  " + formatDelta(score.heuristic) + "  (tie-break only)");
+    }
+  }
   if (score.power) {
     lines.push(
       "power  " +
@@ -2218,9 +2316,11 @@ function renderChartRecs() {
     img.alt = rec.champ.name;
     const name = document.createElement("strong");
     name.textContent = rec.champ.name;
+    const shown =
+      rec.predictReady && rec.predict != null ? rec.predict : rec.avg;
     const delta = document.createElement("span");
-    delta.className = rec.avg >= 0 ? "up" : "down";
-    delta.textContent = formatDelta(rec.avg);
+    delta.className = shown >= 0 ? "up" : "down";
+    delta.textContent = formatDelta(shown);
     card.append(img, name, delta);
     card.addEventListener("click", function () {
       lockChartChamp(rec.champ.id);
@@ -2296,6 +2396,17 @@ function renderGrid() {
   for (let i = 0; i < recs.length && i < 8; i += 1) topIds[recs[i].champ.id] = recs[i];
   const enemies = enemyIds();
   const allies = allyIds();
+  const predict = window.RIFT_PREDICT;
+  let baseBlue = null;
+  let baseRed = null;
+  let baseRec = null;
+  let predictReady = false;
+  if (predict && predict.matchPredict) {
+    baseBlue = lineupFor("blue");
+    baseRed = lineupFor("red");
+    predictReady = predictContextReady(baseBlue, baseRed);
+    if (predictReady) baseRec = predict.matchPredict(baseBlue, baseRed);
+  }
   root.innerHTML = "";
   if (!visible.length) {
     const empty = document.createElement("p");
@@ -2310,7 +2421,18 @@ function renderGrid() {
   for (const champ of visible) {
     const locked = taken.has(champ.id);
     const rec = topIds[champ.id];
-    const score = !locked ? scoreChampion(champ.id, enemies, allies) : null;
+    let score = null;
+    if (!locked) {
+      let predictOpts = null;
+      if (predictReady && baseRec) {
+        const role = powerRoleFor(champ.id);
+        const delta = role
+          ? predictPickDelta(champ.id, role, baseBlue, baseRed, baseRec)
+          : null;
+        if (delta != null) predictOpts = { delta: delta, ready: true };
+      }
+      score = scoreChampion(champ.id, enemies, allies, null, predictOpts);
+    }
     const button = document.createElement("div");
     button.className = "champ";
     button.draggable = !locked;
@@ -2399,12 +2521,19 @@ function renderRecs() {
     meta.className = "rec-meta";
     const name = document.createElement("strong");
     name.textContent = rec.champ.name;
+    const shown =
+      rec.predictReady && rec.predict != null ? rec.predict : rec.avg;
     const delta = document.createElement("span");
-    delta.className = rec.avg >= 0 ? "up" : "down";
-    delta.textContent = formatDelta(rec.avg);
+    delta.className = shown >= 0 ? "up" : "down";
+    delta.textContent = formatDelta(shown);
     meta.append(name, delta);
     const sample = document.createElement("em");
-    if (rec.power) {
+    if (rec.predictReady && rec.predict != null && rec.power) {
+      sample.textContent =
+        rec.power.wr.toFixed(1) + "% " + roleLabel(rec.power.role);
+    } else if (rec.predictReady && rec.predict != null) {
+      sample.textContent = "predicted win%";
+    } else if (rec.power) {
       sample.textContent =
         rec.power.wr.toFixed(1) + "% " + roleLabel(rec.power.role);
     } else if (rec.parts && rec.parts.length === 1 && rec.parts[0].games) {
