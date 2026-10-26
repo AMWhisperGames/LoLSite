@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=63" />
+    <link rel="stylesheet" href="styles.css?v=64" />
     <script>
       window.addEventListener("error", function (event) {
         var status = document.getElementById("boot-status");
@@ -126,35 +126,43 @@
               </div>
             </div>
             <div id="recs-roles" class="recs-roles" role="tablist" aria-label="Recommendation positions"></div>
-            <div id="recs-weights" class="recs-weights" title="Recommendation mix">
-              <label title="Blend in predicted win% from the same model as the bottom bar. 0 = draft heuristics only; higher favors the bar.">
-                <span>Predict <b id="w-predict-val">1.00</b></span>
-                <input id="w-predict" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Winrate <b id="w-wr-val">1.00</b></span>
-                <input id="w-wr" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Popularity <b id="w-pop-val">1.00</b></span>
-                <input id="w-pop" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Safety <b id="w-safety-val">1.00</b></span>
-                <input id="w-safety" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Counter <b id="w-counter-val">1.00</b></span>
-                <input id="w-counter" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Pairing <b id="w-pairing-val">1.00</b></span>
-                <input id="w-pairing" type="range" min="0" max="3" step="0.05" value="1" />
-              </label>
-              <label>
-                <span>Unique <b id="w-unique-val">1.25</b></span>
-                <input id="w-unique" type="range" min="0" max="3" step="0.05" value="1.25" />
-              </label>
+            <div class="recs-weights-wrap">
+              <div class="recs-weights-bar">
+                <button type="button" id="recs-weight-menu-btn" class="recs-weight-menu-btn" aria-expanded="false" aria-controls="recs-weight-menu">
+                  Factors
+                </button>
+                <div id="recs-weight-menu" class="recs-weight-menu filter-menu" hidden role="menu" aria-label="Visible recommendation factors"></div>
+              </div>
+              <div id="recs-weights" class="recs-weights" title="Recommendation mix">
+                <label data-weight="predict" title="Blend in predicted win% from the same model as the bottom bar. 0 = draft heuristics only; higher favors the bar.">
+                  <span>Predict <b id="w-predict-val">1.00</b></span>
+                  <input id="w-predict" type="range" min="0" max="3" step="0.05" value="1" />
+                </label>
+                <label data-weight="wr">
+                  <span>Winrate <b id="w-wr-val">1.00</b></span>
+                  <input id="w-wr" type="range" min="0" max="3" step="0.05" value="1" />
+                </label>
+                <label data-weight="pop">
+                  <span>Popularity <b id="w-pop-val">1.00</b></span>
+                  <input id="w-pop" type="range" min="0" max="3" step="0.05" value="1" />
+                </label>
+                <label data-weight="safety">
+                  <span>Safety <b id="w-safety-val">1.00</b></span>
+                  <input id="w-safety" type="range" min="0" max="3" step="0.05" value="1" />
+                </label>
+                <label data-weight="counter">
+                  <span>Counter <b id="w-counter-val">1.00</b></span>
+                  <input id="w-counter" type="range" min="0" max="3" step="0.05" value="1" />
+                </label>
+                <label data-weight="pairing">
+                  <span>Pairing <b id="w-pairing-val">1.00</b></span>
+                  <input id="w-pairing" type="range" min="0" max="3" step="0.05" value="1" />
+                </label>
+                <label data-weight="unique">
+                  <span>Unique <b id="w-unique-val">1.25</b></span>
+                  <input id="w-unique" type="range" min="0" max="3" step="0.05" value="1.25" />
+                </label>
+              </div>
             </div>
             <div id="recs-list" class="recs-list"></div>
           </div>
@@ -277,6 +285,6 @@
     <script src="player-ratings.js?v=16"></script>
     <script src="comp-styles.js?v=5"></script>
     <script src="predict.js?v=10"></script>
-    <script src="app.js?v=33" onerror="document.getElementById('boot-status').textContent='Could not load app.js'"></script>
+    <script src="app.js?v=34" onerror="document.getElementById('boot-status').textContent='Could not load app.js'"></script>
   </body>
 </html>

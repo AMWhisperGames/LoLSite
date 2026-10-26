@@ -14,6 +14,26 @@ const WEIGHT_DEFAULTS = {
   pairing: 1,
   unique: 1.25,
 };
+const WEIGHT_SLIDER_KEYS = ["predict", "wr", "pop", "safety", "counter", "pairing", "unique"];
+const WEIGHT_SLIDER_LABELS = {
+  predict: "Predict",
+  wr: "Winrate",
+  pop: "Popularity",
+  safety: "Safety",
+  counter: "Counter",
+  pairing: "Pairing",
+  unique: "Unique",
+};
+const WEIGHT_SLIDER_VIS_DEFAULTS = {
+  predict: false,
+  wr: false,
+  pop: false,
+  safety: false,
+  counter: true,
+  pairing: true,
+  unique: false,
+};
+const WEIGHT_SLIDER_VIS_STORAGE = "riftDraft.weightSliders.v1";
 const BOT_WEIGHTS = Object.freeze({
   predict: 0.85,
   wr: 0.1,
@@ -124,6 +144,8 @@ const els = {
   recsRed: document.getElementById("recs-red"),
   recsRoles: document.getElementById("recs-roles"),
   recsWeights: document.getElementById("recs-weights"),
+  recsWeightMenuBtn: document.getElementById("recs-weight-menu-btn"),
+  recsWeightMenu: document.getElementById("recs-weight-menu"),
   wPredict: document.getElementById("w-predict"),
   wWr: document.getElementById("w-wr"),
   wPop: document.getElementById("w-pop"),
@@ -150,6 +172,7 @@ let drag = null;
 let recSide = "blue";
 let recRole = "All";
 let weights = Object.assign({}, WEIGHT_DEFAULTS);
+let weightSliders = Object.assign({}, WEIGHT_SLIDER_VIS_DEFAULTS);
 let counters = {};
 let synergies = {};
 let champGames = {};
@@ -1231,8 +1254,17 @@ function renderExpect() {
   }
 }
 
+function activeWeights() {
+  const out = {};
+  for (let i = 0; i < WEIGHT_SLIDER_KEYS.length; i += 1) {
+    const key = WEIGHT_SLIDER_KEYS[i];
+    out[key] = weightSliders[key] ? weights[key] : 0;
+  }
+  return out;
+}
+
 function scoreChampion(id, enemies, allies, scoreWeights, predictOpts) {
-  const mix = scoreWeights || weights;
+  const mix = scoreWeights || activeWeights();
   const power = champPower(id);
   const blind = power ? blindPick(id, power, mix) : null;
   const parts = [];
@@ -1473,7 +1505,7 @@ function scoreTooltip(champ, score) {
         "  → " +
         formatDelta(score.predictTerm || 0) +
         "  (×" +
-        (weights.predict != null ? weights.predict : WEIGHT_DEFAULTS.predict).toFixed(2) +
+        (activeWeights().predict || 0).toFixed(2) +
         ")"
     );
     if (score.heuristic != null) {
@@ -1481,9 +1513,10 @@ function scoreTooltip(champ, score) {
     }
   }
   if (score.power) {
+    const wrW = activeWeights().wr;
     lines.push(
       "power  " +
-        formatDelta(weights.wr * score.power.power) +
+        formatDelta(wrW * score.power.power) +
         "  (" +
         score.power.wr.toFixed(1) +
         "% " +
@@ -1493,7 +1526,7 @@ function scoreTooltip(champ, score) {
         " games vs " +
         score.power.avg.toFixed(1) +
         "% avg · ×" +
-        weights.wr.toFixed(2) +
+        wrW.toFixed(2) +
         ")"
     );
   }
@@ -2514,10 +2547,11 @@ function renderRecs() {
   const ourName = recSide === "blue" ? state.blue.name : state.red.name;
   const otherName = recSide === "blue" ? state.red.name : state.blue.name;
   const roleBit = recRole === "All" ? "" : recRole + " ";
+  const predictActive = activeWeights().predict;
   const predictBit =
-    weights.predict > 0
-      ? " · predict x" + weights.predict.toFixed(2)
-      : " · predict off";
+    predictActive > 0
+      ? " · predict x" + predictActive.toFixed(2)
+      : "";
   if (enemies.length && allies.length) {
     els.recsLabel.textContent =
       "Best " + roleBit + "with " + ourName + " into " + otherName + predictBit;
@@ -2873,8 +2907,116 @@ function readWeightSliders() {
   if (chartOpen) renderChartRecs();
 }
 
+function loadWeightSliderVisibility() {
+  weightSliders = Object.assign({}, WEIGHT_SLIDER_VIS_DEFAULTS);
+  try {
+    const saved = JSON.parse(localStorage.getItem(WEIGHT_SLIDER_VIS_STORAGE) || "null");
+    if (saved && typeof saved === "object") {
+      for (let i = 0; i < WEIGHT_SLIDER_KEYS.length; i += 1) {
+        const key = WEIGHT_SLIDER_KEYS[i];
+        if (typeof saved[key] === "boolean") weightSliders[key] = saved[key];
+      }
+    }
+  } catch (err) {}
+}
+
+function saveWeightSliderVisibility() {
+  try {
+    localStorage.setItem(WEIGHT_SLIDER_VIS_STORAGE, JSON.stringify(weightSliders));
+  } catch (err) {}
+}
+
+function applyWeightSliderVisibility() {
+  const root = document.getElementById("recs-weights") || els.recsWeights;
+  if (!root) return;
+  const labels = root.querySelectorAll("label[data-weight]");
+  for (let i = 0; i < labels.length; i += 1) {
+    const key = labels[i].getAttribute("data-weight");
+    labels[i].classList.toggle("is-hidden", !weightSliders[key]);
+  }
+  const btn = els.recsWeightMenuBtn || document.getElementById("recs-weight-menu-btn");
+  if (btn) {
+    let n = 0;
+    for (let i = 0; i < WEIGHT_SLIDER_KEYS.length; i += 1) {
+      if (weightSliders[WEIGHT_SLIDER_KEYS[i]]) n += 1;
+    }
+    btn.textContent = n === WEIGHT_SLIDER_KEYS.length ? "Factors" : "Factors · " + n;
+  }
+}
+
+function renderWeightSliderMenu() {
+  const menu = els.recsWeightMenu || document.getElementById("recs-weight-menu");
+  if (!menu) return;
+  menu.textContent = "";
+  for (let i = 0; i < WEIGHT_SLIDER_KEYS.length; i += 1) {
+    const key = WEIGHT_SLIDER_KEYS[i];
+    const label = document.createElement("label");
+    label.setAttribute("role", "menuitemcheckbox");
+    label.setAttribute("aria-checked", weightSliders[key] ? "true" : "false");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = !!weightSliders[key];
+    input.addEventListener("change", function () {
+      weightSliders[key] = !!input.checked;
+      // Keep at least one factor visible.
+      let any = false;
+      for (let j = 0; j < WEIGHT_SLIDER_KEYS.length; j += 1) {
+        if (weightSliders[WEIGHT_SLIDER_KEYS[j]]) {
+          any = true;
+          break;
+        }
+      }
+      if (!any) {
+        weightSliders[key] = true;
+        input.checked = true;
+      }
+      label.setAttribute("aria-checked", weightSliders[key] ? "true" : "false");
+      saveWeightSliderVisibility();
+      applyWeightSliderVisibility();
+      renderRecs();
+      renderGrid();
+      if (chartOpen) renderChartRecs();
+    });
+    const text = document.createElement("span");
+    text.textContent = WEIGHT_SLIDER_LABELS[key] || key;
+    label.append(input, text);
+    menu.appendChild(label);
+  }
+}
+
+function setWeightSliderMenuOpen(open) {
+  const menu = els.recsWeightMenu || document.getElementById("recs-weight-menu");
+  const btn = els.recsWeightMenuBtn || document.getElementById("recs-weight-menu-btn");
+  if (!menu || !btn) return;
+  menu.hidden = !open;
+  btn.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function bindWeightSliderMenu() {
+  const btn = els.recsWeightMenuBtn || document.getElementById("recs-weight-menu-btn");
+  const menu = els.recsWeightMenu || document.getElementById("recs-weight-menu");
+  if (!btn || !menu || btn.dataset.bound === "1") return;
+  btn.dataset.bound = "1";
+  btn.addEventListener("click", function (event) {
+    event.stopPropagation();
+    setWeightSliderMenuOpen(!!menu.hidden);
+  });
+  document.addEventListener("click", function (event) {
+    if (menu.hidden) return;
+    if (menu.contains(event.target) || btn.contains(event.target)) return;
+    setWeightSliderMenuOpen(false);
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") setWeightSliderMenuOpen(false);
+  });
+}
+
 function bindWeights() {
   loadWeights();
+  loadWeightSliderVisibility();
+  applyWeightSliderVisibility();
+  renderWeightSliderMenu();
+  bindWeightSliderMenu();
   const root = document.getElementById("recs-weights") || els.recsWeights;
   if (!root || root.dataset.weightsBound === "1") return;
   root.dataset.weightsBound = "1";
