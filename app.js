@@ -1011,23 +1011,27 @@ function predictContextReady(blueRows, redRows) {
   let redN = 0;
   for (let i = 0; i < (blueRows || []).length; i += 1) if (blueRows[i] && blueRows[i].id) blueN += 1;
   for (let i = 0; i < (redRows || []).length; i += 1) if (redRows[i] && redRows[i].id) redN += 1;
-  if (blueN >= 3 && redN >= 2) return true;
-  if (blueN >= 2 && redN >= 3) return true;
+  // Any real draft context: style needs ~3/side, comfort needs teams; allow earlier too.
+  if (blueN + redN >= 3) return true;
   return !!(state.blue.org && state.red.org);
 }
 
 function predictPickDelta(champId, role, baseBlue, baseRed, baseRec) {
   const predict = window.RIFT_PREDICT;
-  if (!predict || !predict.matchPredict || !champId || !role) return null;
-  const blue =
-    recSide === "blue" ? lineupWithPick(baseBlue, champId, role, "blue") : baseBlue;
-  const red =
-    recSide === "red" ? lineupWithPick(baseRed, champId, role, "red") : baseRed;
-  const next = predict.matchPredict(blue, red);
-  const before = recSide === "blue" ? baseRec.blue : baseRec.red;
-  const after = recSide === "blue" ? next.blue : next.red;
-  if (!isFinite(before) || !isFinite(after)) return null;
-  return after - before;
+  if (!predict || !predict.matchPredict || !champId || !role || !baseRec) return null;
+  try {
+    const blue =
+      recSide === "blue" ? lineupWithPick(baseBlue, champId, role, "blue") : baseBlue;
+    const red =
+      recSide === "red" ? lineupWithPick(baseRed, champId, role, "red") : baseRed;
+    const next = predict.matchPredict(blue, red);
+    const before = recSide === "blue" ? baseRec.blue : baseRec.red;
+    const after = recSide === "blue" ? next.blue : next.red;
+    if (!isFinite(before) || !isFinite(after)) return null;
+    return after - before;
+  } catch (err) {
+    return null;
+  }
 }
 
 function expectLaneWeight(us, them, usRole, themRole) {
@@ -1359,9 +1363,10 @@ function scoreChampion(id, enemies, allies, scoreWeights, predictOpts) {
     comfort +
     teamWr -
     rare;
-  const predictW = mix.predict != null ? mix.predict : WEIGHT_DEFAULTS.predict;
+  const predictW =
+    mix.predict != null && isFinite(mix.predict) ? Number(mix.predict) : WEIGHT_DEFAULTS.predict;
   const predictTerm =
-    predictReady && predictPp != null ? predictW * predictPp * PREDICT_UNIT : 0;
+    predictReady && predictPp != null && predictW ? predictW * predictPp * PREDICT_UNIT : 0;
   const avg = heuristic + predictTerm;
   return {
     avg: avg,
@@ -2509,16 +2514,23 @@ function renderRecs() {
   const ourName = recSide === "blue" ? state.blue.name : state.red.name;
   const otherName = recSide === "blue" ? state.red.name : state.blue.name;
   const roleBit = recRole === "All" ? "" : recRole + " ";
+  const predictBit =
+    weights.predict > 0
+      ? " · predict ×" + weights.predict.toFixed(2)
+      : " · predict off";
   if (enemies.length && allies.length) {
-    els.recsLabel.textContent = "Best " + roleBit + "with " + ourName + " into " + otherName;
+    els.recsLabel.textContent =
+      "Best " + roleBit + "with " + ourName + " into " + otherName + predictBit;
   } else if (enemies.length) {
-    els.recsLabel.textContent = "Best " + roleBit + "into " + otherName;
+    els.recsLabel.textContent = "Best " + roleBit + "into " + otherName + predictBit;
   } else if (allies.length) {
-    els.recsLabel.textContent = "Best " + roleBit + "with " + ourName;
+    els.recsLabel.textContent = "Best " + roleBit + "with " + ourName + predictBit;
   } else {
     const org = orgOf(recSide);
     els.recsLabel.textContent =
-      (recRole === "All" ? "Blind picks" : "Blind " + recRole) + (org ? " · " + org.name : "");
+      (recRole === "All" ? "Blind picks" : "Blind " + recRole) +
+      (org ? " · " + org.name : "") +
+      predictBit;
   }
   els.recsList.innerHTML = "";
   const top = recs.slice(0, 8);
@@ -2767,9 +2779,18 @@ function renderTags() {
 }
 
 function clampWeight(value, fallback) {
+  if (value == null || value === "") return fallback;
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.max(0, Math.min(3, n));
+}
+
+function weightInput(id) {
+  return document.getElementById(id);
+}
+
+function weightLabel(id) {
+  return document.getElementById(id);
 }
 
 function loadWeights() {
@@ -2799,13 +2820,19 @@ function loadWeights() {
       weights.unique = clampWeight(saved.unique, WEIGHT_DEFAULTS.unique);
     }
   } catch (err) {}
-  if (els.wPredict) els.wPredict.value = String(weights.predict);
-  if (els.wWr) els.wWr.value = String(weights.wr);
-  if (els.wPop) els.wPop.value = String(weights.pop);
-  if (els.wSafety) els.wSafety.value = String(weights.safety);
-  if (els.wCounter) els.wCounter.value = String(weights.counter);
-  if (els.wPairing) els.wPairing.value = String(weights.pairing);
-  if (els.wUnique) els.wUnique.value = String(weights.unique);
+  const map = [
+    ["w-predict", "predict"],
+    ["w-wr", "wr"],
+    ["w-pop", "pop"],
+    ["w-safety", "safety"],
+    ["w-counter", "counter"],
+    ["w-pairing", "pairing"],
+    ["w-unique", "unique"],
+  ];
+  for (let i = 0; i < map.length; i += 1) {
+    const el = weightInput(map[i][0]);
+    if (el) el.value = String(weights[map[i][1]]);
+  }
   syncWeightLabels();
 }
 
@@ -2816,35 +2843,43 @@ function saveWeights() {
 }
 
 function syncWeightLabels() {
-  if (els.wPredictVal) els.wPredictVal.textContent = weights.predict.toFixed(2);
-  if (els.wWrVal) els.wWrVal.textContent = weights.wr.toFixed(2);
-  if (els.wPopVal) els.wPopVal.textContent = weights.pop.toFixed(2);
-  if (els.wSafetyVal) els.wSafetyVal.textContent = weights.safety.toFixed(2);
-  if (els.wCounterVal) els.wCounterVal.textContent = weights.counter.toFixed(2);
-  if (els.wPairingVal) els.wPairingVal.textContent = weights.pairing.toFixed(2);
-  if (els.wUniqueVal) els.wUniqueVal.textContent = weights.unique.toFixed(2);
+  const map = [
+    ["w-predict-val", "predict"],
+    ["w-wr-val", "wr"],
+    ["w-pop-val", "pop"],
+    ["w-safety-val", "safety"],
+    ["w-counter-val", "counter"],
+    ["w-pairing-val", "pairing"],
+    ["w-unique-val", "unique"],
+  ];
+  for (let i = 0; i < map.length; i += 1) {
+    const el = weightLabel(map[i][0]);
+    if (el) el.textContent = weights[map[i][1]].toFixed(2);
+  }
 }
 
 function readWeightSliders() {
-  weights.predict = clampWeight(els.wPredict && els.wPredict.value, WEIGHT_DEFAULTS.predict);
-  weights.wr = clampWeight(els.wWr && els.wWr.value, WEIGHT_DEFAULTS.wr);
-  weights.pop = clampWeight(els.wPop && els.wPop.value, WEIGHT_DEFAULTS.pop);
-  weights.safety = clampWeight(els.wSafety && els.wSafety.value, WEIGHT_DEFAULTS.safety);
-  weights.counter = clampWeight(els.wCounter && els.wCounter.value, WEIGHT_DEFAULTS.counter);
-  weights.pairing = clampWeight(els.wPairing && els.wPairing.value, WEIGHT_DEFAULTS.pairing);
-  weights.unique = clampWeight(els.wUnique && els.wUnique.value, WEIGHT_DEFAULTS.unique);
+  weights.predict = clampWeight(weightInput("w-predict") && weightInput("w-predict").value, WEIGHT_DEFAULTS.predict);
+  weights.wr = clampWeight(weightInput("w-wr") && weightInput("w-wr").value, WEIGHT_DEFAULTS.wr);
+  weights.pop = clampWeight(weightInput("w-pop") && weightInput("w-pop").value, WEIGHT_DEFAULTS.pop);
+  weights.safety = clampWeight(weightInput("w-safety") && weightInput("w-safety").value, WEIGHT_DEFAULTS.safety);
+  weights.counter = clampWeight(weightInput("w-counter") && weightInput("w-counter").value, WEIGHT_DEFAULTS.counter);
+  weights.pairing = clampWeight(weightInput("w-pairing") && weightInput("w-pairing").value, WEIGHT_DEFAULTS.pairing);
+  weights.unique = clampWeight(weightInput("w-unique") && weightInput("w-unique").value, WEIGHT_DEFAULTS.unique);
   syncWeightLabels();
   saveWeights();
   renderRecs();
   renderGrid();
+  if (chartOpen) renderChartRecs();
 }
 
 function bindWeights() {
   loadWeights();
-  ["wPredict", "wWr", "wPop", "wSafety", "wCounter", "wPairing", "wUnique"].forEach(function (key) {
-    if (!els[key]) return;
-    els[key].addEventListener("input", readWeightSliders);
-  });
+  const root = document.getElementById("recs-weights") || els.recsWeights;
+  if (!root || root.dataset.weightsBound === "1") return;
+  root.dataset.weightsBound = "1";
+  root.addEventListener("input", readWeightSliders);
+  root.addEventListener("change", readWeightSliders);
 }
 
 function bind() {
