@@ -559,7 +559,7 @@ function renderExpect(game) {
   const fill = node("div", "expect-meter-fill");
   fill.style.width = rec.blue.toFixed(1) + "%";
   meter.append(fill, node("span", "expect-meter-mid"));
-  const asOf = rec.asOf ? " · as-of prior games only" : "";
+  const asOf = rec.asOf ? " · style as-of prior games" : "";
   meter.title =
     (game.bt || "Blue") +
     " " +
@@ -601,7 +601,7 @@ function renderExpect(game) {
     fmtDelta(rec.style || 0) +
     "</span>" +
     (rec.asOf
-      ? ' · <span class="muted" title="Draft counters and style use only games before this one">as-of</span>'
+      ? ' · <span class="muted" title="Style H2H uses only games before this one; draft is solo-queue counters">as-of</span>'
       : "");
   bar.append(blue, meter, red, sub);
   els.stats.append(bar);

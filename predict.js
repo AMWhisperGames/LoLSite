@@ -610,26 +610,13 @@
   }
 
   // --- Retroactive (as-of) predictions for match history -----------------
-  // Walk pro games in time order. Before scoring game i, only games < i are
-  // visible for OE matchups and style H2H (the leaky draft/style signals).
+  // Draft uses LoLalytics (solo-queue) — same as live matchPredict — because
+  // causal OE leave-one-out is ~52–59% and drags team signal down to ~58%.
+  // Style H2H is walked as-of so pro results after game i never leak in.
   // Team/comfort still use the published ladders (slowly-moving player strength).
-  const RETRO_DRAFT_MULT = 4;
-  const RETRO_OE_PRIOR = 40;
 
   let retroCache = null;
   let retroCacheKey = "";
-
-  function bumpMatchup(map, us, them, blueWon) {
-    if (!us || !them || us === them) return;
-    if (!map[us]) map[us] = {};
-    let rec = map[us][them];
-    if (!rec) {
-      rec = { games: 0, wins: 0 };
-      map[us][them] = rec;
-    }
-    rec.games += 1;
-    if (blueWon) rec.wins += 1;
-  }
 
   function bumpStyleH2h(h2h, blueIds, redIds, blueWon) {
     const api = root.CompStyles;
@@ -652,45 +639,6 @@
     }
   }
 
-  function lookupCausalMatchup(map, us, them) {
-    const direct = map[us] && map[us][them];
-    if (direct && direct.games >= 3) {
-      return {
-        delta: (direct.wins / direct.games - 0.5) * 100,
-        games: direct.games,
-      };
-    }
-    const inverse = map[them] && map[them][us];
-    if (inverse && inverse.games >= 3) {
-      return {
-        delta: -((inverse.wins / inverse.games - 0.5) * 100),
-        games: inverse.games,
-      };
-    }
-    return null;
-  }
-
-  function causalCounterElo(matchups, blue, red) {
-    let eloNum = 0;
-    let deltaNum = 0;
-    let den = 0;
-    for (let i = 0; i < blue.length; i += 1) {
-      for (let j = 0; j < red.length; j += 1) {
-        const us = blue[i];
-        const them = red[j];
-        if (!us || !us.id || !them || !them.id) continue;
-        const rec = lookupCausalMatchup(matchups, us.id, them.id);
-        if (!rec) continue;
-        const conf = rec.games / (rec.games + RETRO_OE_PRIOR);
-        const weight = laneWeight(us.role, them.role) * Math.max(conf, 0.05);
-        eloNum += eloFromDelta(rec.delta) * weight;
-        deltaNum += rec.delta * weight;
-        den += weight;
-      }
-    }
-    return { elo: den ? eloNum / den : 0, delta: den ? deltaNum / den : 0 };
-  }
-
   function lineupFromGame(game, side) {
     const champs = side === "blue" ? game.b : game.r;
     const names = side === "blue" ? game.bp : game.rp;
@@ -706,12 +654,12 @@
     return rows;
   }
 
-  function scoreRetroGame(game, matchups, styleH2h) {
+  function scoreRetroGame(game, styleH2h) {
     const blue = lineupFromGame(game, "blue");
     const red = lineupFromGame(game, "red");
     if (blue.length < 3 || red.length < 3) return null;
-    const counter = causalCounterElo(matchups, blue, red);
-    const draftElo = counter.elo * RETRO_DRAFT_MULT;
+    const draft = lineupExpect(blue, red);
+    const draftElo = draft.elo || 0;
     const blueScore = rosterScore(blue);
     const redScore = rosterScore(red);
     const teamElo =
@@ -735,25 +683,18 @@
       style: styleElo,
       styleRec: style,
       side: BLUE_SIDE_ELO,
-      counter: counter.delta,
-      pairing: 0,
+      counter: draft.counter,
+      pairing: draft.pairing,
       blueScore: blueScore,
       redScore: redScore,
       asOf: true,
     };
   }
 
-  function updateRetroState(game, matchups, styleH2h) {
+  function updateRetroState(game, styleH2h) {
     const blue = lineupFromGame(game, "blue");
     const red = lineupFromGame(game, "red");
-    const blueWon = game.w === 1;
-    for (let i = 0; i < blue.length; i += 1) {
-      for (let j = 0; j < red.length; j += 1) {
-        bumpMatchup(matchups, blue[i].id, red[j].id, blueWon);
-        bumpMatchup(matchups, red[j].id, blue[i].id, !blueWon);
-      }
-    }
-    bumpStyleH2h(styleH2h, champIdsOf(blue), champIdsOf(red), blueWon);
+    bumpStyleH2h(styleH2h, champIdsOf(blue), champIdsOf(red), game.w === 1);
   }
 
   function gamesFingerprint(games) {
@@ -773,15 +714,14 @@
       const bg = b.g || "";
       return ag < bg ? -1 : ag > bg ? 1 : 0;
     });
-    const matchups = {};
     const styleH2h = {};
     const byId = {};
     for (let i = 0; i < list.length; i += 1) {
       const game = list[i];
       if (!game || !game.g) continue;
-      const rec = scoreRetroGame(game, matchups, styleH2h);
+      const rec = scoreRetroGame(game, styleH2h);
       if (rec) byId[game.g] = rec;
-      updateRetroState(game, matchups, styleH2h);
+      updateRetroState(game, styleH2h);
     }
     return byId;
   }

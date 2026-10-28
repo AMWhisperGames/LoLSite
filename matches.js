@@ -480,7 +480,7 @@ function renderAcc(rows) {
     hits.toLocaleString() +
     " / " +
     n.toLocaleString() +
-    " predicted correctly (draft/style as-of prior games only)";
+    " predicted correctly (style as-of prior games; draft from solo-queue counters)";
   els.acc.className = "matches-acc " + (pct >= 50 ? "wr-up" : "wr-down");
 }
 
