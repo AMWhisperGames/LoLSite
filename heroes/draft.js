@@ -9,20 +9,46 @@
   const BLIND_SCALE = 100;
   const BLIND_FLOOR = 0.5;
   const QUIET_HEROES = { Kerrigan: 75, Probius: 100, "Sgt. Hammer": 75, Rehgar: 50, Samuro: 30, "The Lost Vikings": 80, Alexstrasza: 20 };
-  const ANCHOR_BONUS = 30;
+  const ANCHOR_BONUS = 110;
+  const ANCHOR_MISS = 150;
   const STEEP_COUNTER = 100;
-  const ROLE_TARGETS = { tank: 12, dps: 11.5, healer: 10.5, flex: 13, offlane: 11.5 };
+  // Flat draft penalties by hero|map (map matrix alone understates these).
+  const MAP_HERO_PENALTY = {
+    "Mephisto|Dragon Shire": 140,
+  };
+  const ROLE_TARGETS = { tank: 12, dps: 12.8, healer: 9.2, flex: 13, offlane: 11.5 };
   const ROLE_FLOOR = 0.1;
+  const ROLE_SURPLUS = -0.25;
   const ROLE_EARLY = 2.5;
   const ROLE_LATE = 8;
   const ROLE_MISS = 120;
   const SAME_ROLE_PENALTY = 90;
+  const HEALER_PAIR_PENALTY = 1.35;
+  const HEALER_SOFT_CAP = 8;
   const REPEAT_FREE = 3;
   const REPEAT_STEP = 80;
   const DUO_SYNERGY = 0.5;
   const SYLVANAS_MAIEV = 160;
   const DEATHWING_UTHER = 400;
   const ALEX_MEPHISTO = 40;
+  // Winrate pairings understate Divine Shield / armor value on dive carries and soft-heal comps.
+  const UTHER_CARRY_BONUS = {
+    Maiev: 48,
+    Illidan: 40,
+    Genji: 36,
+    Tracer: 36,
+    Greymane: 32,
+    Kerrigan: 32,
+    Valeera: 32,
+    Zeratul: 32,
+    Qhira: 28,
+    Samuro: 28,
+    Alarak: 24,
+  };
+  const UTHER_SUPPORT_BONUS = {
+    Auriel: 32,
+    "Li Li": 20,
+  };
   const COMFORT_LINE = 5;
   const ROLE_ORDER = ["tank", "healer", "dps", "flex", "offlane"];
   const FULL_ROLES = 31;
@@ -169,6 +195,11 @@
     if ((hero === "Alexstrasza" && ally === "Mephisto") || (hero === "Mephisto" && ally === "Alexstrasza")) {
       score -= ALEX_MEPHISTO;
     }
+    const utherBonus =
+      (hero === "Uther" && (UTHER_CARRY_BONUS[ally] || UTHER_SUPPORT_BONUS[ally])) ||
+      (ally === "Uther" && (UTHER_CARRY_BONUS[hero] || UTHER_SUPPORT_BONUS[hero])) ||
+      0;
+    if (utherBonus) score += utherBonus;
     return { score: score, games: row.games || 0 };
   }
 
@@ -445,11 +476,15 @@
       flex: ROLE_TARGETS.flex - cover.flex,
       offlane: ROLE_TARGETS.offlane - cover.offlane,
     };
-    const vals = [remain.tank, remain.dps, remain.healer, remain.flex, remain.offlane];
-    const min = Math.min.apply(null, vals);
-    const max = Math.max.apply(null, vals);
+    const need = [remain.tank, remain.dps, remain.healer, remain.flex, remain.offlane].filter(function (value) {
+      return value > 0;
+    });
+    const min = need.length ? Math.min.apply(null, need) : 0;
+    const max = need.length ? Math.max.apply(null, need) : 1;
     const eps = 0.001;
     function weight(value) {
+      // Already-filled roles should not keep earning positive role credit.
+      if (value <= 0) return ROLE_SURPLUS * (1 + Math.min(1, -value / 6));
       return ((value - min + eps) / (max - min + eps)) * (1 - ROLE_FLOOR) + ROLE_FLOOR;
     }
     return {
@@ -478,25 +513,52 @@
     if (cover.tank < 7) holes.push("tank");
     if (cover.healer < 5) holes.push("healer");
     if (cover.offlane < 5) holes.push("offlane");
-    if (cover.dps + cover.flex < 8) holes.push("damage");
+    // Prefer real ranged DPS coverage; flex alone should not fully clear the hole.
+    if (cover.dps < 6 || cover.dps + cover.flex < 9) holes.push("damage");
     let urgency = 0;
     if (slotsLeft > 0 && slotsLeft <= holes.length) {
       const fills = holes.filter(function (hole) {
         if (hole === "tank") return roles.tank >= 4;
         if (hole === "healer") return roles.healer >= 4;
         if (hole === "offlane") return roles.offlane >= 4;
-        return roles.dps + roles.flex >= 4;
+        return roles.dps >= 4 || roles.dps + roles.flex >= 5;
       }).length;
       if (fills === 0) urgency = -ROLE_MISS * (0.35 + 0.65 * progress);
     }
-    return (roleScore * scale + urgency) * state.weights.role;
+    // Soft pushback once healing is already solid — dampens double-healer greed.
+    let surplus = 0;
+    if (cover.healer >= HEALER_SOFT_CAP && roles.healer > 0) {
+      surplus -= (cover.healer + roles.healer - HEALER_SOFT_CAP) * 3.5;
+    }
+    return (roleScore * scale + urgency + surplus) * state.weights.role;
+  }
+
+  function anchorCount(allies) {
+    return allies.filter(function (ally) {
+      return heroStats(ally).anchor === 1;
+    }).length;
   }
 
   function anchorBoost(name, allies) {
     if (!valuesReady || state.map !== "Dragon Shire") return 0;
-    const count = allies.filter(function (ally) { return heroStats(ally).anchor === 1; }).length;
-    if (count >= 1.5) return 0;
-    return heroStats(name).anchor === 1 ? ANCHOR_BONUS : 0;
+    const have = anchorCount(allies);
+    const isAnchor = heroStats(name).anchor === 1;
+    const slotsLeft = Math.max(0, 5 - allies.length);
+    if (have >= 1) return isAnchor ? ANCHOR_BONUS * 0.12 : 0;
+    if (isAnchor) {
+      // Grow urgency as the draft closes so the bot cannot finish shrine-less.
+      const late = 1 + Math.max(0, allies.length - 1) * 0.35;
+      return ANCHOR_BONUS * late;
+    }
+    if (slotsLeft > 0 && slotsLeft <= 2) {
+      return -ANCHOR_MISS * (slotsLeft === 1 ? 1 : 0.55);
+    }
+    return 0;
+  }
+
+  function mapHeroPenalty(name) {
+    if (!state.map) return 0;
+    return MAP_HERO_PENALTY[name + "|" + state.map] || 0;
   }
 
   function raceBoost(name, allies) {
@@ -589,9 +651,10 @@
     const blind = valuesReady && pickCount() < 2 && countsAsBlind(name) ? blindable(name) * BLIND_SCALE : 0;
     const anchor = anchorBoost(name, allies);
     const race = raceBoost(name, allies);
+    const mapPen = mapHeroPenalty(name);
     const threat = poolThreat(name, allies);
     const threatPenalty = threat.penalty * state.weights.counter;
-    const draft = base + stats + role + blind + anchor + race - threatPenalty;
+    const draft = base + stats + role + blind + anchor + race - mapPen - threatPenalty;
     if (!hasContext && !state.map && draft === 0 && !threatPenalty) return null;
     const matchup = hasContext ? base * factor : 0;
     const total = state.map ? (draft === 0 && !threatPenalty ? factor : draft * factor) : draft;
@@ -605,6 +668,7 @@
       blind: blind,
       anchor: anchor,
       race: race,
+      mapPen: mapPen,
       threat: threatPenalty,
       threatName: threat.name,
       map: factor,
@@ -1267,7 +1331,8 @@
     const left = roster.get(a);
     const right = roster.get(b);
     if (!left || !right || left.role !== right.role) return 0;
-    return SAME_ROLE_PENALTY * state.weights.role;
+    const scale = left.role === "Healer" ? HEALER_PAIR_PENALTY : 1;
+    return SAME_ROLE_PENALTY * scale * state.weights.role;
   }
 
   function repeatPenalty(shown) {
@@ -1874,7 +1939,7 @@
   }
 
   Promise.all([
-    fetch("hots_map_matrix.json?v=2").then(function (response) { return response.json(); }),
+    fetch("hots_map_matrix.json?v=3").then(function (response) { return response.json(); }),
     fetch("hotsblindable.json?v=2").then(function (response) { return response.json(); }),
     fetch("herovalues.json?v=7").then(function (response) { return response.json(); }),
     fetch("hotsroles.json?v=3").then(function (response) { return response.json(); }),

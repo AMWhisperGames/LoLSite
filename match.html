@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=63" />
+    <link rel="stylesheet" href="styles.css?v=66" />
   </head>
   <body>
     <div id="splash" class="splash" aria-hidden="true"></div>
@@ -48,6 +48,12 @@
           <h2 id="match-title" class="phase-title done">Match</h2>
         </div>
         <div class="top-actions">
+          <div id="pick-view" class="chips match-pick-view" role="tablist" aria-label="Pick layout">
+            <button type="button" data-view="lane" class="active" role="tab" aria-selected="true">
+              By lane
+            </button>
+            <button type="button" data-view="draft" role="tab" aria-selected="false">Draft order</button>
+          </div>
           <a id="back-link" class="detail-link" href="matches.html">All matches</a>
         </div>
       </header>
@@ -95,8 +101,8 @@
     <script src="synergies.js"></script>
     <script src="oracles.js?v=3"></script>
     <script src="player-ratings.js?v=16"></script>
-    <script src="comp-styles.js?v=5"></script>
-    <script src="predict.js?v=10"></script>
-    <script src="match.js?v=8"></script>
+    <script src="comp-styles.js?v=6"></script>
+    <script src="predict.js?v=14"></script>
+    <script src="match.js?v=12"></script>
   </body>
 </html>

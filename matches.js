@@ -440,10 +440,15 @@ function lineupOf(game, side) {
 
 function predictGame(game) {
   const predict = window.RIFT_PREDICT;
-  if (!predict || !predict.matchPredict || !game || !game.g) return null;
+  if (!predict || !game || !game.g) return null;
   if (predictCache[game.g]) return predictCache[game.g];
-  const rec = predict.matchPredict(lineupOf(game, "blue"), lineupOf(game, "red"));
-  predictCache[game.g] = rec;
+  let rec = null;
+  if (predict.retroPredict) {
+    rec = predict.retroPredict(game, bundle.games || (window.RIFT_PRO_GAMES && window.RIFT_PRO_GAMES.games));
+  } else if (predict.matchPredict) {
+    rec = predict.matchPredict(lineupOf(game, "blue"), lineupOf(game, "red"));
+  }
+  if (rec) predictCache[game.g] = rec;
   return rec;
 }
 
@@ -471,7 +476,11 @@ function renderAcc(rows) {
   const pct = (hits / n) * 100;
   els.acc.hidden = false;
   els.acc.innerHTML = "<b>" + pct.toFixed(1) + "%</b><span>pred acc</span>";
-  els.acc.title = hits.toLocaleString() + " / " + n.toLocaleString() + " predicted correctly";
+  els.acc.title =
+    hits.toLocaleString() +
+    " / " +
+    n.toLocaleString() +
+    " predicted correctly (draft/style as-of prior games only)";
   els.acc.className = "matches-acc " + (pct >= 50 ? "wr-up" : "wr-down");
 }
 

@@ -444,10 +444,10 @@
     return buildStyleTables(games);
   }
 
-  function subEdge(aSub, bSub, prior) {
+  function subEdge(aSub, bSub, prior, h2hTable) {
     if (!aSub || !bSub || aSub === bSub) return { edge: 0, n: 0, wr: 0.5 };
     prior = prior == null ? 20 : prior;
-    var table = ensureStyleTables().h2h;
+    var table = h2hTable || ensureStyleTables().h2h;
     var rec = table[pairKey(aSub, bSub)];
     var n = rec ? rec.n : 0;
     var w = rec ? rec.w : 0;
@@ -460,11 +460,11 @@
   var STYLE_SOFT_MULT = 10;
   var STYLE_SUB_MIN = 8;
 
-  function predictFeature(blueIds, redIds) {
+  function predictFeature(blueIds, redIds, h2hTable) {
     var blue = classify(blueIds || []);
     var red = classify(redIds || []);
     var soft = cycleScore(blue.soft, red.soft);
-    var sub = subEdge(blue.sub, red.sub);
+    var sub = subEdge(blue.sub, red.sub, null, h2hTable);
     var usedSub = sub.n >= STYLE_SUB_MIN;
     var feature = usedSub ? sub.edge : soft;
     var mult = usedSub ? STYLE_SUB_MULT : STYLE_SOFT_MULT;

@@ -1,9 +1,11 @@
 (function (root) {
   // Locked via ratings/probe_cs.py + tune_style.py (60d primary; 30d/90d must not regress).
-  // Draft weight is 0: LoLalytics / OE matchups hurt once roster+comfort are tuned.
+  // Draft: LoLalytics counters only (no OE, no synergy). OE×N looks ~78% on history but
+  // that is leakage — OE tables include the scored games; OE leave-one-out drops to ~59%.
+  // LoLalytics×2 is neutral vs draft=0 on 60d/90d (~67%) and keeps draft non-zero in UI.
   // Roster uses 35% role score + 65% champ-pool score (cs); comfort weight raised with it.
   const ELO_SCALE = 400;
-  const ELO_MULT = 0;
+  const ELO_MULT = 2;
   const SYN_MULT = 0;
   const PAIR_PRIOR = 400;
   const OE_PAIR_PRIOR = 40;
@@ -151,7 +153,8 @@
   }
 
   function lineupExpect(blue, red) {
-    const counter = counterOf(blue || [], red || [], true);
+    // preferPro=false: never feed OE matchups into matchPredict (history leakage).
+    const counter = counterOf(blue || [], red || [], false);
     const pairBlue = pairingOf(blue || []);
     const pairRed = pairingOf(red || []);
     const elo = counter.elo * ELO_MULT + (pairBlue.elo - pairRed.elo) * SYN_MULT;
@@ -602,7 +605,203 @@
       pairing: draft.pairing,
       blueScore: blueScore,
       redScore: redScore,
+      asOf: false,
     };
+  }
+
+  // --- Retroactive (as-of) predictions for match history -----------------
+  // Walk pro games in time order. Before scoring game i, only games < i are
+  // visible for OE matchups and style H2H (the leaky draft/style signals).
+  // Team/comfort still use the published ladders (slowly-moving player strength).
+  const RETRO_DRAFT_MULT = 4;
+  const RETRO_OE_PRIOR = 40;
+
+  let retroCache = null;
+  let retroCacheKey = "";
+
+  function bumpMatchup(map, us, them, blueWon) {
+    if (!us || !them || us === them) return;
+    if (!map[us]) map[us] = {};
+    let rec = map[us][them];
+    if (!rec) {
+      rec = { games: 0, wins: 0 };
+      map[us][them] = rec;
+    }
+    rec.games += 1;
+    if (blueWon) rec.wins += 1;
+  }
+
+  function bumpStyleH2h(h2h, blueIds, redIds, blueWon) {
+    const api = root.CompStyles;
+    if (!api || !api.classify) return;
+    const b = api.classify(blueIds || []);
+    const r = api.classify(redIds || []);
+    if (!b.sub || !r.sub || b.sub === r.sub) return;
+    const ab = b.sub + "|" + r.sub;
+    const ba = r.sub + "|" + b.sub;
+    if (!h2h[ab]) h2h[ab] = { w: 0, n: 0 };
+    if (!h2h[ba]) h2h[ba] = { w: 0, n: 0 };
+    if (blueWon) {
+      h2h[ab].w += 1;
+      h2h[ab].n += 1;
+      h2h[ba].n += 1;
+    } else {
+      h2h[ba].w += 1;
+      h2h[ba].n += 1;
+      h2h[ab].n += 1;
+    }
+  }
+
+  function lookupCausalMatchup(map, us, them) {
+    const direct = map[us] && map[us][them];
+    if (direct && direct.games >= 3) {
+      return {
+        delta: (direct.wins / direct.games - 0.5) * 100,
+        games: direct.games,
+      };
+    }
+    const inverse = map[them] && map[them][us];
+    if (inverse && inverse.games >= 3) {
+      return {
+        delta: -((inverse.wins / inverse.games - 0.5) * 100),
+        games: inverse.games,
+      };
+    }
+    return null;
+  }
+
+  function causalCounterElo(matchups, blue, red) {
+    let eloNum = 0;
+    let deltaNum = 0;
+    let den = 0;
+    for (let i = 0; i < blue.length; i += 1) {
+      for (let j = 0; j < red.length; j += 1) {
+        const us = blue[i];
+        const them = red[j];
+        if (!us || !us.id || !them || !them.id) continue;
+        const rec = lookupCausalMatchup(matchups, us.id, them.id);
+        if (!rec) continue;
+        const conf = rec.games / (rec.games + RETRO_OE_PRIOR);
+        const weight = laneWeight(us.role, them.role) * Math.max(conf, 0.05);
+        eloNum += eloFromDelta(rec.delta) * weight;
+        deltaNum += rec.delta * weight;
+        den += weight;
+      }
+    }
+    return { elo: den ? eloNum / den : 0, delta: den ? deltaNum / den : 0 };
+  }
+
+  function lineupFromGame(game, side) {
+    const champs = side === "blue" ? game.b : game.r;
+    const names = side === "blue" ? game.bp : game.rp;
+    const rows = [];
+    for (let i = 0; i < 5; i += 1) {
+      if (!champs || !champs[i]) continue;
+      rows.push({
+        id: champs[i],
+        name: (names && names[i]) || "",
+        role: ROLE_KEYS[i],
+      });
+    }
+    return rows;
+  }
+
+  function scoreRetroGame(game, matchups, styleH2h) {
+    const blue = lineupFromGame(game, "blue");
+    const red = lineupFromGame(game, "red");
+    if (blue.length < 3 || red.length < 3) return null;
+    const counter = causalCounterElo(matchups, blue, red);
+    const draftElo = counter.elo * RETRO_DRAFT_MULT;
+    const blueScore = rosterScore(blue);
+    const redScore = rosterScore(red);
+    const teamElo =
+      blueScore != null && redScore != null ? (blueScore - redScore) * TEAM_SCORE_ELO : 0;
+    const comfortElo = champLineupElo(blue, red);
+    let style = { elo: 0, blue: null, red: null, note: null, usedSub: false };
+    const api = root.CompStyles;
+    if (api && api.predictFeature) {
+      style = api.predictFeature(champIdsOf(blue), champIdsOf(red), styleH2h) || style;
+    }
+    const styleElo = style.elo || 0;
+    const elo = draftElo + teamElo + comfortElo + BLUE_SIDE_ELO + styleElo;
+    const p = expectedFromElo(elo);
+    return {
+      blue: p * 100,
+      red: (1 - p) * 100,
+      elo: elo,
+      draft: draftElo,
+      team: teamElo,
+      comfort: comfortElo,
+      style: styleElo,
+      styleRec: style,
+      side: BLUE_SIDE_ELO,
+      counter: counter.delta,
+      pairing: 0,
+      blueScore: blueScore,
+      redScore: redScore,
+      asOf: true,
+    };
+  }
+
+  function updateRetroState(game, matchups, styleH2h) {
+    const blue = lineupFromGame(game, "blue");
+    const red = lineupFromGame(game, "red");
+    const blueWon = game.w === 1;
+    for (let i = 0; i < blue.length; i += 1) {
+      for (let j = 0; j < red.length; j += 1) {
+        bumpMatchup(matchups, blue[i].id, red[j].id, blueWon);
+        bumpMatchup(matchups, red[j].id, blue[i].id, !blueWon);
+      }
+    }
+    bumpStyleH2h(styleH2h, champIdsOf(blue), champIdsOf(red), blueWon);
+  }
+
+  function gamesFingerprint(games) {
+    const n = games && games.length ? games.length : 0;
+    if (!n) return "0";
+    const first = games[0] && games[0].g;
+    const last = games[n - 1] && games[n - 1].g;
+    return n + "|" + (first || "") + "|" + (last || "");
+  }
+
+  function buildRetroCache(games) {
+    const list = (games || []).slice().sort(function (a, b) {
+      const ad = a.d || "";
+      const bd = b.d || "";
+      if (ad !== bd) return ad < bd ? -1 : 1;
+      const ag = a.g || "";
+      const bg = b.g || "";
+      return ag < bg ? -1 : ag > bg ? 1 : 0;
+    });
+    const matchups = {};
+    const styleH2h = {};
+    const byId = {};
+    for (let i = 0; i < list.length; i += 1) {
+      const game = list[i];
+      if (!game || !game.g) continue;
+      const rec = scoreRetroGame(game, matchups, styleH2h);
+      if (rec) byId[game.g] = rec;
+      updateRetroState(game, matchups, styleH2h);
+    }
+    return byId;
+  }
+
+  function ensureRetroCache(games) {
+    const key = gamesFingerprint(games);
+    if (retroCache && retroCacheKey === key) return retroCache;
+    retroCacheKey = key;
+    retroCache = buildRetroCache(games);
+    return retroCache;
+  }
+
+  function retroPredict(game, games) {
+    if (!game || !game.g) return null;
+    const pool =
+      games ||
+      (root.RIFT_PRO_GAMES && root.RIFT_PRO_GAMES.games) ||
+      [];
+    const cache = ensureRetroCache(pool);
+    return cache[game.g] || null;
   }
 
   root.RIFT_PREDICT = {
@@ -615,5 +814,7 @@
     draftQuality: draftQuality,
     matchPredict: matchPredict,
     styleOf: styleOf,
+    retroPredict: retroPredict,
+    ensureRetroCache: ensureRetroCache,
   };
 })(window);

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whisper Draft — UFC Connections</title>
+    <meta
+      name="description"
+      content="Explore UFC fight networks between two fighters, or play a connect-the-opponents game."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css?v=64" />
+    <link rel="stylesheet" href="ufc.css?v=5" />
+  </head>
+  <body class="ufc-page">
+    <div class="vignette"></div>
+
+    <div class="ufc-app">
+      <header class="topbar">
+        <div class="brand">
+          <a class="brand-mark" href="../index.html" aria-label="Whisper Draft home">W</a>
+          <div>
+            <strong>Whisper Draft</strong>
+            <nav class="site-nav">
+              <a href="./">Rankings</a>
+              <a href="h2h.html">Head to Head</a>
+              <a href="connections.html" aria-current="page">Connections</a>
+            </nav>
+          </div>
+        </div>
+        <div class="phase-wrap">
+          <p class="phase-kicker">UFC</p>
+          <h1 class="phase-title done">Connections</h1>
+        </div>
+        <div class="top-actions">
+          <span id="ufc-summary" class="game-label">Loading…</span>
+        </div>
+      </header>
+
+      <main class="ufc-main conn-main">
+        <div id="conn-tabs" class="chips" role="tablist" aria-label="Connections mode">
+          <button type="button" id="tab-network" class="active" role="tab" aria-selected="true">
+            Network
+          </button>
+          <button type="button" id="tab-game" role="tab" aria-selected="false">Game</button>
+        </div>
+
+        <section id="panel-network" class="conn-panel" role="tabpanel">
+          <p class="ufc-blurb">
+            Pick two fighters to see the shortest fight links between them — bubble size is model score,
+            edges are shared cage time.
+          </p>
+          <section class="h2h-pick">
+            <div class="h2h-card conn-combo">
+              <label for="net-a">From</label>
+              <input id="net-a" type="text" autocomplete="off" spellcheck="false" placeholder="Search a fighter" />
+              <div id="net-a-menu" class="filter-menu" hidden></div>
+            </div>
+            <button type="button" id="net-swap" class="h2h-swap" aria-label="Swap fighters">⇄</button>
+            <div class="h2h-card conn-combo">
+              <label for="net-b">To</label>
+              <input id="net-b" type="text" autocomplete="off" spellcheck="false" placeholder="Search a fighter" />
+              <div id="net-b-menu" class="filter-menu" hidden></div>
+            </div>
+          </section>
+          <p id="net-status" class="ufc-status"></p>
+          <div class="conn-stage">
+            <canvas id="net-canvas" aria-label="Fighter connection network"></canvas>
+            <div id="net-tooltip" class="bubble-tooltip" hidden></div>
+            <aside id="net-path" class="conn-path" hidden>
+              <h3>Shortest path</h3>
+              <ol id="net-path-list"></ol>
+              <p id="net-path-note" class="muted"></p>
+            </aside>
+          </div>
+        </section>
+
+        <section id="panel-game" class="conn-panel" role="tabpanel" hidden>
+          <p class="ufc-blurb">
+            Connect two top fighters through common opponents. Each step must be a real fight. Autocomplete
+            helps with names.
+          </p>
+          <div class="conn-game-head">
+            <div class="conn-game-targets">
+              <div class="conn-target">
+                <span class="muted">Start</span>
+                <strong id="game-start-name">—</strong>
+                <em id="game-start-meta" class="muted"></em>
+              </div>
+              <span class="conn-game-arrow" aria-hidden="true">→</span>
+              <div class="conn-target">
+                <span class="muted">Finish</span>
+                <strong id="game-end-name">—</strong>
+                <em id="game-end-meta" class="muted"></em>
+              </div>
+            </div>
+            <div class="conn-game-actions">
+              <button type="button" id="game-new" class="conn-btn">New puzzle</button>
+              <button type="button" id="game-hint" class="conn-btn conn-btn-ghost">Hint</button>
+              <button type="button" id="game-reveal" class="conn-btn conn-btn-ghost">Reveal</button>
+            </div>
+          </div>
+          <p id="game-status" class="ufc-status"></p>
+          <ol id="game-chain" class="conn-chain"></ol>
+          <div class="conn-game-add">
+            <div class="conn-combo conn-combo-wide">
+              <label for="game-input">Add opponent</label>
+              <input
+                id="game-input"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Type a fighter who fought the last name in the chain"
+              />
+              <div id="game-menu" class="filter-menu" hidden></div>
+            </div>
+            <button type="button" id="game-add" class="conn-btn">Add</button>
+            <button type="button" id="game-undo" class="conn-btn conn-btn-ghost">Undo</button>
+          </div>
+          <p id="game-optimal" class="muted conn-optimal"></p>
+        </section>
+      </main>
+    </div>
+
+    <script src="model.js?v=3"></script>
+    <script src="connections.js?v=2"></script>
+  </body>
+</html>

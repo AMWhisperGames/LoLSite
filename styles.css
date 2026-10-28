@@ -2172,6 +2172,18 @@ select:hover,
   text-transform: uppercase;
 }
 
+.match-pick-view {
+  flex-wrap: nowrap;
+  margin: 0;
+}
+
+.match-pick-break {
+  flex: 0 0 auto;
+  height: 1px;
+  margin: 6px 8px;
+  background: var(--line);
+}
+
 .match-player-panel {
   display: grid;
   gap: 16px;

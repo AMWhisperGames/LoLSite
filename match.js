@@ -25,6 +25,7 @@ const els = {
   player: document.getElementById("match-player"),
   mvp: document.getElementById("match-mvp"),
   styleNote: document.getElementById("match-style"),
+  pickView: document.getElementById("pick-view"),
   mid: document.querySelector(".match-mid"),
 };
 
@@ -38,6 +39,9 @@ let currentGame = null;
 let hoverTimer = 0;
 let hoverKey = "";
 let mvpPlayer = null;
+let pickView = "lane";
+let blueRoster = [];
+let redRoster = [];
 
 // v1 MVP heuristic — winner-only, role-weighted. Tune these over time.
 const MVP_WEIGHTS = {
@@ -540,8 +544,14 @@ function lineupOf(game, side) {
 
 function renderExpect(game) {
   const predict = window.RIFT_PREDICT;
-  if (!predict || !predict.matchPredict) return;
-  const rec = predict.matchPredict(lineupOf(game, "blue"), lineupOf(game, "red"));
+  if (!predict) return;
+  let rec = null;
+  if (predict.retroPredict) {
+    rec = predict.retroPredict(game, (window.RIFT_PRO_GAMES && window.RIFT_PRO_GAMES.games) || []);
+  } else if (predict.matchPredict) {
+    rec = predict.matchPredict(lineupOf(game, "blue"), lineupOf(game, "red"));
+  }
+  if (!rec) return;
   const bar = node("div", "expect-bar match-expect");
   const blue = node("div", "expect-side expect-blue");
   blue.append(node("span", "", game.bt || "Blue"), node("strong", "", rec.blue.toFixed(1) + "%"));
@@ -549,6 +559,7 @@ function renderExpect(game) {
   const fill = node("div", "expect-meter-fill");
   fill.style.width = rec.blue.toFixed(1) + "%";
   meter.append(fill, node("span", "expect-meter-mid"));
+  const asOf = rec.asOf ? " · as-of prior games only" : "";
   meter.title =
     (game.bt || "Blue") +
     " " +
@@ -562,7 +573,8 @@ function renderExpect(game) {
     " · comfort " +
     fmtDelta(rec.comfort) +
     " · style " +
-    fmtDelta(rec.style || 0);
+    fmtDelta(rec.style || 0) +
+    asOf;
   const red = node("div", "expect-side expect-red");
   red.append(node("strong", "", rec.red.toFixed(1) + "%"), node("span", "", game.rt || "Red"));
   const sub = node("p", "expect-sub");
@@ -587,7 +599,10 @@ function renderExpect(game) {
     toneClass(rec.style || 0) +
     "\">" +
     fmtDelta(rec.style || 0) +
-    "</span>";
+    "</span>" +
+    (rec.asOf
+      ? ' · <span class="muted" title="Draft counters and style use only games before this one">as-of</span>'
+      : "");
   bar.append(blue, meter, red, sub);
   els.stats.append(bar);
 }
@@ -766,10 +781,71 @@ function renderBans(root, ids) {
   }
 }
 
+function firstPickSide(game) {
+  return game && game.x && game.x.fp === 0 ? "red" : "blue";
+}
+
+function pickNumbersForSide(game, side) {
+  return firstPickSide(game) === side ? [1, 4, 5, 8, 9] : [2, 3, 6, 7, 10];
+}
+
+function pickOrderGroup(pickNumber) {
+  if (!pickNumber) return null;
+  if (pickNumber === 1) return { id: "opening", label: "Pick 1 · first pick" };
+  if (pickNumber <= 3) return { id: "early-response", label: "Picks 2–3" };
+  if (pickNumber <= 5) return { id: "late-response", label: "Picks 4–5" };
+  if (pickNumber === 6) return { id: "phase-one-close", label: "Pick 6 · phase 1 close" };
+  if (pickNumber === 7) return { id: "phase-two-open", label: "Pick 7 · phase 2 open" };
+  if (pickNumber <= 9) return { id: "phase-two-response", label: "Picks 8–9" };
+  return { id: "final", label: "Pick 10 · final" };
+}
+
+function pickOrderBreak() {
+  const node = document.createElement("div");
+  node.className = "match-pick-break";
+  node.setAttribute("aria-hidden", "true");
+  return node;
+}
+
+function orderedPickRows(game, side, roster) {
+  const laneRows = (roster || []).map(function (player) {
+    return { player: player, pickNumber: 0 };
+  });
+  if (pickView !== "draft" || !game) return laneRows;
+  const orderIds = side === "blue" ? game.bpk : game.rpk;
+  if (!orderIds || orderIds.filter(Boolean).length !== 5) return laneRows;
+  const nums = pickNumbersForSide(game, side);
+  const byId = {};
+  for (let i = 0; i < roster.length; i += 1) byId[roster[i].id] = roster[i];
+  const rows = [];
+  const used = {};
+  for (let i = 0; i < orderIds.length; i += 1) {
+    const player = byId[orderIds[i]];
+    if (!player || used[player.key]) continue;
+    used[player.key] = true;
+    rows.push({ player: player, pickNumber: nums[i] || 0 });
+  }
+  for (let i = 0; i < roster.length; i += 1) {
+    if (used[roster[i].key]) continue;
+    rows.push({ player: roster[i], pickNumber: 0 });
+  }
+  return rows;
+}
+
 function renderPicks(root, game, side, roster) {
   root.innerHTML = "";
-  for (let i = 0; i < 5; i += 1) {
-    const player = roster[i];
+  const rows = orderedPickRows(game, side, roster);
+  let previousGroup = "";
+  for (let i = 0; i < rows.length; i += 1) {
+    const row = rows[i];
+    const player = row.player;
+    if (pickView === "draft") {
+      const group = pickOrderGroup(row.pickNumber);
+      if (group && previousGroup && group.id !== previousGroup) {
+        root.append(pickOrderBreak());
+      }
+      if (group) previousGroup = group.id;
+    }
     const slot = document.createElement("article");
     slot.className = "pick filled";
     slot.tabIndex = 0;
@@ -799,7 +875,12 @@ function renderPicks(root, game, side, roster) {
     scores.append(kda, perf);
     const role = document.createElement("span");
     role.className = "role-btn";
-    role.textContent = player.role;
+    if (pickView === "draft" && row.pickNumber) {
+      role.textContent = "P" + row.pickNumber + " · " + player.role;
+      role.title = "Draft pick " + row.pickNumber + " · " + player.role;
+    } else {
+      role.textContent = player.role;
+    }
     meta.append(name, scores, role);
     slot.append(art, meta);
     slot.addEventListener("mouseenter", function () {
@@ -812,6 +893,22 @@ function renderPicks(root, game, side, roster) {
     slot.addEventListener("blur", clearHover);
     root.append(slot);
   }
+}
+
+function syncPickView() {
+  if (!els.pickView) return;
+  const buttons = els.pickView.querySelectorAll("button[data-view]");
+  for (let i = 0; i < buttons.length; i += 1) {
+    const active = buttons[i].getAttribute("data-view") === pickView;
+    buttons[i].classList.toggle("active", active);
+    buttons[i].setAttribute("aria-selected", active ? "true" : "false");
+  }
+}
+
+function renderSidePicks() {
+  if (!currentGame) return;
+  renderPicks(els.bluePicks, currentGame, "blue", blueRoster);
+  renderPicks(els.redPicks, currentGame, "red", redRoster);
 }
 
 function teamHref(name) {
@@ -838,35 +935,28 @@ function renderStyles(game) {
   if (!window.CompStyles) {
     setStyleChip(els.blueStyle, null);
     setStyleChip(els.redStyle, null);
-    if (els.styleNote) els.styleNote.hidden = true;
+    if (els.styleNote) {
+      els.styleNote.hidden = true;
+      els.styleNote.textContent = "";
+    }
     return;
   }
   const blueStyle = CompStyles.classify(game.b || []);
   const redStyle = CompStyles.classify(game.r || []);
   setStyleChip(els.blueStyle, blueStyle);
   setStyleChip(els.redStyle, redStyle);
-  if (!els.styleNote) return;
-  const note = CompStyles.matchup(blueStyle, redStyle);
-  if (!note) {
+  if (els.styleNote) {
     els.styleNote.hidden = true;
     els.styleNote.textContent = "";
-    return;
   }
-  els.styleNote.hidden = false;
-  els.styleNote.innerHTML =
-    '<a class="match-style-link" href="matches.html">' +
-    note.headline +
-    "</a><span class=\"muted\"> · " +
-    note.detail +
-    "</span>";
 }
 
 function render(game) {
   currentGame = game;
   const roster = playersOf(game);
   attachPerformance(roster);
-  const blue = roster.slice(0, 5);
-  const red = roster.slice(5, 10);
+  blueRoster = roster.slice(0, 5);
+  redRoster = roster.slice(5, 10);
   mvpPlayer = pickMvp(roster);
   els.title.textContent = game.bt + " vs " + game.rt;
   document.title = game.bt + " vs " + game.rt + " — Match preview";
@@ -888,8 +978,8 @@ function render(game) {
   renderStats(game, roster);
   renderBans(els.blueBans, game.bb);
   renderBans(els.redBans, game.rb);
-  renderPicks(els.bluePicks, game, "blue", blue);
-  renderPicks(els.redPicks, game, "red", red);
+  syncPickView();
+  renderSidePicks();
   const splashId = (mvpPlayer && mvpPlayer.id) || (focus && (game.b.indexOf(focus) !== -1 || game.r.indexOf(focus) !== -1) ? focus : game.b[2] || game.b[0]);
   if (splashId) {
     els.splash.style.backgroundImage = 'url("' + splashArt(splashId) + '")';
@@ -923,6 +1013,17 @@ function boot() {
         clearTimeout(hoverTimer);
       });
       els.player.addEventListener("mouseleave", clearHover);
+    }
+    if (els.pickView) {
+      els.pickView.addEventListener("click", function (event) {
+        const btn = event.target.closest("button[data-view]");
+        if (!btn) return;
+        const next = btn.getAttribute("data-view");
+        if (!next || next === pickView) return;
+        pickView = next;
+        syncPickView();
+        renderSidePicks();
+      });
     }
     render(game);
     showApp();
