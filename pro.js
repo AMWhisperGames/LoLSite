@@ -4,7 +4,7 @@ const ROLE_KEYS = ["top", "jng", "mid", "adc", "sup"];
 const LEAGUES = ["All", "LPL", "LCK", "LEC", "LCS", "Worlds", "MSI"];
 const SOLO = window.RIFT_META_MODE === "solo";
 const MIN_GAMES = 2;
-const SOLO_MIN_ROLE_GAMES = 1000;
+const SOLO_MIN_PICK_RATE = 0.003; // 0.3% pick share in the selected lane
 const RECENT_DAYS = 60;
 const META_POP_SCALE = 4.7;
 const META_POP_PRIOR_FLOOR = SOLO ? 400 : 8;
@@ -734,11 +734,8 @@ function buildRows(data) {
       }
     }
     if (!picks) continue;
-    if (SOLO) {
-      const listed = roleKey || primaryRole(counts);
-      const rolePicks = listed && counts[listed] ? counts[listed].picks : picks;
-      if (rolePicks < SOLO_MIN_ROLE_GAMES) continue;
-    }
+    const pickRate = data.games ? picks / data.games : 0;
+    if (SOLO && pickRate < SOLO_MIN_PICK_RATE) continue;
     const winRate = picks ? wins / picks : 0;
     wins = Math.round(wins);
     rows.push({
@@ -746,7 +743,7 @@ function buildRows(data) {
       name: champName(id),
       role: roleKey || primaryRole(counts),
       picks: picks,
-      pickRate: data.games ? picks / data.games : 0,
+      pickRate: pickRate,
       wins: wins,
       winRate: winRate,
       meta: 0,
