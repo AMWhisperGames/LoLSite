@@ -16,6 +16,21 @@ const META_UNIQUE = 8;
 const SHARP_COUNTER_DELTA = -2;
 const META_PRIOR = 18;
 const META_MIN_GAMES = 8;
+const DUO_MIN_GAME_OPTIONS = SOLO
+  ? [
+      { label: "8+", value: 8 },
+      { label: "100+", value: 100 },
+      { label: "500+", value: 500 },
+      { label: "1k+", value: 1000 },
+      { label: "2k+", value: 2000 },
+      { label: "5k+", value: 5000 },
+    ]
+  : [
+      { label: "8+", value: 8 },
+      { label: "15+", value: 15 },
+      { label: "25+", value: 25 },
+      { label: "50+", value: 50 },
+    ];
 const META_WR_PRIOR = 24;
 const HIGH_META_SHARE = 0.3;
 const HIGH_META_MIN = 6;
@@ -39,6 +54,7 @@ const els = {
   views: document.getElementById("pro-views"),
   roles: document.getElementById("pro-roles"),
   duoLens: document.getElementById("pro-duo-lens"),
+  duoGames: document.getElementById("pro-duo-games"),
   supportTags: document.getElementById("pro-support-tags"),
   windows: document.getElementById("pro-windows"),
   patches: document.getElementById("pro-patches"),
@@ -68,6 +84,7 @@ let role = "All";
 let viewMode = "champ"; // champ | duo
 let duoRoles = ["adc", "sup"]; // up to two role keys
 let duoLens = "pair"; // pair | vs
+let duoMinGames = META_MIN_GAMES;
 let windowKey = "recent";
 let gamePatch = "All";
 let sortKey = "meta";
@@ -784,7 +801,7 @@ function buildDuoRows(data) {
   function pushPair(idA, idB, games, wins, score) {
     if (!idA || !idB || idA === idB) return;
     if (!poolA[idA] || !poolB[idB]) return;
-    if (!games || games < META_MIN_GAMES) return;
+    if (!games || games < duoMinGames) return;
     const key = duoId(idA, idB);
     if (seen[key] && seen[key] >= games) return;
     seen[key] = games;
@@ -826,7 +843,7 @@ function buildDuoRows(data) {
         const idB = them[j];
         if (!poolB[idB]) continue;
         const rec = vsMap[idB];
-        if (!rec || rec.games < META_MIN_GAMES) continue;
+        if (!rec || rec.games < duoMinGames) continue;
         const d = delta(rec.wins, rec.games);
         pushPair(idA, idB, rec.games, rec.wins, d);
       }
@@ -1160,6 +1177,31 @@ function renderChips() {
           render();
         }
       );
+    }
+  }
+  if (els.duoGames) {
+    els.duoGames.hidden = !isDuoView();
+    if (isDuoView()) {
+      const labels = DUO_MIN_GAME_OPTIONS.map(function (opt) {
+        return opt.label;
+      });
+      let current = DUO_MIN_GAME_OPTIONS[0].label;
+      for (let i = 0; i < DUO_MIN_GAME_OPTIONS.length; i += 1) {
+        if (DUO_MIN_GAME_OPTIONS[i].value === duoMinGames) {
+          current = DUO_MIN_GAME_OPTIONS[i].label;
+          break;
+        }
+      }
+      chipRow(els.duoGames, labels, current, function (name) {
+        for (let i = 0; i < DUO_MIN_GAME_OPTIONS.length; i += 1) {
+          if (DUO_MIN_GAME_OPTIONS[i].label === name) {
+            duoMinGames = DUO_MIN_GAME_OPTIONS[i].value;
+            break;
+          }
+        }
+        selected = "";
+        render();
+      });
     }
   }
   if (!SOLO) {
