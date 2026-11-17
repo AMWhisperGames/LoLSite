@@ -1953,6 +1953,47 @@ select:hover,
   align-items: center;
   gap: 8px;
   font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.support-tag-stack {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.support-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--support-tag, #8a96a3);
+  background: color-mix(in srgb, var(--support-tag, #8a96a3) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--support-tag, #8a96a3) 45%, transparent);
+}
+
+.support-tag.is-secondary {
+  opacity: 0.78;
+  font-weight: 600;
+}
+
+.pro-side-head .support-tag-stack {
+  margin: 6px 0 2px;
+}
+
+.pro-champ .support-tag {
+  font-size: 9px;
+  padding: 0 5px;
+}
+
+.pro-champ-duo img + img {
+  margin-left: -8px;
+  box-shadow: -1px 0 0 rgba(10, 14, 18, 0.85);
 }
 
 .pro-champ img {

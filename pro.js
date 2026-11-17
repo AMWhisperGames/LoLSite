@@ -36,14 +36,19 @@ const els = {
   teamMenu: document.getElementById("pro-team-menu"),
   teamChips: document.getElementById("pro-team-chips"),
   leagues: document.getElementById("pro-leagues"),
+  views: document.getElementById("pro-views"),
   roles: document.getElementById("pro-roles"),
+  duoLens: document.getElementById("pro-duo-lens"),
+  supportTags: document.getElementById("pro-support-tags"),
   windows: document.getElementById("pro-windows"),
   patches: document.getElementById("pro-patches"),
   vs: document.getElementById("pro-vs"),
   pair: document.getElementById("pro-pair"),
+  head: document.getElementById("pro-head"),
   body: document.getElementById("pro-body"),
   detailName: document.getElementById("detail-name"),
   detailSub: document.getElementById("detail-sub"),
+  detailSupportTags: document.getElementById("detail-support-tags"),
   detailGames: document.getElementById("detail-games"),
   matchBody: document.getElementById("match-body"),
   pairBody: document.getElementById("pair-body"),
@@ -60,6 +65,9 @@ let search = "";
 let league = "All";
 let team = "";
 let role = "All";
+let viewMode = "champ"; // champ | duo
+let duoRoles = ["adc", "sup"]; // up to two role keys
+let duoLens = "pair"; // pair | vs
 let windowKey = "recent";
 let gamePatch = "All";
 let sortKey = "meta";
@@ -67,10 +75,33 @@ let sortDir = -1;
 let selected = "";
 let vsRole = "All";
 let pairRole = "All";
+let supportTag = "All";
 let matchSort = "games";
 let matchDir = -1;
 let pairSort = "games";
 let pairDir = -1;
+
+function isDuoView() {
+  return viewMode === "duo";
+}
+
+function duoRolePair() {
+  if (!duoRoles || duoRoles.length !== 2) return null;
+  const a = duoRoles[0];
+  const b = duoRoles[1];
+  if (!a || !b || a === b) return null;
+  return { a: a, b: b };
+}
+
+function duoId(a, b) {
+  return String(a || "") + "|" + String(b || "");
+}
+
+function parseDuoId(id) {
+  const parts = String(id || "").split("|");
+  if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+  return { a: parts[0], b: parts[1] };
+}
 
 function portrait(id) {
   return DDRAGON + "/cdn/" + patch + "/img/champion/" + id + ".png";
@@ -714,7 +745,155 @@ function primaryRole(counts) {
   return best;
 }
 
+function rolePool(data, roleKey) {
+  const out = {};
+  const lanes = (window.RIFT_WINRATES && window.RIFT_WINRATES.lanes) || {};
+  const ids = Object.keys(data.stats || {});
+  for (let i = 0; i < ids.length; i += 1) {
+    const id = ids[i];
+    const counts = data.stats[id];
+    if (!counts || !counts[roleKey] || !counts[roleKey].picks) continue;
+    if (SOLO) {
+      if (!soloInRole(id, roleKey, lanes)) continue;
+      const laneGames = counts[roleKey].picks;
+      const pickRate = data.games ? laneGames / data.games : 0;
+      if (pickRate < SOLO_MIN_PICK_RATE) continue;
+    }
+    out[id] = counts[roleKey];
+  }
+  return out;
+}
+
+function buildDuoRows(data) {
+  const pair = duoRolePair();
+  const q = search.trim().toLowerCase();
+  if (!pair) return [];
+  const poolA = rolePool(data, pair.a);
+  const poolB = rolePool(data, pair.b);
+  const rows = [];
+  const seen = {};
+
+  function pushPair(idA, idB, games, wins, score) {
+    if (!idA || !idB || idA === idB) return;
+    if (!poolA[idA] || !poolB[idB]) return;
+    if (!games || games < META_MIN_GAMES) return;
+    const key = duoId(idA, idB);
+    if (seen[key] && seen[key] >= games) return;
+    seen[key] = games;
+    const winRate = wins / games;
+    const pickRate = data.games ? games / data.games : 0;
+    const existing = rows.find(function (r) {
+      return r.id === key;
+    });
+    const row = {
+      id: key,
+      name: champName(idA) + " + " + champName(idB),
+      a: idA,
+      b: idB,
+      roleA: pair.a,
+      roleB: pair.b,
+      role: pair.a + "+" + pair.b,
+      picks: games,
+      pickRate: pickRate,
+      wins: Math.round(wins),
+      winRate: winRate,
+      score: score,
+      meta: score,
+      potential: null,
+    };
+    if (existing) {
+      Object.assign(existing, row);
+    } else {
+      rows.push(row);
+    }
+  }
+
+  if (duoLens === "vs") {
+    const idsA = Object.keys(poolA);
+    for (let i = 0; i < idsA.length; i += 1) {
+      const idA = idsA[i];
+      const vsMap = (data.matchupsAll && data.matchupsAll[idA]) || {};
+      const them = Object.keys(vsMap);
+      for (let j = 0; j < them.length; j += 1) {
+        const idB = them[j];
+        if (!poolB[idB]) continue;
+        const rec = vsMap[idB];
+        if (!rec || rec.games < META_MIN_GAMES) continue;
+        const d = delta(rec.wins, rec.games);
+        pushPair(idA, idB, rec.games, rec.wins, d);
+      }
+    }
+  } else if (SOLO) {
+    const synergies = (window.RIFT_SYNERGIES && window.RIFT_SYNERGIES.synergies) || {};
+    const idsA = Object.keys(poolA);
+    for (let i = 0; i < idsA.length; i += 1) {
+      const idA = idsA[i];
+      const mates = synergies[idA] || {};
+      const mateIds = Object.keys(mates);
+      for (let j = 0; j < mateIds.length; j += 1) {
+        const idB = mateIds[j];
+        if (!poolB[idB]) continue;
+        const entry = mates[idB];
+        if (!entry || (entry.role && entry.role !== pair.b)) continue;
+        const games = entry.games || 0;
+        if (!games) continue;
+        const shift = typeof entry.delta === "number" ? entry.delta : 0;
+        const wins = games * (0.5 + shift / 100);
+        pushPair(idA, idB, games, wins, shift);
+      }
+    }
+  } else {
+    const roleIdx = { top: 0, jng: 1, mid: 2, adc: 3, sup: 4 };
+    const ia = roleIdx[pair.a];
+    const ib = roleIdx[pair.b];
+    const games = filteredGames();
+    const tallyMap = {};
+    for (let g = 0; g < games.length; g += 1) {
+      const game = games[g];
+      const sides = [
+        { champs: game.b, win: game.w === 1 },
+        { champs: game.r, win: game.w === 0 },
+      ];
+      for (let s = 0; s < 2; s += 1) {
+        const side = sides[s];
+        const idA = side.champs && side.champs[ia];
+        const idB = side.champs && side.champs[ib];
+        if (!idA || !idB || !poolA[idA] || !poolB[idB]) continue;
+        const key = duoId(idA, idB);
+        if (!tallyMap[key]) tallyMap[key] = { a: idA, b: idB, games: 0, wins: 0 };
+        tallyMap[key].games += 1;
+        if (side.win) tallyMap[key].wins += 1;
+      }
+    }
+    const keys = Object.keys(tallyMap);
+    for (let i = 0; i < keys.length; i += 1) {
+      const rec = tallyMap[keys[i]];
+      pushPair(rec.a, rec.b, rec.games, rec.wins, delta(rec.wins, rec.games));
+    }
+  }
+
+  const shown = [];
+  for (let i = 0; i < rows.length; i += 1) {
+    const row = rows[i];
+    if (
+      q &&
+      row.name.toLowerCase().indexOf(q) === -1 &&
+      row.a.toLowerCase().indexOf(q) === -1 &&
+      row.b.toLowerCase().indexOf(q) === -1 &&
+      champName(row.a).toLowerCase().indexOf(q) === -1 &&
+      champName(row.b).toLowerCase().indexOf(q) === -1
+    ) {
+      continue;
+    }
+    shown.push(row);
+  }
+  const key = sortKey === "meta" || sortKey === "potential" ? "score" : sortKey;
+  const dir = sortKey === "meta" || sortKey === "potential" ? sortDir : sortDir;
+  return sortRows(shown, key === "name" ? "name" : key === "role" ? "role" : key, dir);
+}
+
 function buildRows(data) {
+  if (isDuoView()) return buildDuoRows(data);
   const q = search.trim().toLowerCase();
   const rows = [];
   const rates = pickRates(data);
@@ -768,11 +947,15 @@ function buildRows(data) {
   }
   attachPotential(rows, data);
   const shown = [];
+  const tagApi = window.SupportTags;
   for (let i = 0; i < rows.length; i += 1) {
     const row = rows[i];
     const champ = champMap.get(row.id);
     if (q && (!champ || champ.name.toLowerCase().indexOf(q) === -1) && row.id.toLowerCase().indexOf(q) === -1) {
       continue;
+    }
+    if (supportTag !== "All" && tagApi) {
+      if (!tagApi.hasTag(row.id, supportTag.toLowerCase())) continue;
     }
     shown.push(row);
   }
@@ -871,20 +1054,165 @@ function chipRow(root, items, current, onPick) {
   }
 }
 
+function chipRowMulti(root, items, activeSet, onToggle) {
+  root.innerHTML = "";
+  for (let i = 0; i < items.length; i += 1) {
+    const name = items[i];
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = name;
+    if (activeSet[name.toLowerCase()] || activeSet[name]) button.className = "active";
+    button.addEventListener("click", function () {
+      onToggle(name);
+    });
+    root.append(button);
+  }
+}
+
+function renderTableHead() {
+  if (!els.head) return;
+  els.head.innerHTML = "";
+  const tr = document.createElement("tr");
+  function th(label, key, title, num) {
+    const cell = document.createElement("th");
+    if (num) cell.className = "sort-num";
+    cell.setAttribute("data-sort", key);
+    cell.textContent = label;
+    if (title) cell.title = title;
+    cell.addEventListener("click", function () {
+      if (sortKey === key) sortDir *= -1;
+      else {
+        sortKey = key;
+        sortDir = key === "name" || key === "role" ? 1 : -1;
+      }
+      render();
+    });
+    tr.append(cell);
+  }
+  if (isDuoView()) {
+    th("Duo", "name");
+    th("Roles", "role");
+    th(duoLens === "vs" ? "Counter" : "Pairing", "score", null, true);
+    th("Games", "picks", null, true);
+    th("Pick%", "pickRate", null, true);
+    th("Wins", "wins", null, true);
+    th("WR", "winRate", null, true);
+  } else {
+    th("Champion", "name");
+    th("Role", "role");
+    th("Meta", "meta", "Blind-picks popularity into this filter (winrate and safety off)", true);
+    th(
+      "Potential",
+      "potential",
+      "Counters, pairings, and role uniqueness into the current high-meta pool, relative to Meta",
+      true
+    );
+    th("Picks", "picks", null, true);
+    th("Pick%", "pickRate", null, true);
+    th("Wins", "wins", null, true);
+    th("WR", "winRate", null, true);
+  }
+  els.head.append(tr);
+}
+
 function renderChips() {
   if (els.leagues) els.leagues.hidden = SOLO;
   if (els.windows) els.windows.hidden = SOLO;
   if (els.patches) els.patches.hidden = SOLO;
+  if (els.views) {
+    chipRow(els.views, ["Champs", "Duos"], isDuoView() ? "Duos" : "Champs", function (name) {
+      const next = name === "Duos" ? "duo" : "champ";
+      if (viewMode === next) return;
+      viewMode = next;
+      selected = "";
+      if (viewMode === "duo") {
+        if (duoRoles.length !== 2) duoRoles = ["adc", "sup"];
+        sortKey = "score";
+        sortDir = -1;
+      } else {
+        sortKey = "meta";
+        sortDir = -1;
+      }
+      render();
+    });
+  }
+  if (els.duoLens) {
+    els.duoLens.hidden = !isDuoView();
+    if (isDuoView()) {
+      chipRow(
+        els.duoLens,
+        ["Pairings", "Counters"],
+        duoLens === "vs" ? "Counters" : "Pairings",
+        function (name) {
+          duoLens = name === "Counters" ? "vs" : "pair";
+          selected = "";
+          sortKey = "score";
+          sortDir = -1;
+          render();
+        }
+      );
+    }
+  }
   if (!SOLO) {
     chipRow(els.leagues, LEAGUES, league, function (name) {
       league = name;
       render();
     });
   }
-  chipRow(els.roles, ROLES, role, function (name) {
-    role = name;
-    render();
-  });
+  if (isDuoView()) {
+    const active = {};
+    for (let i = 0; i < duoRoles.length; i += 1) active[duoRoles[i]] = true;
+    chipRowMulti(els.roles, ROLE_KEYS.map(function (k) { return k.toUpperCase(); }), active, function (name) {
+      const key = name.toLowerCase();
+      const idx = duoRoles.indexOf(key);
+      if (idx >= 0) {
+        duoRoles = duoRoles.filter(function (r) {
+          return r !== key;
+        });
+      } else {
+        duoRoles = duoRoles.concat([key]).slice(-2);
+      }
+      selected = "";
+      render();
+    });
+  } else {
+    chipRow(els.roles, ROLES, role, function (name) {
+      role = name;
+      if (name !== "SUP" && name !== "All") supportTag = "All";
+      render();
+    });
+  }
+  if (els.supportTags && window.SupportTags) {
+    const showTags = SOLO && !isDuoView() && (role === "SUP" || role === "All");
+    els.supportTags.hidden = !showTags;
+    if (showTags) {
+      const labels = ["All"].concat(
+        window.SupportTags.TAG_ORDER.map(function (id) {
+          return window.SupportTags.TAGS[id].label;
+        })
+      );
+      const current =
+        supportTag === "All"
+          ? "All"
+          : (window.SupportTags.TAGS[supportTag] && window.SupportTags.TAGS[supportTag].label) || "All";
+      chipRow(els.supportTags, labels, current, function (name) {
+        if (name === "All") supportTag = "All";
+        else {
+          const order = window.SupportTags.TAG_ORDER;
+          supportTag = "All";
+          for (let i = 0; i < order.length; i += 1) {
+            if (window.SupportTags.TAGS[order[i]].label === name) {
+              supportTag = order[i];
+              break;
+            }
+          }
+        }
+        render();
+      });
+    }
+  } else if (els.supportTags) {
+    els.supportTags.hidden = true;
+  }
   if (!SOLO) {
     RIFT_WINDOW.mount(els.windows, function () {
       windowKey = RIFT_WINDOW.key;
@@ -915,12 +1243,22 @@ function renderChips() {
 function renderTable(data) {
   const rows = buildRows(data);
   els.body.innerHTML = "";
+  if (isDuoView() && !duoRolePair()) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 7;
+    td.className = "pick-empty";
+    td.textContent = "Pick two roles to see duo pairings and counters.";
+    tr.append(td);
+    els.body.append(tr);
+    return;
+  }
   if (!rows.length) {
     const tr = document.createElement("tr");
     const td = document.createElement("td");
-    td.colSpan = 8;
+    td.colSpan = isDuoView() ? 7 : 8;
     td.className = "pick-empty";
-    td.textContent = "No champions match that filter.";
+    td.textContent = isDuoView() ? "No duos match that filter." : "No champions match that filter.";
     tr.append(td);
     els.body.append(tr);
     return;
@@ -931,8 +1269,49 @@ function renderTable(data) {
     if (row.id === selected) tr.className = "active";
     tr.addEventListener("click", function () {
       selected = row.id;
+      if (isDuoView() && row.a && row.b) {
+        vsRole = row.roleA ? row.roleA.toUpperCase() : "All";
+        pairRole = row.roleB ? row.roleB.toUpperCase() : "All";
+      }
       render();
     });
+
+    if (isDuoView()) {
+      const champ = document.createElement("td");
+      const wrap = document.createElement("div");
+      wrap.className = "pro-champ pro-champ-duo";
+      const imgA = document.createElement("img");
+      imgA.src = portrait(row.a);
+      imgA.alt = champName(row.a);
+      const imgB = document.createElement("img");
+      imgB.src = portrait(row.b);
+      imgB.alt = champName(row.b);
+      const name = document.createElement("span");
+      name.textContent = row.name;
+      wrap.append(imgA, imgB, name);
+      champ.append(wrap);
+
+      const roleCell = document.createElement("td");
+      roleCell.className = "pro-role";
+      roleCell.textContent = roleLabel(row.roleA) + " + " + roleLabel(row.roleB);
+
+      const score = document.createElement("td");
+      score.className = "num " + (row.score >= 0 ? "wr-up" : "wr-down");
+      score.textContent = fmtDelta(row.score);
+
+      tr.append(
+        champ,
+        roleCell,
+        score,
+        numCell(row.picks),
+        numCell(row.pickRate, "pct"),
+        numCell(row.wins),
+        numCell(row.winRate, "pct")
+      );
+      els.body.append(tr);
+      continue;
+    }
+
     const champ = document.createElement("td");
     const wrap = document.createElement("div");
     wrap.className = "pro-champ";
@@ -942,6 +1321,14 @@ function renderTable(data) {
     const name = document.createElement("span");
     name.textContent = row.name;
     wrap.append(img, name);
+    if (window.SupportTags && (row.role === "sup" || role === "SUP")) {
+      const tags = window.SupportTags.chipHtml(row.id, { compact: true });
+      if (tags) {
+        const tagWrap = document.createElement("span");
+        tagWrap.innerHTML = tags;
+        wrap.append(tagWrap);
+      }
+    }
     champ.append(wrap);
 
     const roleCell = document.createElement("td");
@@ -1066,20 +1453,31 @@ function fillScoreTable(root, rows, emptyText) {
 function renderDetail(data) {
   if (!selected) {
     els.detailName.textContent = "Related champs";
-    els.detailSub.textContent = "Select a champion.";
+    els.detailSub.textContent = isDuoView()
+      ? "Select a duo from the list."
+      : "Select a champion.";
     els.detailGames.hidden = true;
+    if (els.detailSupportTags) {
+      els.detailSupportTags.hidden = true;
+      els.detailSupportTags.innerHTML = "";
+    }
     fillScoreTable(els.matchBody, [], "");
     fillScoreTable(els.pairBody, [], "");
     return;
   }
-  const vsMap = (data.matchupsAll || data.matchupsLane)[selected] || {};
-  const pairMap = (data.pairs && data.pairs[selected]) || {};
+  const duo = isDuoView() ? parseDuoId(selected) : null;
+  const focusId = duo ? duo.a : selected;
+  const vsMap = (data.matchupsAll || data.matchupsLane)[focusId] || {};
+  const pairMap = (data.pairs && data.pairs[focusId]) || {};
   const vsRows = scoreRows(vsMap, matchSort, matchDir, vsRole, data);
   const pairRows = scoreRows(pairMap, pairSort, pairDir, pairRole, data);
-  els.detailName.textContent = champName(selected);
+  els.detailName.textContent = duo
+    ? champName(duo.a) + " + " + champName(duo.b)
+    : champName(selected);
   const vsLabel = vsRole === "All" ? "all roles" : vsRole;
   const pairLabel = pairRole === "All" ? "all roles" : pairRole;
   els.detailSub.textContent =
+    (duo ? champName(duo.a) + " focus · " : "") +
     "Counters " +
     vsLabel +
     " · pairings " +
@@ -1087,13 +1485,23 @@ function renderDetail(data) {
     " · " +
     MIN_GAMES +
     "+ games";
-  if (SOLO) {
+  if (els.detailSupportTags) {
+    const tagId = duo ? duo.b : selected;
+    if (window.SupportTags && window.SupportTags.tagsOf(tagId).length) {
+      els.detailSupportTags.hidden = false;
+      els.detailSupportTags.innerHTML = window.SupportTags.chipHtml(tagId);
+    } else {
+      els.detailSupportTags.hidden = true;
+      els.detailSupportTags.innerHTML = "";
+    }
+  }
+  if (SOLO || duo) {
     els.detailGames.hidden = true;
   } else {
     els.detailGames.hidden = false;
     els.detailGames.href =
       "games.html?champ=" +
-      encodeURIComponent(selected) +
+      encodeURIComponent(focusId) +
       "&league=" +
       encodeURIComponent(league) +
       "&window=" +
@@ -1111,7 +1519,7 @@ function renderPlayers() {
   const root = els.players;
   const body = els.playerBody;
   if (!root || !body) return;
-  if (SOLO || !selected) {
+  if (SOLO || isDuoView() || !selected || parseDuoId(selected)) {
     root.hidden = true;
     if (els.board) els.board.classList.remove("has-players");
     return;
@@ -1173,8 +1581,12 @@ function render() {
     if (team && teams.indexOf(team) === -1) team = "";
   }
   const data = tally();
+  if (els.search) {
+    els.search.placeholder = isDuoView() ? "Search duos" : "Search champions";
+  }
   renderMeta(data);
   renderChips();
+  renderTableHead();
   renderTable(data);
   renderDetail(data);
   renderPlayers();
@@ -1258,17 +1670,6 @@ function bind() {
       pickTeam(hits[0]);
     });
   }
-  document.querySelectorAll(".pro-table th[data-sort]").forEach(function (th) {
-    th.addEventListener("click", function () {
-      const key = th.getAttribute("data-sort");
-      if (sortKey === key) sortDir *= -1;
-      else {
-        sortKey = key;
-        sortDir = key === "name" || key === "role" ? 1 : -1;
-      }
-      render();
-    });
-  });
   document.querySelectorAll(".pro-table th[data-match-sort]").forEach(function (th) {
     th.addEventListener("click", function () {
       const key = th.getAttribute("data-match-sort");

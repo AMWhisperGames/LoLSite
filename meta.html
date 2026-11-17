@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=62" />
+    <link rel="stylesheet" href="styles.css?v=70" />
   </head>
   <body>
     <div class="vignette"></div>
@@ -67,14 +67,17 @@
               autocomplete="off"
               spellcheck="false"
             />
+            <div id="pro-views" class="chips" role="tablist" aria-label="View mode"></div>
             <div id="pro-leagues" class="chips" role="tablist" aria-label="Leagues" hidden></div>
             <div id="pro-roles" class="chips" role="tablist" aria-label="Positions"></div>
+            <div id="pro-duo-lens" class="chips" role="tablist" aria-label="Duo lens" hidden></div>
+            <div id="pro-support-tags" class="chips" role="tablist" aria-label="Support tags" hidden></div>
             <div id="pro-windows" class="pro-windows chips" role="tablist" aria-label="Time window" hidden></div>
             <div id="pro-patches" class="chips" role="tablist" aria-label="Patches" hidden></div>
           </div>
           <div class="pro-table-wrap">
             <table class="pro-table">
-              <thead>
+              <thead id="pro-head">
                 <tr>
                   <th data-sort="name">Champion</th>
                   <th data-sort="role">Role</th>
@@ -95,6 +98,7 @@
           <div class="pro-side-head">
             <h3 id="detail-name">Related champs</h3>
             <p id="detail-sub" class="muted">Select a champion.</p>
+            <div id="detail-support-tags" class="support-tag-stack" hidden></div>
             <a id="detail-games" class="detail-link" hidden>Recent games</a>
           </div>
           <div class="pro-block">
@@ -146,7 +150,8 @@
     <script src="winrates.js"></script>
     <script src="counters.js"></script>
     <script src="synergies.js"></script>
+    <script src="support-tags.js?v=1"></script>
     <script src="window-days.js"></script>
-    <script src="pro.js?v=7"></script>
+    <script src="pro.js?v=9"></script>
   </body>
 </html>
