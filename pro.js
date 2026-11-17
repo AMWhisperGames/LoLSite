@@ -294,7 +294,15 @@ function windowGames() {
 function deltaRec(entry) {
   const games = (entry && entry.games) || 0;
   const shift = entry && typeof entry.delta === "number" ? entry.delta : 0;
-  return { games: games, wins: games * (0.5 + shift / 100) };
+  const wrPct =
+    entry && typeof entry.wr === "number"
+      ? entry.wr <= 1.5
+        ? entry.wr * 100
+        : entry.wr
+      : 50 + shift;
+  const rec = { games: games, wins: games * (wrPct / 100) };
+  if (entry && entry.role) rec.role = entry.role;
+  return rec;
 }
 
 function soloLane(id, roleKey, lanes) {
@@ -838,7 +846,8 @@ function buildDuoRows(data) {
         const games = entry.games || 0;
         if (!games) continue;
         const shift = typeof entry.delta === "number" ? entry.delta : 0;
-        const wins = games * (0.5 + shift / 100);
+        const wrPct = typeof entry.wr === "number" ? entry.wr : 50 + shift;
+        const wins = games * (wrPct / 100);
         pushPair(idA, idB, games, wins, shift);
       }
     }

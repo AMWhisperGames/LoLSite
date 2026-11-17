@@ -69,11 +69,23 @@ def convert(csv_path: Path, champions_js: Path, out_path: Path) -> None:
                 games = int(str(row.get("games") or "0").replace(",", ""))
             except (TypeError, ValueError):
                 continue
+            wr = None
+            raw_wr = (row.get("winrate") or "").strip()
+            if raw_wr:
+                try:
+                    wr = round(float(raw_wr), 2)
+                    # LoLalytics may send 0–1 or 0–100.
+                    if wr <= 1.5:
+                        wr = round(wr * 100, 2)
+                except (TypeError, ValueError):
+                    wr = None
             role = LANE_KEYS.get((row.get("teammate_lane") or "").strip().lower(), "")
             current = pairs.setdefault(main_id, {}).get(mate_id)
             if current and current.get("games", 0) >= games:
                 continue
             entry = {"delta": delta, "games": games}
+            if wr is not None:
+                entry["wr"] = wr
             if role:
                 entry["role"] = role
             pairs[main_id][mate_id] = entry
