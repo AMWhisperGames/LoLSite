@@ -40,6 +40,7 @@ const els = {
   windows: document.getElementById("pro-windows"),
   patches: document.getElementById("pro-patches"),
   vs: document.getElementById("pro-vs"),
+  pair: document.getElementById("pro-pair"),
   body: document.getElementById("pro-body"),
   detailName: document.getElementById("detail-name"),
   detailSub: document.getElementById("detail-sub"),
@@ -64,7 +65,8 @@ let gamePatch = "All";
 let sortKey = "meta";
 let sortDir = -1;
 let selected = "";
-let vsScope = "role";
+let vsRole = "All";
+let pairRole = "All";
 let matchSort = "games";
 let matchDir = -1;
 let pairSort = "games";
@@ -342,8 +344,10 @@ function soloTally() {
     pairs[id] = {};
     for (let j = 0; j < pairIds.length; j += 1) {
       const them = pairIds[j];
-      const rec = deltaRec(syn[them]);
+      const entry = syn[them];
+      const rec = deltaRec(entry);
       if (!rec.games) continue;
+      if (entry && entry.role) rec.role = entry.role;
       pairs[id][them] = rec;
     }
   }
@@ -790,7 +794,21 @@ function sortRows(rows, key, dir) {
   return rows;
 }
 
-function scoreRows(map, sortKey, sortDir) {
+function relatedInRole(id, roleName, data) {
+  const roleKey = !roleName || roleName === "All" ? "" : roleName.toLowerCase();
+  if (!roleKey) return true;
+  if (SOLO) {
+    const lanes = (window.RIFT_WINRATES && window.RIFT_WINRATES.lanes) || {};
+    return soloInRole(id, roleKey, lanes);
+  }
+  const counts = (data && data.stats && data.stats[id]) || null;
+  if (!counts) return false;
+  if (counts[roleKey] && counts[roleKey].picks) return true;
+  return primaryRole(counts) === roleKey;
+}
+
+function scoreRows(map, sortKey, sortDir, roleName, data) {
+  const roleKey = !roleName || roleName === "All" ? "" : roleName.toLowerCase();
   const ids = Object.keys(map || {});
   const rows = [];
   for (let i = 0; i < ids.length; i += 1) {
@@ -798,12 +816,20 @@ function scoreRows(map, sortKey, sortDir) {
     if (id === selected) continue;
     const rec = map[id];
     if (!rec || rec.games < MIN_GAMES) continue;
+    if (roleKey) {
+      if (rec.role) {
+        if (rec.role !== roleKey) continue;
+      } else if (!relatedInRole(id, roleName, data)) {
+        continue;
+      }
+    }
     rows.push({
       id: id,
       name: champName(id),
       games: rec.games,
       winRate: rec.games ? rec.wins / rec.games : null,
       score: delta(rec.wins, rec.games),
+      role: rec.role || "",
     });
   }
   return sortRows(rows, sortKey, sortDir);
@@ -874,10 +900,16 @@ function renderChips() {
     if (team && teams.indexOf(team) === -1) team = "";
     renderTeamChips();
   }
-  chipRow(els.vs, ["Same role", "All champs"], vsScope === "all" ? "All champs" : "Same role", function (name) {
-    vsScope = name === "All champs" ? "all" : "role";
+  chipRow(els.vs, ROLES, vsRole, function (name) {
+    vsRole = name;
     render();
   });
+  if (els.pair) {
+    chipRow(els.pair, ROLES, pairRole, function (name) {
+      pairRole = name;
+      render();
+    });
+  }
 }
 
 function renderTable(data) {
@@ -1040,13 +1072,18 @@ function renderDetail(data) {
     fillScoreTable(els.pairBody, [], "");
     return;
   }
-  const vsMap = (vsScope === "all" ? data.matchupsAll : data.matchupsLane)[selected] || {};
-  const pairMap = data.pairs[selected] || {};
-  const vsRows = scoreRows(vsMap, matchSort, matchDir);
-  const pairRows = scoreRows(pairMap, pairSort, pairDir);
+  const vsMap = (data.matchupsAll || data.matchupsLane)[selected] || {};
+  const pairMap = (data.pairs && data.pairs[selected]) || {};
+  const vsRows = scoreRows(vsMap, matchSort, matchDir, vsRole, data);
+  const pairRows = scoreRows(pairMap, pairSort, pairDir, pairRole, data);
   els.detailName.textContent = champName(selected);
+  const vsLabel = vsRole === "All" ? "all roles" : vsRole;
+  const pairLabel = pairRole === "All" ? "all roles" : pairRole;
   els.detailSub.textContent =
-    (vsScope === "all" ? "Matchups vs all enemy champs" : "Matchups vs same role") +
+    "Counters " +
+    vsLabel +
+    " · pairings " +
+    pairLabel +
     " · " +
     MIN_GAMES +
     "+ games";

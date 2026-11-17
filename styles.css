@@ -4465,7 +4465,7 @@ body.home-page {
 
 .bubble-detail-cols li button {
   display: grid;
-  grid-template-columns: 22px 1fr auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px;
   width: 100%;
@@ -4487,6 +4487,14 @@ body.home-page {
   height: 22px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.bubble-detail-cols li button img + img {
+  margin-left: -6px;
+}
+
+.bubble-tools .filter-menu img + img {
+  margin-left: -6px;
 }
 
 .bubble-detail-cols em {

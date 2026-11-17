@@ -7,13 +7,18 @@
     { id: "pro", label: "Pro" },
     { id: "solo", label: "Solo" },
   ];
+  const VIEWS = [
+    { id: "champ", label: "Champs" },
+    { id: "duo", label: "Duos" },
+  ];
   const EDGE_PRIOR = 20;
   const MIN_STRENGTH = 3; // overview graph only; focus uses min-games alone
   const MAX_EDGE_PER_NODE = 6;
-  const MAX_FOCUS_LINKS = 24;
   const ELO_SCALE = 400;
   const TEAM_SCORE_ELO = 14;
-  const SOLO_LANE_PCT = 8;
+  const MIN_ROLE_PRESENCE = 5; // % of a champ's games that must be in the filtered role
+  const DUO_ADC = "adc";
+  const DUO_SUP = "sup";
 
   const els = {
     boot: document.getElementById("boot"),
@@ -24,10 +29,12 @@
     hint: document.getElementById("bubble-hint"),
     search: document.getElementById("bubble-search"),
     searchMenu: document.getElementById("bubble-search-menu"),
+    views: document.getElementById("bubble-views"),
     sources: document.getElementById("bubble-sources"),
     leagues: document.getElementById("bubble-leagues"),
     roles: document.getElementById("bubble-roles"),
     windows: document.getElementById("bubble-windows"),
+    network: document.getElementById("bubble-network"),
     topn: document.getElementById("bubble-topn"),
     topnVal: document.getElementById("bubble-topn-val"),
     minGames: document.getElementById("bubble-mingames"),
@@ -53,10 +60,12 @@
   let champMap = new Map();
   let bundle = { games: [], leagues: LEAGUES.filter(function (l) { return l !== "All"; }), to: "" };
   let source = "pro"; // pro = Oracle's Elixir, solo = LoLalytics
+  let viewMode = "champ"; // champ | duo (ADC+SUP)
   let league = "All";
   let role = "MID";
   let topN = 36;
   let minGames = 8;
+  let showNetwork = false;
   let selected = "";
   let hoverId = "";
   let hoverEdge = null;
@@ -197,6 +206,30 @@
     return source !== "solo";
   }
 
+  function isDuo() {
+    return viewMode === "duo";
+  }
+
+  function duoKey(adc, sup) {
+    return String(adc || "") + "|" + String(sup || "");
+  }
+
+  function parseDuo(id) {
+    const parts = String(id || "").split("|");
+    if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
+    return { adc: parts[0], sup: parts[1] };
+  }
+
+  function duoLabel(id) {
+    const pair = parseDuo(id);
+    if (!pair) return champName(id);
+    return champName(pair.adc) + " + " + champName(pair.sup);
+  }
+
+  function nodeLabel(id) {
+    return isDuo() ? duoLabel(id) : champName(id);
+  }
+
   function soloLane(id, roleKey) {
     const lanes = (window.RIFT_WINRATES && window.RIFT_WINRATES.lanes) || {};
     const lane = lanes[roleKey];
@@ -205,22 +238,7 @@
 
   function soloInRole(id, roleKey) {
     const rec = soloLane(id, roleKey);
-    if (rec && (rec.lane_pct || 0) >= SOLO_LANE_PCT) return true;
-    if (rec && (rec.games || 0) > 0) {
-      // Primary role fallback.
-      let best = "";
-      let n = 0;
-      for (let i = 0; i < ROLE_KEYS.length; i += 1) {
-        const row = soloLane(id, ROLE_KEYS[i]);
-        const games = row && row.games ? row.games : 0;
-        if (games > n) {
-          n = games;
-          best = ROLE_KEYS[i];
-        }
-      }
-      return best === roleKey;
-    }
-    return false;
+    return !!(rec && (rec.lane_pct || 0) >= MIN_ROLE_PRESENCE);
   }
 
   function soloTally() {
@@ -238,6 +256,7 @@
       const rec = champs[id];
       const games = rec && rec.games ? rec.games : 0;
       if (!games) continue;
+      if ((rec.lane_pct || 0) < MIN_ROLE_PRESENCE) continue;
       const wr = ((rec.wr != null ? rec.wr : 50) / 100);
       const wins = games * wr;
       const exp = games * 0.5;
@@ -289,13 +308,35 @@
   }
 
   function proTally(games) {
+    const roleKey = role.toLowerCase();
+    const roleTotals = {};
+    for (let g = 0; g < games.length; g += 1) {
+      const game = games[g];
+      for (let i = 0; i < 5; i += 1) {
+        const rk = ROLE_KEYS[i];
+        const ids = [game.b[i], game.r[i]];
+        for (let s = 0; s < 2; s += 1) {
+          const id = ids[s];
+          if (!id) continue;
+          if (!roleTotals[id]) roleTotals[id] = { total: 0, roles: {} };
+          roleTotals[id].total += 1;
+          if (!roleTotals[id].roles[rk]) roleTotals[id].roles[rk] = 0;
+          roleTotals[id].roles[rk] += 1;
+        }
+      }
+    }
+    function proInRole(id) {
+      const rec = roleTotals[id];
+      if (!rec || !rec.total) return false;
+      return ((rec.roles[roleKey] || 0) / rec.total) * 100 >= MIN_ROLE_PRESENCE;
+    }
     const stats = {};
     const matchups = {};
     for (let g = 0; g < games.length; g += 1) {
       const game = games[g];
       const pBlue = expectedBlueWin(game);
       for (let i = 0; i < 5; i += 1) {
-        if (ROLE_KEYS[i] !== role.toLowerCase()) continue;
+        if (ROLE_KEYS[i] !== roleKey) continue;
         const both = [
           { id: game.b[i], win: game.w === 1, enemy: game.r[i], expected: pBlue },
           { id: game.r[i], win: game.w === 0, enemy: game.b[i], expected: 1 - pBlue },
@@ -303,6 +344,7 @@
         for (let s = 0; s < 2; s += 1) {
           const us = both[s];
           if (!us.id || !us.enemy) continue;
+          if (!proInRole(us.id)) continue;
           if (!stats[us.id]) stats[us.id] = { picks: 0, wins: 0, adj: 0, exp: 0, roles: {} };
           stats[us.id].picks += 1;
           stats[us.id].wins += us.win ? 1 : 0;
@@ -318,7 +360,179 @@
     return { games: games.length, stats: stats, matchups: matchups, source: "pro" };
   }
 
+  function soloDuoTally() {
+    const lanes = (window.RIFT_WINRATES && window.RIFT_WINRATES.lanes) || {};
+    const adcLane = (lanes[DUO_ADC] && lanes[DUO_ADC].champs) || {};
+    const supLane = (lanes[DUO_SUP] && lanes[DUO_SUP].champs) || {};
+    const synergies = (window.RIFT_SYNERGIES && window.RIFT_SYNERGIES.synergies) || {};
+    const adcOk = {};
+    const supOk = {};
+    const adcIds = Object.keys(adcLane);
+    for (let i = 0; i < adcIds.length; i += 1) {
+      const id = adcIds[i];
+      const rec = adcLane[id];
+      if (rec && rec.games && (rec.lane_pct || 0) >= MIN_ROLE_PRESENCE) adcOk[id] = true;
+    }
+    const supIds = Object.keys(supLane);
+    for (let i = 0; i < supIds.length; i += 1) {
+      const id = supIds[i];
+      const rec = supLane[id];
+      if (rec && rec.games && (rec.lane_pct || 0) >= MIN_ROLE_PRESENCE) supOk[id] = true;
+    }
+    const stats = {};
+    const matchups = {};
+    let pickSum = 0;
+    const byAdc = {};
+    const bySup = {};
+    const mains = Object.keys(synergies);
+    for (let i = 0; i < mains.length; i += 1) {
+      const adc = mains[i];
+      if (!adcOk[adc]) continue;
+      const mates = synergies[adc] || {};
+      const mateIds = Object.keys(mates);
+      for (let j = 0; j < mateIds.length; j += 1) {
+        const sup = mateIds[j];
+        if (!supOk[sup]) continue;
+        const entry = mates[sup];
+        if (!entry || entry.role !== DUO_SUP) continue;
+        const games = entry.games || 0;
+        if (!games) continue;
+        const shift = typeof entry.delta === "number" ? entry.delta : 0;
+        const wins = games * (0.5 + shift / 100);
+        const exp = games * 0.5;
+        const id = duoKey(adc, sup);
+        stats[id] = {
+          picks: games,
+          wins: wins,
+          adj: wins - exp,
+          exp: exp,
+          roles: { adc: games, sup: games },
+          adc: adc,
+          sup: sup,
+          delta: shift,
+        };
+        pickSum += games;
+        if (!byAdc[adc]) byAdc[adc] = [];
+        byAdc[adc].push(id);
+        if (!bySup[sup]) bySup[sup] = [];
+        bySup[sup].push(id);
+      }
+    }
+    const duoIds = Object.keys(stats);
+    for (let i = 0; i < duoIds.length; i += 1) {
+      const id = duoIds[i];
+      const st = stats[id];
+      matchups[id] = {};
+      const shareAdc = byAdc[st.adc] || [];
+      const shareSup = bySup[st.sup] || [];
+      for (let j = 0; j < shareAdc.length; j += 1) {
+        const other = shareAdc[j];
+        if (other === id || matchups[id][other]) continue;
+        const ot = stats[other];
+        if (!ot || ot.picks < minGames) continue;
+        const games = Math.min(st.picks, ot.picks);
+        const shift = (ot.delta || 0) - (st.delta || 0);
+        const wins = games * (0.5 + shift / 100);
+        const exp = games * 0.5;
+        matchups[id][other] = { games: games, wins: wins, adj: wins - exp, exp: exp, kind: "share-adc" };
+      }
+      for (let j = 0; j < shareSup.length; j += 1) {
+        const other = shareSup[j];
+        if (other === id || matchups[id][other]) continue;
+        const ot = stats[other];
+        if (!ot || ot.picks < minGames) continue;
+        const games = Math.min(st.picks, ot.picks);
+        const shift = (ot.delta || 0) - (st.delta || 0);
+        const wins = games * (0.5 + shift / 100);
+        const exp = games * 0.5;
+        matchups[id][other] = { games: games, wins: wins, adj: wins - exp, exp: exp, kind: "share-sup" };
+      }
+    }
+    let adcGames = 0;
+    for (let i = 0; i < adcIds.length; i += 1) {
+      const rec = adcLane[adcIds[i]];
+      if (rec && rec.games) adcGames += rec.games;
+    }
+    return {
+      games: adcGames / 2 || pickSum,
+      stats: stats,
+      matchups: matchups,
+      source: "solo",
+      kind: "duo",
+    };
+  }
+
+  function proDuoTally(games) {
+    const roleTotals = {};
+    for (let g = 0; g < games.length; g += 1) {
+      const game = games[g];
+      for (let i = 0; i < 5; i += 1) {
+        const rk = ROLE_KEYS[i];
+        const ids = [game.b[i], game.r[i]];
+        for (let s = 0; s < 2; s += 1) {
+          const id = ids[s];
+          if (!id) continue;
+          if (!roleTotals[id]) roleTotals[id] = { total: 0, roles: {} };
+          roleTotals[id].total += 1;
+          if (!roleTotals[id].roles[rk]) roleTotals[id].roles[rk] = 0;
+          roleTotals[id].roles[rk] += 1;
+        }
+      }
+    }
+    function roleShare(id, roleKey) {
+      const rec = roleTotals[id];
+      if (!rec || !rec.total) return 0;
+      return ((rec.roles[roleKey] || 0) / rec.total) * 100;
+    }
+    function duoOk(adc, sup) {
+      return (
+        roleShare(adc, DUO_ADC) >= MIN_ROLE_PRESENCE &&
+        roleShare(sup, DUO_SUP) >= MIN_ROLE_PRESENCE
+      );
+    }
+    const stats = {};
+    const matchups = {};
+    function bumpDuo(id, adc, sup, win, expected) {
+      if (!stats[id]) {
+        stats[id] = {
+          picks: 0,
+          wins: 0,
+          adj: 0,
+          exp: 0,
+          roles: { adc: 0, sup: 0 },
+          adc: adc,
+          sup: sup,
+        };
+      }
+      stats[id].picks += 1;
+      stats[id].wins += win ? 1 : 0;
+      stats[id].adj += (win ? 1 : 0) - expected;
+      stats[id].exp += expected;
+      stats[id].roles.adc += 1;
+      stats[id].roles.sup += 1;
+    }
+    for (let g = 0; g < games.length; g += 1) {
+      const game = games[g];
+      const bAdc = game.b && game.b[3];
+      const bSup = game.b && game.b[4];
+      const rAdc = game.r && game.r[3];
+      const rSup = game.r && game.r[4];
+      if (!bAdc || !bSup || !rAdc || !rSup) continue;
+      const blueId = duoKey(bAdc, bSup);
+      const redId = duoKey(rAdc, rSup);
+      const pBlue = expectedBlueWin(game);
+      if (duoOk(bAdc, bSup)) bumpDuo(blueId, bAdc, bSup, game.w === 1, pBlue);
+      if (duoOk(rAdc, rSup)) bumpDuo(redId, rAdc, rSup, game.w === 0, 1 - pBlue);
+      if (duoOk(bAdc, bSup) && duoOk(rAdc, rSup) && blueId !== redId) {
+        bump(matchups, blueId, redId, game.w === 1, pBlue);
+        bump(matchups, redId, blueId, game.w === 0, 1 - pBlue);
+      }
+    }
+    return { games: games.length, stats: stats, matchups: matchups, source: "pro", kind: "duo" };
+  }
+
   function tally(games) {
+    if (isDuo()) return isPro() ? proDuoTally(games) : soloDuoTally();
     if (!isPro()) return soloTally();
     return proTally(games);
   }
@@ -385,6 +599,78 @@
     return rows;
   }
 
+  function significantEdgesAmong(keep, keepSet, data, skipPairs) {
+    const candidates = [];
+    const seen = skipPairs || {};
+    for (let i = 0; i < keep.length; i += 1) {
+      const a = keep[i];
+      const map = data.matchups[a] || {};
+      const them = Object.keys(map);
+      for (let j = 0; j < them.length; j += 1) {
+        const b = them[j];
+        if (!keepSet[b] || a === b) continue;
+        const key = a < b ? a + "|" + b : b + "|" + a;
+        if (seen[key]) continue;
+        seen[key] = true;
+        const rec = map[b];
+        if (!rec || rec.games < minGames) continue;
+        const recBa = (data.matchups[b] || {})[a];
+        const relA = relDelta(rec, baseAdj(data.stats, a));
+        const relB = recBa ? relDelta(recBa, baseAdj(data.stats, b)) : -relA;
+        const favorA = relA >= relB;
+        const d = favorA ? relA : relB;
+        if (Math.abs(d) < MIN_STRENGTH) continue;
+        const src = favorA ? a : b;
+        const dst = favorA ? b : a;
+        const rawFromSrc = favorA
+          ? delta(rec.wins, rec.games)
+          : recBa
+            ? delta(recBa.wins, recBa.games)
+            : -delta(rec.wins, rec.games);
+        const skillFromSrc = favorA
+          ? adjDelta(rec)
+          : recBa
+            ? adjDelta(recBa)
+            : -adjDelta(rec);
+        candidates.push({
+          type: "vs",
+          source: src,
+          target: dst,
+          games: rec.games,
+          wins: favorA ? rec.wins : recBa ? recBa.wins : rec.games - rec.wins,
+          delta: Math.abs(d),
+          rawDelta: d,
+          rawWrDelta: rawFromSrc,
+          skillDelta: skillFromSrc,
+          baseDelta: favorA ? baseAdj(data.stats, a) : baseAdj(data.stats, b),
+          expected: favorA
+            ? rec.games
+              ? rec.exp / rec.games
+              : 0.5
+            : recBa && recBa.games
+              ? recBa.exp / recBa.games
+              : 0.5,
+          w: edgeWeight(rec.games, Math.abs(d)),
+        });
+      }
+    }
+    candidates.sort(function (a, b) {
+      return b.w - a.w;
+    });
+    const out = [];
+    const degree = {};
+    for (let i = 0; i < candidates.length; i += 1) {
+      const e = candidates[i];
+      const da = degree[e.source] || 0;
+      const db = degree[e.target] || 0;
+      if (da >= MAX_EDGE_PER_NODE && db >= MAX_EDGE_PER_NODE) continue;
+      out.push(e);
+      degree[e.source] = da + 1;
+      degree[e.target] = db + 1;
+    }
+    return out;
+  }
+
   function buildGraph(data) {
     let keep = [];
     const keepSet = {};
@@ -393,9 +679,14 @@
     if (selected && data.stats[selected]) {
       const links = counterLinksFor(selected, data.matchups, data.stats, {
         requireStrength: false,
-      }).slice(0, MAX_FOCUS_LINKS);
+      })
+        .sort(function (a, b) {
+          return b.games - a.games || b.w - a.w;
+        })
+        .slice(0, topN);
       keep = [selected];
       keepSet[selected] = true;
+      const usedPairs = {};
       for (let i = 0; i < links.length; i += 1) {
         const other = links[i].other;
         if (!keepSet[other]) {
@@ -411,6 +702,11 @@
           keep.push(other);
           keepSet[other] = true;
         }
+        const pairKey =
+          links[i].source < links[i].target
+            ? links[i].source + "|" + links[i].target
+            : links[i].target + "|" + links[i].source;
+        usedPairs[pairKey] = true;
         nextEdges.push({
           type: "vs",
           source: links[i].source,
@@ -426,81 +722,22 @@
           w: links[i].w,
         });
       }
+      if (showNetwork) {
+        const peerKeep = keep.filter(function (id) {
+          return id !== selected;
+        });
+        const peerSet = {};
+        for (let i = 0; i < peerKeep.length; i += 1) peerSet[peerKeep[i]] = true;
+        const extras = significantEdgesAmong(peerKeep, peerSet, data, usedPairs);
+        for (let i = 0; i < extras.length; i += 1) nextEdges.push(extras[i]);
+      }
     } else {
       const ids = Object.keys(data.stats).sort(function (a, b) {
         return data.stats[b].picks - data.stats[a].picks;
       });
       keep = ids.slice(0, topN);
       for (let i = 0; i < keep.length; i += 1) keepSet[keep[i]] = true;
-
-      const candidates = [];
-      const seen = {};
-      for (let i = 0; i < keep.length; i += 1) {
-        const a = keep[i];
-        const map = data.matchups[a] || {};
-        const them = Object.keys(map);
-        for (let j = 0; j < them.length; j += 1) {
-          const b = them[j];
-          if (!keepSet[b] || a === b) continue;
-          const key = a < b ? a + "|" + b : b + "|" + a;
-          if (seen[key]) continue;
-          seen[key] = true;
-          const rec = map[b];
-          if (!rec || rec.games < minGames) continue;
-          const recBa = (data.matchups[b] || {})[a];
-          const relA = relDelta(rec, baseAdj(data.stats, a));
-          const relB = recBa ? relDelta(recBa, baseAdj(data.stats, b)) : -relA;
-          // Orient toward whoever overperforms their own baseline more.
-          const favorA = relA >= relB;
-          const d = favorA ? relA : relB;
-          if (Math.abs(d) < MIN_STRENGTH) continue;
-          const src = favorA ? a : b;
-          const dst = favorA ? b : a;
-          const rawFromSrc = favorA
-            ? delta(rec.wins, rec.games)
-            : recBa
-              ? delta(recBa.wins, recBa.games)
-              : -delta(rec.wins, rec.games);
-          const skillFromSrc = favorA
-            ? adjDelta(rec)
-            : recBa
-              ? adjDelta(recBa)
-              : -adjDelta(rec);
-          candidates.push({
-            type: "vs",
-            source: src,
-            target: dst,
-            games: rec.games,
-            wins: favorA ? rec.wins : recBa ? recBa.wins : rec.games - rec.wins,
-            delta: Math.abs(d),
-            rawDelta: d,
-            rawWrDelta: rawFromSrc,
-            skillDelta: skillFromSrc,
-            baseDelta: favorA ? baseAdj(data.stats, a) : baseAdj(data.stats, b),
-            expected: favorA
-              ? rec.games
-                ? rec.exp / rec.games
-                : 0.5
-              : recBa && recBa.games
-                ? recBa.exp / recBa.games
-                : 0.5,
-            w: edgeWeight(rec.games, Math.abs(d)),
-          });
-        }
-      }
-      candidates.sort(function (a, b) {
-        return b.w - a.w;
-      });
-      const degree = {};
-      for (let i = 0; i < candidates.length; i += 1) {
-        const e = candidates[i];
-        const da = degree[e.source] || 0;
-        const db = degree[e.target] || 0;
-        if (da >= MAX_EDGE_PER_NODE && db >= MAX_EDGE_PER_NODE) continue;
-        nextEdges.push(e);
-        degree[e.source] = da + 1;
-        degree[e.target] = db + 1;
-      }
+      nextEdges = significantEdgesAmong(keep, keepSet, data, {});
     }
 
     let maxPicks = 1;
@@ -545,7 +782,10 @@
         picks: st.picks,
         wins: st.wins,
         wr: st.picks ? st.wins / st.picks : 0,
-        role: primaryRole(st.roles),
+        role: isDuo() ? "duo" : primaryRole(st.roles),
+        adc: st.adc || "",
+        sup: st.sup || "",
+        delta: st.delta,
         r: r,
         x: x,
         y: y,
@@ -554,7 +794,12 @@
       };
       nextNodes.push(node);
       nextById[id] = node;
-      ensureImage(id);
+      if (isDuo() && st.adc && st.sup) {
+        ensureImage(st.adc);
+        ensureImage(st.sup);
+      } else {
+        ensureImage(id);
+      }
     }
 
     nodes = nextNodes;
@@ -761,7 +1006,6 @@
         node.id === selected ||
         node.id === hoverId ||
         (hoverEdge && (node.id === hoverEdge.source || node.id === hoverEdge.target));
-      const img = imgCache[node.id];
       ctx.save();
       ctx.globalAlpha = dim ? 0.22 : 1;
       ctx.beginPath();
@@ -772,11 +1016,43 @@
       ctx.beginPath();
       ctx.arc(node.x, node.y, node.r - 1.5, 0, Math.PI * 2);
       ctx.clip();
-      if (img && img.complete && img.naturalWidth) {
-        ctx.drawImage(img, node.x - node.r, node.y - node.r, node.r * 2, node.r * 2);
+      if (isDuo() && node.adc && node.sup) {
+        const left = imgCache[node.adc];
+        const right = imgCache[node.sup];
+        const size = node.r * 2;
+        const x0 = node.x - node.r;
+        const y0 = node.y - node.r;
+        if (left && left.complete && left.naturalWidth) {
+          ctx.drawImage(left, x0, y0, size, size);
+        } else {
+          ctx.fillStyle = "#1c2430";
+          ctx.fillRect(x0, y0, node.r, size);
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(node.x, y0, node.r, size);
+        ctx.clip();
+        if (right && right.complete && right.naturalWidth) {
+          ctx.drawImage(right, x0, y0, size, size);
+        } else {
+          ctx.fillStyle = "#243040";
+          ctx.fillRect(node.x, y0, node.r, size);
+        }
+        ctx.restore();
+        ctx.beginPath();
+        ctx.moveTo(node.x, y0);
+        ctx.lineTo(node.x, y0 + size);
+        ctx.strokeStyle = "rgba(16, 20, 26, 0.85)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
       } else {
-        ctx.fillStyle = "#1c2430";
-        ctx.fillRect(node.x - node.r, node.y - node.r, node.r * 2, node.r * 2);
+        const img = imgCache[node.id];
+        if (img && img.complete && img.naturalWidth) {
+          ctx.drawImage(img, node.x - node.r, node.y - node.r, node.r * 2, node.r * 2);
+        } else {
+          ctx.fillStyle = "#1c2430";
+          ctx.fillRect(node.x - node.r, node.y - node.r, node.r * 2, node.r * 2);
+        }
       }
       ctx.restore();
       ctx.beginPath();
@@ -789,8 +1065,13 @@
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
         ctx.fillStyle = dim ? "rgba(238,241,244,0.25)" : "rgba(238,241,244,0.78)";
-        const label = champName(node.id);
-        ctx.fillText(label.length > 10 ? label.slice(0, 9) + "…" : label, node.x, node.y + node.r + 4);
+        const label = nodeLabel(node.id);
+        const maxLen = isDuo() ? 16 : 10;
+        ctx.fillText(
+          label.length > maxLen ? label.slice(0, maxLen - 1) + "…" : label,
+          node.x,
+          node.y + node.r + 4
+        );
       }
       ctx.restore();
     }
@@ -892,17 +1173,22 @@
     }
     const pickRate = lastData && lastData.games ? node.picks / lastData.games : 0;
     els.tooltip.hidden = false;
+    const synBit =
+      isDuo() && node.delta != null && isFinite(node.delta)
+        ? " · syn " + fmtDelta(node.delta)
+        : "";
     els.tooltip.innerHTML =
       "<strong>" +
-      champName(node.id) +
+      nodeLabel(node.id) +
       "</strong><span>" +
-      (node.role || "").toUpperCase() +
+      (isDuo() ? "ADC+SUP" : (node.role || "").toUpperCase()) +
       " · " +
       node.picks +
       " picks · " +
       fmtPct(pickRate) +
       " · WR " +
       fmtPct(node.wr) +
+      synBit +
       "</span>";
     placeTooltip(x, y);
   }
@@ -929,9 +1215,9 @@
     els.tooltip.hidden = false;
     els.tooltip.innerHTML =
       "<strong>" +
-      champName(favor) +
+      nodeLabel(favor) +
       (adj >= 0 ? " beats " : " loses to ") +
-      champName(under) +
+      nodeLabel(under) +
       "</strong><span>" +
       "vs avg " +
       fmtDelta(adj) +
@@ -948,7 +1234,11 @@
     if (!rows.length) {
       const li = document.createElement("li");
       li.className = "muted";
-      li.textContent = "No strong counters in this filter.";
+      li.textContent = isDuo()
+        ? isPro()
+          ? "No strong duo matchups in this filter."
+          : "No related botlane duos in this filter."
+        : "No strong counters in this filter.";
       ul.appendChild(li);
       return;
     }
@@ -956,21 +1246,29 @@
       const row = rows[i];
       const li = document.createElement("li");
       const good = row.rawDelta >= 0;
-      const verb = good ? "beats" : "loses to";
+      const verb = isDuo() && !isPro() ? (good ? "better syn" : "worse syn") : good ? "beats" : "loses to";
+      const pair = parseDuo(row.other);
+      const icons = pair
+        ? '<img src="' +
+          portrait(pair.adc) +
+          '" alt="" /><img src="' +
+          portrait(pair.sup) +
+          '" alt="" />'
+        : '<img src="' + portrait(row.other) + '" alt="" />';
       li.innerHTML =
         '<button type="button" data-id="' +
         row.other +
-        '"><img src="' +
-        portrait(row.other) +
-        '" alt="" /><span>' +
-        champName(row.other) +
+        '">' +
+        icons +
+        "<span>" +
+        nodeLabel(row.other) +
         '</span><em class="' +
         (good ? "is-good" : "is-bad") +
         '">' +
         verb +
         " " +
         fmtDelta(row.rawDelta) +
-        " vs avg · " +
+        " · " +
         row.games +
         "g</em></button>";
       ul.appendChild(li);
@@ -1154,21 +1452,27 @@
     }
     const st = data.stats[selected];
     els.detail.hidden = false;
-    els.detailIcon.src = portrait(selected);
-    els.detailName.textContent = champName(selected);
+    const pair = parseDuo(selected);
+    els.detailIcon.src = portrait(pair ? pair.adc : selected);
+    els.detailName.textContent = nodeLabel(selected);
+    const listTitle = document.getElementById("bubble-detail-list-title");
+    if (listTitle) {
+      listTitle.textContent = isDuo() ? (isPro() ? "Duo matchups" : "Related duos") : "Counters";
+    }
+    const synBit =
+      isDuo() && st.delta != null && isFinite(st.delta) ? " · syn " + fmtDelta(st.delta) : "";
     els.detailSub.textContent =
-      role +
+      (isDuo() ? "ADC+SUP" : role) +
       " · " +
       st.picks +
       " picks · WR " +
       fmtPct(st.picks ? st.wins / st.picks : 0) +
-      " · baseline " +
-      fmtDelta(baseAdj(data.stats, selected));
+      (isDuo() ? synBit : " · baseline " + fmtDelta(baseAdj(data.stats, selected)));
     const rows = counterLinksFor(selected, data.matchups, data.stats, {
       requireStrength: false,
     }).slice();
     rows.sort(function (a, b) {
-      return a.rawDelta - b.rawDelta;
+      return isDuo() && !isPro() ? b.games - a.games : a.rawDelta - b.rawDelta;
     });
     fillDetailList(els.detailVs, rows.slice(0, 16));
     if (historyPair) {
@@ -1184,21 +1488,49 @@
 
   function syncSourceUi() {
     const pro = isPro();
+    const duo = isDuo();
     if (els.leagues) els.leagues.hidden = !pro;
     if (els.windows) els.windows.hidden = !pro;
-    if (els.kicker) els.kicker.textContent = pro ? "Pro network" : "Solo network";
+    if (els.roles) els.roles.hidden = duo;
+    if (els.kicker) {
+      els.kicker.textContent = duo
+        ? pro
+          ? "Pro bot duos"
+          : "Solo bot duos"
+        : pro
+          ? "Pro network"
+          : "Solo network";
+    }
     if (els.hint) {
-      els.hint.textContent = pro
-        ? "Bubble size = pick rate. Pro counters are skill-adjusted then compared to each champ’s own baseline. Green = good for the focused champ, red = bad."
-        : "Bubble size = pick rate. Solo counters come from LoLalytics and are compared to each champ’s lane baseline. Green = good for the focused champ, red = bad.";
+      let base;
+      if (duo) {
+        base = pro
+          ? "Bubble size = duo pick rate. Edges are botlane H2H vs each duo’s baseline. Green = good for the focused duo."
+          : "Bubble size = duo games. Solo links related botlanes that share an ADC or support (synergy Δ).";
+      } else {
+        base = pro
+          ? "Bubble size = pick rate. Pro counters are skill-adjusted then compared to each champ’s own baseline. Green = good for the focused champ, red = bad."
+          : "Bubble size = pick rate. Solo counters come from LoLalytics and are compared to each champ’s lane baseline. Green = good for the focused champ, red = bad.";
+      }
+      els.hint.textContent = showNetwork
+        ? base + " Network adds significant links among the others."
+        : base;
+    }
+    if (els.search) {
+      els.search.placeholder = duo
+        ? "Search or focus a botlane duo"
+        : "Search or focus a champion";
     }
   }
 
   function refresh() {
     syncSourceUi();
+    if (selected && lastData && lastData.kind === "duo" && !isDuo()) selected = "";
+    if (selected && lastData && lastData.kind !== "duo" && isDuo()) selected = "";
     const games = isPro() ? filteredGames() : [];
     const data = tally(games);
     lastData = data;
+    if (selected && !data.stats[selected]) selected = "";
     buildGraph(data);
     if (isPro()) {
       const winLabel = RIFT_WINDOW.key === "season" ? "Season" : RIFT_WINDOW.days + "d";
@@ -1208,7 +1540,8 @@
         (league === "All" ? "All leagues" : league) +
         " · " +
         winLabel +
-        (selected ? " · " + champName(selected) : "");
+        (isDuo() ? " · ADC+SUP" : "") +
+        (selected ? " · " + nodeLabel(selected) : "");
     } else {
       const wr = window.RIFT_WINRATES || {};
       const patchBit = wr.patch || wr.patch_query || wr.tier || "";
@@ -1216,7 +1549,8 @@
         Math.round(data.games).toLocaleString() +
         " games · LoLalytics" +
         (patchBit ? " · " + patchBit : "") +
-        (selected ? " · " + champName(selected) : "");
+        (isDuo() ? " · ADC+SUP" : "") +
+        (selected ? " · " + nodeLabel(selected) : "");
     }
     renderDetail(data);
     startSim();
@@ -1247,9 +1581,13 @@
       url.searchParams.delete("league");
       url.searchParams.delete("window");
     }
-    url.searchParams.set("role", role);
+    url.searchParams.set("view", viewMode);
+    if (!isDuo()) url.searchParams.set("role", role);
+    else url.searchParams.delete("role");
     url.searchParams.set("n", String(topN));
     url.searchParams.set("min", String(minGames));
+    if (showNetwork) url.searchParams.set("net", "1");
+    else url.searchParams.delete("net");
     if (selected) url.searchParams.set("champ", selected);
     else url.searchParams.delete("champ");
     url.searchParams.delete("patch");
@@ -1261,12 +1599,15 @@
     const url = new URL(location.href);
     const src = url.searchParams.get("source");
     source = src === "solo" || src === "normal" ? "solo" : "pro";
+    const view = url.searchParams.get("view");
+    viewMode = view === "duo" ? "duo" : "champ";
     const lg = url.searchParams.get("league");
     const rl = url.searchParams.get("role");
     league = LEAGUES.indexOf(lg) >= 0 ? lg : "All";
     role = ROLES.indexOf(rl) >= 0 ? rl : "MID";
-    topN = Math.max(16, Math.min(60, Number(url.searchParams.get("n")) || 36));
+    topN = Math.max(1, Math.min(60, Number(url.searchParams.get("n")) || 36));
     minGames = Math.max(4, Math.min(24, Number(url.searchParams.get("min")) || 8));
+    showNetwork = url.searchParams.get("net") === "1";
     selected = url.searchParams.get("champ") || "";
     RIFT_WINDOW.init(url.searchParams.get("window") || "60");
     els.topn.value = String(topN);
@@ -1279,6 +1620,32 @@
     const needle = q.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
     if (!needle) return [];
     const out = [];
+    if (isDuo() && lastData && lastData.stats) {
+      const ids = Object.keys(lastData.stats);
+      for (let i = 0; i < ids.length; i += 1) {
+        const id = ids[i];
+        const pair = parseDuo(id);
+        if (!pair) continue;
+        const label = duoLabel(id)
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+        const a = pair.adc.toLowerCase();
+        const s = pair.sup.toLowerCase();
+        if (
+          label.indexOf(needle) !== -1 ||
+          a.indexOf(needle) !== -1 ||
+          s.indexOf(needle) !== -1
+        ) {
+          out.push(id);
+        }
+      }
+      out.sort(function (a, b) {
+        const pa = lastData.stats[a].picks || 0;
+        const pb = lastData.stats[b].picks || 0;
+        return pb - pa || duoLabel(a).localeCompare(duoLabel(b));
+      });
+      return out.slice(0, 10);
+    }
     champMap.forEach(function (champ, id) {
       const slug = String(champ.name || id)
         .toLowerCase()
@@ -1306,7 +1673,19 @@
       const id = hits[i];
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.innerHTML = '<img src="' + portrait(id) + '" alt="" /><span>' + champName(id) + "</span>";
+      const pair = parseDuo(id);
+      if (pair) {
+        btn.innerHTML =
+          '<img src="' +
+          portrait(pair.adc) +
+          '" alt="" /><img src="' +
+          portrait(pair.sup) +
+          '" alt="" /><span>' +
+          duoLabel(id) +
+          "</span>";
+      } else {
+        btn.innerHTML = '<img src="' + portrait(id) + '" alt="" /><span>' + champName(id) + "</span>";
+      }
       btn.addEventListener("click", function () {
         focusChamp(id);
         search = "";
@@ -1395,7 +1774,8 @@
         const e = edgeClick.edge;
         const us = selected && (selected === e.source || selected === e.target) ? selected : e.source;
         const them = us === e.source ? e.target : e.source;
-        openMatchupHistory(us, them);
+        if (isDuo()) focusChamp(them);
+        else openMatchupHistory(us, them);
       }
       drag = null;
       edgeClick = null;
@@ -1422,8 +1802,37 @@
     if (!window.RIFT_WINRATES || !window.RIFT_COUNTERS) {
       throw new Error("Missing solo queue winrates/counters");
     }
+    if (!window.RIFT_SYNERGIES) {
+      throw new Error("Missing solo queue synergies");
+    }
 
     readUrl();
+    if (els.views) {
+      els.views.textContent = "";
+      for (let i = 0; i < VIEWS.length; i += 1) {
+        const item = VIEWS[i];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = item.label;
+        btn.title = item.id === "duo" ? "ADC + Support botlane duos" : "Single-champion counter network";
+        if (item.id === viewMode) btn.classList.add("active");
+        btn.addEventListener("click", function () {
+          if (viewMode === item.id) return;
+          viewMode = item.id;
+          selected = "";
+          clearHistory();
+          if (els.views) {
+            const kids = els.views.querySelectorAll("button");
+            for (let k = 0; k < kids.length; k += 1) {
+              kids[k].classList.toggle("active", kids[k].textContent === item.label);
+            }
+          }
+          syncUrl();
+          refresh();
+        });
+        els.views.appendChild(btn);
+      }
+    }
     if (els.sources) {
       els.sources.textContent = "";
       for (let i = 0; i < SOURCES.length; i += 1) {
@@ -1466,6 +1875,17 @@
       syncUrl();
       refresh();
     });
+    function renderNetworkChip() {
+      if (!els.network) return;
+      renderChips(els.network, ["Network"], showNetwork ? "Network" : "", function () {
+        showNetwork = !showNetwork;
+        renderNetworkChip();
+        syncSourceUi();
+        syncUrl();
+        refresh();
+      });
+    }
+    renderNetworkChip();
 
     els.topn.addEventListener("input", function () {
       topN = Number(els.topn.value);
@@ -1500,7 +1920,8 @@
       const btn = evt.target.closest("button[data-id]");
       if (!btn) return;
       const them = btn.getAttribute("data-id");
-      if (selected && them) openMatchupHistory(selected, them);
+      if (isDuo()) focusChamp(them);
+      else if (selected && them) openMatchupHistory(selected, them);
       else focusChamp(them);
     });
 

@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=67" />
+    <link rel="stylesheet" href="styles.css?v=68" />
   </head>
   <body>
     <div class="vignette"></div>
@@ -69,14 +69,16 @@
             />
             <div id="bubble-search-menu" class="filter-menu" hidden></div>
           </div>
+          <div id="bubble-views" class="chips" role="tablist" aria-label="View mode"></div>
           <div id="bubble-sources" class="chips" role="tablist" aria-label="Data source"></div>
           <div id="bubble-leagues" class="chips" role="tablist" aria-label="Leagues"></div>
           <div id="bubble-roles" class="chips" role="tablist" aria-label="Positions"></div>
           <div id="bubble-windows" class="pro-windows chips" role="tablist" aria-label="Time window"></div>
+          <div id="bubble-network" class="chips" role="tablist" aria-label="Network links"></div>
           <div class="bubble-sliders">
             <label class="bubble-slider">
               <span>Champs</span>
-              <input id="bubble-topn" type="range" min="16" max="60" step="2" value="36" />
+              <input id="bubble-topn" type="range" min="1" max="60" step="1" value="36" />
               <em id="bubble-topn-val">36</em>
             </label>
             <label class="bubble-slider">
@@ -86,7 +88,7 @@
             </label>
           </div>
           <p id="bubble-hint" class="bubble-hint muted">
-            Bubble size = pick rate. Counters are compared to each champ’s own baseline. Green = good for the focused champ, red = bad.
+            Bubble size = pick rate. Focus a duo to see related bot lanes; Network adds significant links.
           </p>
         </div>
 
@@ -104,7 +106,7 @@
             </div>
             <div id="bubble-detail-counters" class="bubble-detail-cols bubble-detail-cols-single">
               <div>
-                <h4>Counters</h4>
+                <h4 id="bubble-detail-list-title">Counters</h4>
                 <ul id="bubble-detail-vs"></ul>
               </div>
             </div>
@@ -124,9 +126,10 @@
     <script src="champions.js"></script>
     <script src="winrates.js"></script>
     <script src="counters.js"></script>
+    <script src="synergies.js"></script>
     <script src="pro-games.js?v=5"></script>
     <script src="player-ratings.js?v=17"></script>
     <script src="window-days.js"></script>
-    <script src="bubbles.js?v=12"></script>
+    <script src="bubbles.js?v=16"></script>
   </body>
 </html>
